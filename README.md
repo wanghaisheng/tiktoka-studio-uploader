@@ -31,3 +31,8 @@ for those multiple channels under same google account
 
 # 5. seleniumwire
 
+THANKS FOR 
+1. https://github.com/ContentAutomation/YouTubeUploader
+2. https://github.com/offish/opplast
+3. other I CAN NOT REMEMBER
+
