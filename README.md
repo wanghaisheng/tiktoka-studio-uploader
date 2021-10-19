@@ -4,13 +4,16 @@ about:profiles
 ```
 一般来说 一个youtube帐号要新建一个profile
 文件夹可以选在assets下
-2.安装火狐插件 Cookie-Editor，人工登录对应的频道，并利用插件导出cookie.json 
-文件夹可以选在assets下
-3.
-pip install -r requirement.txt
 
-4.
-python auto_video.py
+2.安装火狐插件 Cookie-Editor，人工登录对应的频道，并利用插件导出cookie.json 
+
+文件夹可以选在assets下
+
+3. lib you need to preprare    
+```
+pip install -r requirement.txt
+```
+4.adjust and run example
 
 
 
