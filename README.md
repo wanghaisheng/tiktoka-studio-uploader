@@ -13,12 +13,17 @@ about:profiles
 2.install firefox addon, **Cookie-Editor**，mannually login into youtube channel，export a  cookie.json 
 
 
-3. lib you need to preprare    
+3. if you want to ajust source code, pls do    
 ```
+git clone https://github.com/wanghaisheng/ytb-up.git
 pip install -r requirement.txt
 ```
 4.adjust and run example
 
+5. use as a lib
+```
+pip install ytb-up
+```
 
 
 # features YOU MAY NEED
