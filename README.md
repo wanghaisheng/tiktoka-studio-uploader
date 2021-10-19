@@ -17,7 +17,7 @@ pip install -r requirement.txt
 
 
 
-features:
+# features YOU MAY NEED
 
 # 1. proxy support
 auto detect whether need a proxy 
