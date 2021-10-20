@@ -1,4 +1,4 @@
-from opplast import Upload
+from ytb_up import Upload
 import os,json
 
 import requests
