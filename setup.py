@@ -23,7 +23,7 @@ setup(
     license="MIT",
     url="https://github.com/wanghaisheng/ytb-up",
     download_url="https://github.com/wanghaisheng/ytb-up/tarball/v" + version,
-    packages=["ytb-up"],
+    packages=["ytb_up"],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
