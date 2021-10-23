@@ -10,16 +10,31 @@ about:profiles
 一般来说 一个youtube帐号要新建一个profile
 文件夹可以选在assets下
 
-2.install firefox addon, **Cookie-Editor**，mannually login into youtube channel，set display language to english,then export a  cookie.json 
+2.install firefox addon, **Cookie-Editor**，mannually login into youtube channel，click profile icon, choose english language,export a  cookie.json 
 
 
 3. if you want to ajust source code, pls do    
 ```
-git clone https://github.com/wanghaisheng/ytb-up.git
-pip install -r requirement.txt
-```
-4.adjust and run example
 
+git clone https://github.com/wanghaisheng/ytb_up
+pip install -r requirements.txt
+
+all codes under **ytb_up**, twist them as you wish
+
+```
+4. run demo project
+```
+git clone https://github.com/wanghaisheng/autovideo
+
+conda create -n autovideo python=3.9
+conda activate autovideo
+
+下面这两个二选一就行
+pip install -i http://mirrors.aliyun.com/pypi/simple/ requests pillow itemdbs selenium-wire moviepy ytb_up
+
+pip install -i  https://pypi.tuna.tsinghua.edu.cn/simple requests pillow itemdbs selenium-wire moviepy ytb_up
+python auto_video.py
+```
 5. use as a lib
 ```
 pip install ytb-up
@@ -45,3 +60,7 @@ THANKS FOR
 2. https://github.com/offish/opplast
 3. other I CAN NOT REMEMBER
 
+
+
+配置文件说明 
+publishpolicy：1 表示上传以后立即公开  0 表示上传以后保持私享 2表示结合每天发布数量和视频文件夹中的数量 从上传当日起开始定时公开
