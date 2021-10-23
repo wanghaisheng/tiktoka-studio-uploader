@@ -10,7 +10,7 @@ about:profiles
 一般来说 一个youtube帐号要新建一个profile
 文件夹可以选在assets下
 
-2.install firefox addon, **Cookie-Editor**，mannually login into youtube channel，export a  cookie.json 
+2.install firefox addon, **Cookie-Editor**，mannually login into youtube channel，set display language to english,then export a  cookie.json 
 
 
 3. if you want to ajust source code, pls do    
