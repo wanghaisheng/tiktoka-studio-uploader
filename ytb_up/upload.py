@@ -271,12 +271,8 @@ class Upload:
 
             if publish_date and not publish_date=="":
                 pass            
-            elif publish_date =="" :
-                publish_date = datetime( date.today().year,  date.today().month,  date.today().day+1, 20, 15),
-
-                print('schedule time',type(publish_date),publish_date)
             else:
-                print('schedule time',type(publish_date),publish_date)
+                publish_date = datetime( date.today().year,  date.today().month,  date.today().day+1, 20, 15),
             self._set_time(publish_date)        
         video_id = self.get_video_id(modal)
         while self.not_uploaded(modal):
