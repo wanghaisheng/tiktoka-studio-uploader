@@ -1,12 +1,12 @@
 Metadata-Version: 2.1
 Name: ytb-up
-Version: 0.1.0
+Version: 0.1.3
 Summary: auto video machine,Upload videos to YouTube using geckodriver, Firefox profiles and Selenium.
 Home-page: https://github.com/wanghaisheng/ytb-up
 Author: wanghaisheng
 Author-email: edwin.uestc@gmail.com
 License: MIT
-Download-URL: https://github.com/wanghaisheng/ytb-up/tarball/v0.1.0
+Download-URL: https://github.com/wanghaisheng/ytb-up/tarball/v0.1.3
 Description: This project aims to automate the upload process for YouTube Videos. Since videos can only be publicly uploaded through the YouTube Data API by using a Google Workspaces Account (not free!), I decided to figure out a headless uploader using Selenium. This approach also bypasses API restrictions (e.g. Rate Limits/Endcards can't be set through the API).There are tons of library existing  but not for me .
         
         AS a code dummy,I do accept any advice because of my only purpose is to get things work
@@ -24,19 +24,26 @@ Description: This project aims to automate the upload process for YouTube Videos
         
         3. if you want to ajust source code, pls do    
         ```
+        
+        git clone https://github.com/wanghaisheng/ytb_up
+        pip install -r requirements.txt
+        
+        all codes under **ytb_up**, twist them as you wish
+        
+        ```
+        4. run demo project
+        ```
         git clone https://github.com/wanghaisheng/autovideo
         
         conda create -n autovideo python=3.9
         conda activate autovideo
         
         下面这两个二选一就行
-        pip install -i http://mirrors.aliyun.com/pypi/simple/ requests pillow itemdbs selenium-wire moviepy
+        pip install -i http://mirrors.aliyun.com/pypi/simple/ requests pillow itemdbs selenium-wire moviepy ytb_up
         
-        pip install -i  https://pypi.tuna.tsinghua.edu.cn/simple requests pillow itemdbs selenium-wire moviepy
+        pip install -i  https://pypi.tuna.tsinghua.edu.cn/simple requests pillow itemdbs selenium-wire moviepy ytb_up
         python auto_video.py
         ```
-        4.adjust and run example
-        
         5. use as a lib
         ```
         pip install ytb-up

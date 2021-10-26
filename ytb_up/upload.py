@@ -232,9 +232,11 @@ class Upload:
 
         if tags:
             self.click(modal.find_element_by_xpath(MORE_OPTIONS_CONTAINER))
-
-            tags = ",".join(str(tag) for tag in tags)
-            tags=tags[:500]
+            if type(tags)==list:
+                tags = ",".join(str(tag) for tag in tags)
+                tags=tags[:500]
+            else:
+                tags=tags
             if len(tags) > TAGS_COUNTER:
                 raise ExceedsCharactersAllowed(
                     f"Tags were not set due to exceeding the maximum allowed characters ({len(tags)}/{TAGS_COUNTER})"
@@ -255,7 +257,8 @@ class Upload:
                 self.click_next(modal)
             except:
                 pass
-
+        if not int(publishpolicy) in [0,1,2]:
+            publishpolicy=0
         if int(publishpolicy)==0:
             self.log.debug("Trying to set video visibility to private...")
 
@@ -267,17 +270,18 @@ class Upload:
             public_main_button = modal.find_element_by_name(PUBLIC_BUTTON)
             public_main_button.find_element_by_id(RADIO_LABEL).click()
         else:
-            self.log.debug("Trying to set video schedule time...",type(publish_date),publish_date)
+            self.log.debug("Trying to set video schedule time...")
 
             if publish_date and not publish_date=="":
                 pass            
             else:
-                publish_date = datetime( date.today().year,  date.today().month,  date.today().day+1, 20, 15),
-            self._set_time(publish_date)        
+                publish_date = datetime( date.today().year,  date.today().month,  date.today().day+1, 20, 15)
+            self._set_time(publish_date)       
         video_id = self.get_video_id(modal)
         while self.not_uploaded(modal):
             self.log.debug("Still uploading...")
             sleep(1)
+        print('upload process is done') 
 
         done_button = modal.find_element_by_id(DONE_BUTTON)
 
