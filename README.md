@@ -51,6 +51,7 @@ for those multiple channels under same google account
 
 # 3. schedule time publish
 
+you can explictly specify a date and time for each video or you can set publish policy and daily public count,for example,daily count is 4,you got 5 videos,then first 4 will be published 1 day after the upload date ,the other 1 will be 2 days after the upload date
 # 4. fix google account verify
 
 # 5. seleniumwire
