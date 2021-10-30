@@ -270,18 +270,23 @@ class Upload:
             public_main_button = modal.find_element_by_name(PUBLIC_BUTTON)
             public_main_button.find_element_by_id(RADIO_LABEL).click()
         else:
-            self.log.debug("Trying to set video schedule time...")
+            self.log.debug("Trying to set video schedule time...",str(publish_date))
 
             if publish_date and not publish_date=="":
                 pass            
             else:
-                publish_date = datetime( date.today().year,  date.today().month,  date.today().day+1, 20, 15)
+                publish_date = datetime( date.today().year,  date.today().month,  date.today().day, 20, 15)
+
+                publish_date += timedelta(days=1)
+
             self._set_time(publish_date)       
         video_id = self.get_video_id(modal)
+        # self.waitfordone() 
+        self._wait_for_processing(False) 
+        # option 1 to check final upload status 
         while self.not_uploaded(modal):
             self.log.debug("Still uploading...")
             sleep(1)
-        print('upload process is done') 
 
         done_button = modal.find_element_by_id(DONE_BUTTON)
 
@@ -290,6 +295,28 @@ class Upload:
             return False, error_message
 
         self.click(done_button)
+        print('upload process is done') 
+
+        # # option 2 to check final upload status 
+
+        # # Go back to endcard settings
+        # self.driver.find_element_by_css_selector("#step-badge-1").click()
+        # self._set_endcard()
+
+        # for _ in range(2):
+        #     # Sometimes, the button is clickable but clicking it raises an error, so we add a "safety-sleep" here
+        #     sleep(5)
+        #     WebDriverWait(self.driver, 20).until(EC.element_to_be_clickable((By.ID, "next-button"))).click()
+
+        # sleep(5)
+        # WebDriverWait(self.driver, 20).until(EC.element_to_be_clickable((By.ID, "done-button"))).click()
+
+        # # Wait for the dialog to disappear
+        # sleep(5)
+        # logging.info("Upload is complete")
+
+
+
 
         return True, video_id
 
