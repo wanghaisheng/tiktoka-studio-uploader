@@ -1,12 +1,12 @@
 Metadata-Version: 2.1
 Name: ytb-up
-Version: 0.1.3
+Version: 0.1.4
 Summary: auto video machine,Upload videos to YouTube using geckodriver, Firefox profiles and Selenium.
 Home-page: https://github.com/wanghaisheng/ytb-up
 Author: wanghaisheng
 Author-email: edwin.uestc@gmail.com
 License: MIT
-Download-URL: https://github.com/wanghaisheng/ytb-up/tarball/v0.1.3
+Download-URL: https://github.com/wanghaisheng/ytb-up/tarball/v0.1.4
 Description: This project aims to automate the upload process for YouTube Videos. Since videos can only be publicly uploaded through the YouTube Data API by using a Google Workspaces Account (not free!), I decided to figure out a headless uploader using Selenium. This approach also bypasses API restrictions (e.g. Rate Limits/Endcards can't be set through the API).There are tons of library existing  but not for me .
         
         AS a code dummy,I do accept any advice because of my only purpose is to get things work
@@ -60,6 +60,7 @@ Description: This project aims to automate the upload process for YouTube Videos
         
         # 3. schedule time publish
         
+        you can explictly specify a date and time for each video or you can set publish policy and daily public count,for example,daily count is 4,you got 5 videos,then first 4 will be published 1 day after the upload date ,the other 1 will be 2 days after the upload date
         # 4. fix google account verify
         
         # 5. seleniumwire
