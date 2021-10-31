@@ -4,6 +4,8 @@ from .logging import Log
 from .exceptions import *
 from .login import *
 import os
+from datetime import timedelta, date
+
 from typing import Tuple, Optional
 from time import sleep
 from datetime import datetime,date
@@ -270,7 +272,7 @@ class Upload:
             public_main_button = modal.find_element_by_name(PUBLIC_BUTTON)
             public_main_button.find_element_by_id(RADIO_LABEL).click()
         else:
-            self.log.debug("Trying to set video schedule time...",str(publish_date))
+            self.log.debug("Trying to set video schedule time...{publish_date}")
 
             if publish_date and not publish_date=="":
                 pass            

@@ -76,7 +76,7 @@ class Upload:
         description: str = "",
         thumbnail: str = "",
         publishpolicy:str='0',
-        publish_date:datetime =datetime( date.today().year,  date.today().month,  date.today().day+1, 20, 15),
+        publish_date:datetime =datetime( date.today().year,  date.today().month,  date.today().day, 20, 15),
         tags: list = [],
     ) -> Tuple[bool, Optional[str]]:
         """Uploads a video to YouTube.
@@ -277,7 +277,7 @@ class Upload:
             else:
                 publish_date = datetime( date.today().year,  date.today().month,  date.today().day, 20, 15)
 
-                publish_date += timedelta(days=1)
+            publish_date += timedelta(days=1)
 
             self._set_time(publish_date)       
         video_id = self.get_video_id(modal)
