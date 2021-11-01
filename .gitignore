@@ -1,0 +1,8 @@
+/__pycache__/*
+/scikit-image/*
+ytb.db
+geckodriver.log
+main.spec
+ytb_up.egg-info
+/build/*
+/dist/*

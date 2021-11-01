@@ -17,6 +17,7 @@ from selenium.common.exceptions import NoSuchElementException, ElementNotInterac
 from pathlib import Path
 import logging
 import re
+from selenium.webdriver import ActionChains
 
 def get_path(file_path: str) -> str:
     # no clue why, but this character gets added for me when running
@@ -78,6 +79,7 @@ class Upload:
         description: str = "",
         thumbnail: str = "",
         publishpolicy:str='0',
+        release_offset:str='0-1',
         publish_date:datetime =datetime( date.today().year,  date.today().month,  date.today().day, 20, 15),
         tags: list = [],
     ) -> Tuple[bool, Optional[str]]:
@@ -89,12 +91,13 @@ class Upload:
         if self.CHANNEL_COOKIES and not self.CHANNEL_COOKIES=='':
             print('loading existing cookies from',self.CHANNEL_COOKIES)
             login_using_cookie_file(self.driver, cookie_file=self.CHANNEL_COOKIES)
+      
         elif self.driver.has_cookies_for_current_website():
             self.driver.load_cookies()
             sleep(USER_WAITING_TIME)
             self.driver.refresh()
         else:
-            self.logger.info('Please sign in and then press enter')
+            self.log.info('Please sign in and then press enter')
             input()
             self.driver.get(YOUTUBE_URL)
             sleep(USER_WAITING_TIME)
@@ -149,9 +152,10 @@ class Upload:
         self.__set_channel_language_english()
         print('finish change locale to english')
 
-        self.log.debug(f'Trying to upload "{file}" to YouTube...')
         self.driver.get(YOUTUBE_UPLOAD_URL)
         sleep(self.timeout)
+        self.log.debug(f'Trying to upload "{file}" to YouTube...')
+
         self.driver.find_element_by_xpath(INPUT_FILE_VIDEO).send_keys(get_path(file))
         sleep(self.timeout)
 
@@ -273,15 +277,18 @@ class Upload:
             public_main_button.find_element_by_id(RADIO_LABEL).click()
         else:
             self.log.debug("Trying to set video schedule time...{publish_date}")
-
-            if publish_date and not publish_date=="":
-                pass            
+            publish_date = datetime( date.today().year,  date.today().month,  date.today().day, 20, 15)
+            offset=timedelta(days=1)
+            if release_offset and not release_offset=="":
+                print('1--',release_offset)
+                if not int(release_offset.split('-')[0])==0:
+                    offset =timedelta(months=int(release_offset.split('-')[0]),days=int(release_offset.split('-')[-1]))   
             else:
-                publish_date = datetime( date.today().year,  date.today().month,  date.today().day, 20, 15)
+                offset=timedelta(days=1)
+            publish_date += offset
 
-            publish_date += timedelta(days=1)
-
-            self._set_time(publish_date)       
+            self._set_time(publish_date)   
+            # self.__set_scheduler(publish_date)    
         video_id = self.get_video_id(modal)
         # self.waitfordone() 
         self._wait_for_processing(False) 
@@ -493,6 +500,7 @@ class Upload:
         time_list = driver.find_elements_by_css_selector("tp-yt-paper-item.tp-yt-paper-item")
         # Transform time into required format: 8:15 PM
         time_str = publish_date.strftime("%I:%M %p").strip("0")
+
         time = [time for time in time_list[2:] if time.text == time_str][0]
         time.click()       
     def close(self):
@@ -566,6 +574,63 @@ class Upload:
             return True
         except:
             return False
+    def __set_scheduler(self,publish_date):
+        # Set upload time
+        action = ActionChains(self.driver)
+        schedule_radio_button = self.driver.find_element_by_id("schedule-radio-button")
+
+        action.move_to_element(schedule_radio_button)
+        action.click(schedule_radio_button).perform()
+        self.log.debug('Set delevery to {}'.format("schedule"))
+        sleep(.33)
+
+        #Set close action
+        action_close = ActionChains(self.driver)
+        action_close.send_keys(Keys.ESCAPE)
+
+        #date picker
+        action_datepicker = ActionChains(self.driver)
+        datepicker_trigger = self.driver.find_element_by_id("datepicker-trigger")
+
+        action_datepicker.move_to_element(datepicker_trigger)
+        action_datepicker.click(datepicker_trigger).perform()
+        sleep(.33)
+
+        date_string = publish_date.strftime("%d.%m.%Y")
+        date_input = self.driver.find_element_by_xpath('//ytcp-date-picker/tp-yt-paper-dialog//iron-input/input')
+
+        self.__write_in_field(date_input, date_string, True)
+        self.log.debug('Set schedule date to {}'.format(date_string))
+
+        action_close.perform()
+        sleep(.33)
+
+
+        #time picker
+        action_timepicker = ActionChains(self.driver)
+        time_of_day_trigger = self.driver.find_element_by_id("time-of-day-trigger")
+        
+        action_timepicker.move_to_element(time_of_day_trigger)
+        action_timepicker.click(time_of_day_trigger).perform()
+        sleep(.33)
+
+        time_dto = (publish_date - timedelta( 
+                            minutes = publish_date.minute % 15,
+                            seconds = publish_date.second,
+                            microseconds = publish_date.microsecond))
+        time_string = time_dto.strftime("%H:%M")
+        
+        time_container = self.driver.find_element_by_xpath('//ytcp-time-of-day-picker//*[@id="dialog"]')
+        time_item = self.driver.find_element_by_xpath('//ytcp-time-of-day-picker//tp-yt-paper-item[text() = "{}"]'.format(time_string))
+        
+        self.log.debug('Set schedule date to {}'.format(time_string))
+        self.driver.execute_script("arguments[0].scrollTop = arguments[1].offsetTop; ", time_container, time_item)
+
+        time_item.click()
+
+        action_close.perform()
+        sleep(.33)
+
 
     def __remove_unwatched_videos(self):
         DELETE_WAIT_TIME = 60 * 2
@@ -598,3 +663,4 @@ class Upload:
         sleep(DELETE_WAIT_TIME)
 
         return self.__remove_unwatched_videos()
+
