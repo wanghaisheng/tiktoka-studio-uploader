@@ -44,9 +44,12 @@ class Upload:
         firefoxoptions = webdriver.FirefoxOptions()
         firefoxoptions.headless = headless
         if proxy_option =="":
+            print('start web driver without proxy')
             self.driver = webdriver.Firefox(options=firefoxoptions,
             firefox_profile=firefox_profile, executable_path=executable_path)            
         else:
+            print('start web driver with proxy')
+
             self.driver = webdriver.Firefox(options=firefoxoptions,
             firefox_profile=firefox_profile,seleniumwire_options=proxy_option, executable_path=executable_path)
         self.timeout = timeout
@@ -91,7 +94,6 @@ class Upload:
         if self.CHANNEL_COOKIES and not self.CHANNEL_COOKIES=='':
             print('loading existing cookies from',self.CHANNEL_COOKIES)
             login_using_cookie_file(self.driver, cookie_file=self.CHANNEL_COOKIES)
-      
         elif self.driver.has_cookies_for_current_website():
             self.driver.load_cookies()
             sleep(USER_WAITING_TIME)
@@ -130,7 +132,13 @@ class Upload:
             self.driver = webdriver.Firefox(options=firefoxoptions,
             
             firefox_profile=firefox_profile,seleniumwire_options=proxy_option, executable_path=executable_path)
+            print('try to load cookie files')
+
             login_using_cookie_file(self.driver, cookie_file=self.CHANNEL_COOKIES)
+            print('success load cookie files')
+            self.driver.get(YOUTUBE_URL)
+            print('start to check login status')
+
             islogin =confirm_logged_in(self.driver)
             if not islogin:
                 input()
@@ -155,8 +163,13 @@ class Upload:
         self.driver.get(YOUTUBE_UPLOAD_URL)
         sleep(self.timeout)
         self.log.debug(f'Trying to upload "{file}" to YouTube...')
+        if os.path.exists(get_path(file)):
+            self.driver.find_element_by_xpath(INPUT_FILE_VIDEO).send_keys(get_path(file))
+        else:
+            if os.path.exists(file.encode('utf-8')):
+                print('file found',file)
+                self.driver.find_element_by_xpath(INPUT_FILE_VIDEO).send_keys(file.encode('utf-8'))
 
-        self.driver.find_element_by_xpath(INPUT_FILE_VIDEO).send_keys(get_path(file))
         sleep(self.timeout)
 
         modal = self.driver.find_element_by_css_selector(UPLOAD_DIALOG_MODAL)
@@ -209,8 +222,12 @@ class Upload:
             # more backspaces than needed just to be sure
             title_field.send_keys(Keys.BACKSPACE)
             sleep(0.1)
+        
 
-        self.send(title_field, title)
+        title_field.send_keys(Keys.CONTROL, 'a')
+        title_field.send_keys(Keys.DELETE)
+
+        self.send(title_field, title[:99])
         description=description[:5000]
         if description:
             if len(description) > DESCRIPTION_COUNTER:
@@ -226,9 +243,12 @@ class Upload:
 
         if thumbnail:
             self.log.debug(f'Trying to set "{thumbnail}" as thumbnail...')
-            modal.find_element_by_xpath(INPUT_FILE_THUMBNAIL).send_keys(
-                get_path(thumbnail)
-            )
+            if os.path.exists(get_path(thumbnail)):
+                modal.find_element_by_xpath(INPUT_FILE_THUMBNAIL).send_keys(get_path(thumbnail))
+            else:
+                if os.path.exists(thumbnail.encode('utf-8')):
+                    print('thumbnail found',thumbnail)
+                    modal.find_element_by_xpath(INPUT_FILE_THUMBNAIL).send_keys(thumbnail.encode('utf-8'))
             sleep(self.timeout)
 
         self.log.debug('Trying to set video to "Not made for kids"...')
