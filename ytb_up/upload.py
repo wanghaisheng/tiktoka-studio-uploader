@@ -8,7 +8,7 @@ from datetime import timedelta, date
 
 from typing import Tuple, Optional
 from time import sleep
-from datetime import datetime,date
+from datetime import datetime, date
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.common.keys import Keys
 from seleniumwire import webdriver
@@ -18,6 +18,7 @@ from pathlib import Path
 import logging
 import re
 from selenium.webdriver import ActionChains
+
 
 def get_path(file_path: str) -> str:
     # no clue why, but this character gets added for me when running
@@ -30,12 +31,12 @@ class Upload:
     def __init__(
         self,
         root_profile_directory: str,
-        proxy_option: str ="",
+        proxy_option: str = "",
         executable_path: str = "geckodriver",
         timeout: int = 3,
         headless: bool = True,
         debug: bool = True,
-        CHANNEL_COOKIES:str=""
+        CHANNEL_COOKIES: str = ""
 
     ) -> None:
 
@@ -43,18 +44,30 @@ class Upload:
 
         firefoxoptions = webdriver.FirefoxOptions()
         firefoxoptions.headless = headless
-        if proxy_option =="":
+        if proxy_option == "":
             print('start web driver without proxy')
             self.driver = webdriver.Firefox(options=firefoxoptions,
-            firefox_profile=firefox_profile, executable_path=executable_path)            
+                                            firefox_profile=firefox_profile, executable_path=executable_path)
+                                         
         else:
             print('start web driver with proxy')
-
+ 
+            # print('it seems network is not that well try an proxy setting')
+            # proxy_option = {
+            #     'backend': 'mitmproxy',
+            #     'proxy': {
+            #         'http': 'socks5://127.0.0.1:1080',
+            #         'https': 'socks5://127.0.0.1:1080',
+            #         'no_proxy': 'localhost,127.0.0.1'
+            #     }
+            # }
+            print('proxy_option is',proxy_option)
             self.driver = webdriver.Firefox(options=firefoxoptions,
-            firefox_profile=firefox_profile,seleniumwire_options=proxy_option, executable_path=executable_path)
+
+                                            firefox_profile=firefox_profile, seleniumwire_options=proxy_option, executable_path=executable_path)                                           
         self.timeout = timeout
         self.log = Log(debug)
-        self.CHANNEL_COOKIES=CHANNEL_COOKIES
+        self.CHANNEL_COOKIES = CHANNEL_COOKIES
         self.log.debug("Firefox is now running")
 
     def click(self, element):
@@ -81,9 +94,10 @@ class Upload:
         title: str = "",
         description: str = "",
         thumbnail: str = "",
-        publishpolicy:str='0',
-        release_offset:str='0-1',
-        publish_date:datetime =datetime( date.today().year,  date.today().month,  date.today().day, 20, 15),
+        publishpolicy: str = '0',
+        release_offset: str = '0-1',
+        publish_date: datetime = datetime(
+            date.today().year,  date.today().month,  date.today().day, 20, 15),
         tags: list = [],
     ) -> Tuple[bool, Optional[str]]:
         """Uploads a video to YouTube.
@@ -91,9 +105,13 @@ class Upload:
         """
         if not file:
             raise FileNotFoundError(f'Could not find file with path: "{file}"')
-        if self.CHANNEL_COOKIES and not self.CHANNEL_COOKIES=='':
-            print('loading existing cookies from',self.CHANNEL_COOKIES)
-            login_using_cookie_file(self.driver, cookie_file=self.CHANNEL_COOKIES)
+        if self.CHANNEL_COOKIES and not self.CHANNEL_COOKIES == '':
+            print('cookies existing', self.CHANNEL_COOKIES)
+            login_using_cookie_file(
+                self.driver, cookie_file=self.CHANNEL_COOKIES)
+            print('success load cookie files')
+            self.driver.get(YOUTUBE_URL)
+            print('start to check login status')                
         elif self.driver.has_cookies_for_current_website():
             self.driver.load_cookies()
             sleep(USER_WAITING_TIME)
@@ -103,58 +121,42 @@ class Upload:
             input()
             self.driver.get(YOUTUBE_URL)
             sleep(USER_WAITING_TIME)
-            os.rename(self.CHANNEL_COOKIES,self.CHANNEL_COOKIES+'.bak')
+            os.rename(self.CHANNEL_COOKIES, self.CHANNEL_COOKIES+'.bak')
             with open(self.CHANNEL_COOKIES, 'w') as filehandler:
-                json.dump(self.driver.get_cookies(), filehandler)     
-            os.remove(self.CHANNEL_COOKIES+'.bak')       
+                json.dump(self.driver.get_cookies(), filehandler)
+            os.remove(self.CHANNEL_COOKIES+'.bak')
             self.driver.save_cookies()
         self.driver.get(YOUTUBE_URL)
         sleep(self.timeout)
         # logincheck?
+        islogin = confirm_logged_in(self.driver)
+        print('checking login status',islogin)
 
-
-        islogin =confirm_logged_in(self.driver)
         if not islogin:
-
-            print('it seems network is not that well try an proxy setting')
-            firefox_profile = webdriver.FirefoxProfile(self.root_profile_directory)
-
-            firefoxoptions = webdriver.FirefoxOptions()
-            firefoxoptions.headless = True    
-            proxy_option = {
-                'backend': 'mitmproxy',
-                'proxy': {
-                    'http': 'socks5://127.0.0.1:1080',
-                    'https': 'socks5://127.0.0.1:1080',
-                    'no_proxy': 'localhost,127.0.0.1'
-                }
-            }        
-            self.driver = webdriver.Firefox(options=firefoxoptions,
-            
-            firefox_profile=firefox_profile,seleniumwire_options=proxy_option, executable_path=executable_path)
             print('try to load cookie files')
-
-            login_using_cookie_file(self.driver, cookie_file=self.CHANNEL_COOKIES)
+            login_using_cookie_file(
+                self.driver, cookie_file=self.CHANNEL_COOKIES)
             print('success load cookie files')
             self.driver.get(YOUTUBE_URL)
             print('start to check login status')
 
-            islogin =confirm_logged_in(self.driver)
+            islogin = confirm_logged_in(self.driver)
             if not islogin:
                 input()
                 self.driver.get(YOUTUBE_URL)
                 sleep(USER_WAITING_TIME)
-                os.rename(self.CHANNEL_COOKIES,self.CHANNEL_COOKIES+'.bak')
+                os.rename(self.CHANNEL_COOKIES, self.CHANNEL_COOKIES+'.bak')
                 with open(self.CHANNEL_COOKIES, 'w') as filehandler:
-                    json.dump(self.driver.get_cookies(), filehandler)     
-                os.remove(self.CHANNEL_COOKIES+'.bak')       
+                    json.dump(self.driver.get_cookies(), filehandler)
+                os.remove(self.CHANNEL_COOKIES+'.bak')
                 # self.driver.save_cookies()
-                login_using_cookie_file(self.driver, cookie_file=self.CHANNEL_COOKIES)
-                islogin =confirm_logged_in(self.driver)
+                login_using_cookie_file(
+                    self.driver, cookie_file=self.CHANNEL_COOKIES)
+                islogin = confirm_logged_in(self.driver)
                 if not islogin:
                     print('we need find the bug')
 
-        self.driver.get(YOUTUBE_URL)       
+        self.driver.get(YOUTUBE_URL)
         print('start change locale to english')
 
         self.__set_channel_language_english()
@@ -164,11 +166,13 @@ class Upload:
         sleep(self.timeout)
         self.log.debug(f'Trying to upload "{file}" to YouTube...')
         if os.path.exists(get_path(file)):
-            self.driver.find_element_by_xpath(INPUT_FILE_VIDEO).send_keys(get_path(file))
+            self.driver.find_element_by_xpath(
+                INPUT_FILE_VIDEO).send_keys(get_path(file))
         else:
             if os.path.exists(file.encode('utf-8')):
-                print('file found',file)
-                self.driver.find_element_by_xpath(INPUT_FILE_VIDEO).send_keys(file.encode('utf-8'))
+                print('file found', file)
+                self.driver.find_element_by_xpath(
+                    INPUT_FILE_VIDEO).send_keys(file.encode('utf-8'))
 
         sleep(self.timeout)
 
@@ -179,7 +183,8 @@ class Upload:
         try:
 
             while True:
-                check =self.driver.find_element(By.XPATH,'//*[@id="dialog-title"]')
+                check = self.driver.find_element(
+                    By.XPATH, '//*[@id="dialog-title"]')
                 self.log.debug(f'found to YouTube account check')
                 sleep(30)
                 # gmail =''
@@ -187,20 +192,19 @@ class Upload:
                 # self.driver.find_element(By.XPATH,'//*[@id="confirm-button"]').click()
                 # self.__verifyitsyou(self,gmail,password)
                 x_path = '//*[@id="textbox"]'
-                if self.driver.find_element(By.XPATH,x_path):                        
+                if self.driver.find_element(By.XPATH, x_path):
                     self.log.debug(f'fix  YouTube account check')
-                    break      
+                    break
 
         except:
             sleep(1)
         sleep(60)
 
-
-
         # Catch max uploads/day limit errors
         next_button = self.driver.find_element(By.ID, NEXT_BUTTON)
         if next_button.get_attribute('hidden') == 'true':
-            error_short_by_xpath = self.driver.find(By.XPATH, ERROR_SHORT_XPATH)
+            error_short_by_xpath = self.driver.find(
+                By.XPATH, ERROR_SHORT_XPATH)
             # print(f"ERROR: {error_short_by_xpath.text} {self.cookie_working_dir}")
             return False
 
@@ -222,13 +226,12 @@ class Upload:
             # more backspaces than needed just to be sure
             title_field.send_keys(Keys.BACKSPACE)
             sleep(0.1)
-        
 
         title_field.send_keys(Keys.CONTROL, 'a')
         title_field.send_keys(Keys.DELETE)
 
         self.send(title_field, title[:99])
-        description=description[:5000]
+        description = description[:5000]
         if description:
             if len(description) > DESCRIPTION_COUNTER:
                 raise ExceedsCharactersAllowed(
@@ -237,18 +240,21 @@ class Upload:
 
             self.log.debug(f'Trying to set "{description}" as description...')
             container = modal.find_element_by_xpath(DESCRIPTION_CONTAINER)
-            description_field = self.click(container.find_element_by_id(TEXTBOX))
+            description_field = self.click(
+                container.find_element_by_id(TEXTBOX))
 
             self.send(description_field, description)
 
         if thumbnail:
             self.log.debug(f'Trying to set "{thumbnail}" as thumbnail...')
             if os.path.exists(get_path(thumbnail)):
-                modal.find_element_by_xpath(INPUT_FILE_THUMBNAIL).send_keys(get_path(thumbnail))
+                modal.find_element_by_xpath(
+                    INPUT_FILE_THUMBNAIL).send_keys(get_path(thumbnail))
             else:
                 if os.path.exists(thumbnail.encode('utf-8')):
-                    print('thumbnail found',thumbnail)
-                    modal.find_element_by_xpath(INPUT_FILE_THUMBNAIL).send_keys(thumbnail.encode('utf-8'))
+                    print('thumbnail found', thumbnail)
+                    modal.find_element_by_xpath(INPUT_FILE_THUMBNAIL).send_keys(
+                        thumbnail.encode('utf-8'))
             sleep(self.timeout)
 
         self.log.debug('Trying to set video to "Not made for kids"...')
@@ -258,11 +264,11 @@ class Upload:
 
         if tags:
             self.click(modal.find_element_by_xpath(MORE_OPTIONS_CONTAINER))
-            if type(tags)==list:
+            if type(tags) == list:
                 tags = ",".join(str(tag) for tag in tags)
-                tags=tags[:500]
+                tags = tags[:500]
             else:
-                tags=tags
+                tags = tags
             if len(tags) > TAGS_COUNTER:
                 raise ExceedsCharactersAllowed(
                     f"Tags were not set due to exceeding the maximum allowed characters ({len(tags)}/{TAGS_COUNTER})"
@@ -273,8 +279,7 @@ class Upload:
             tags_field = self.click(container.find_element_by_id(TEXT_INPUT))
             self.send(tags_field, tags)
 
-        self._wait_for_processing(process=False)                    
-
+        self._wait_for_processing(process=False)
 
         # sometimes you have 4 tabs instead of 3
         # this handles both cases
@@ -283,50 +288,54 @@ class Upload:
                 self.click_next(modal)
             except:
                 pass
-        if not int(publishpolicy) in [0,1,2]:
-            publishpolicy=0
-        if int(publishpolicy)==0:
+        if not int(publishpolicy) in [0, 1, 2]:
+            publishpolicy = 0
+        if int(publishpolicy) == 0:
             self.log.debug("Trying to set video visibility to private...")
 
             public_main_button = modal.find_element_by_name(PRIVATE_BUTTON)
             public_main_button.find_element_by_id(RADIO_LABEL).click()
-        elif int(publishpolicy)==1:
+        elif int(publishpolicy) == 1:
             self.log.debug("Trying to set video visibility to public...")
 
             public_main_button = modal.find_element_by_name(PUBLIC_BUTTON)
             public_main_button.find_element_by_id(RADIO_LABEL).click()
         else:
-            self.log.debug("Trying to set video schedule time...{publish_date}")
-            publish_date = datetime( date.today().year,  date.today().month,  date.today().day, 20, 15)
-            offset=timedelta(days=1)
-            if release_offset and not release_offset=="":
-                print('1--',release_offset)
-                if not int(release_offset.split('-')[0])==0:
-                    offset =timedelta(months=int(release_offset.split('-')[0]),days=int(release_offset.split('-')[-1]))   
+            self.log.debug(
+                "Trying to set video schedule time...{publish_date}")
+            publish_date = datetime(
+                date.today().year,  date.today().month,  date.today().day, 20, 15)
+            offset = timedelta(days=1)
+            if release_offset and not release_offset == "":
+                print('1--', release_offset)
+                if not int(release_offset.split('-')[0]) == 0:
+                    offset = timedelta(months=int(release_offset.split(
+                        '-')[0]), days=int(release_offset.split('-')[-1]))
             else:
-                offset=timedelta(days=1)
+                offset = timedelta(days=1)
             publish_date += offset
 
-            self._set_time(publish_date)   
-            # self.__set_scheduler(publish_date)    
+            self._setscheduletime(publish_date)
+            # self.__set_scheduler(publish_date)
         video_id = self.get_video_id(modal)
-        # self.waitfordone() 
-        self._wait_for_processing(False) 
-        # option 1 to check final upload status 
+        # self.waitfordone()
+        self._wait_for_processing(False)
+        # option 1 to check final upload status
         while self.not_uploaded(modal):
             self.log.debug("Still uploading...")
-            sleep(1)
+            sleep(5)
 
         done_button = modal.find_element_by_id(DONE_BUTTON)
 
         if done_button.get_attribute("aria-disabled") == "true":
-            error_message = self.driver.find_element_by_xpath(ERROR_CONTAINER).text
+            error_message = self.driver.find_element_by_xpath(
+                ERROR_CONTAINER).text
             return False, error_message
 
         self.click(done_button)
-        print('upload process is done') 
+        print('upload process is done')
 
-        # # option 2 to check final upload status 
+        # # option 2 to check final upload status
 
         # # Go back to endcard settings
         # self.driver.find_element_by_css_selector("#step-badge-1").click()
@@ -344,15 +353,13 @@ class Upload:
         # sleep(5)
         # logging.info("Upload is complete")
 
-
-
-
         return True, video_id
 
     def get_video_id(self, modal) -> Optional[str]:
         video_id = None
         try:
-            video_url_container = modal.find_element_by_xpath(VIDEO_URL_CONTAINER)
+            video_url_container = modal.find_element_by_xpath(
+                VIDEO_URL_CONTAINER)
             video_url_element = video_url_container.find_element_by_xpath(
                 VIDEO_URL_ELEMENT
             )
@@ -363,24 +370,29 @@ class Upload:
 
         return video_id
 
-
-
-
     def __set_channel_language_english(self):
         # why does not work again
         try:
-            print('Click your profile picture .',self.driver.find_element(By.ID,"img"))
+            print('Click your profile picture .',
+                  self.driver.find_element(By.ID, "img"))
 
-            WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.ID, "avatar-btn")))
-            self.driver.find_element(By.ID,"avatar-btn").click()
+            WebDriverWait(self.driver, 10).until(
+                EC.visibility_of_element_located((By.ID, "avatar-btn")))
+            self.driver.find_element(By.ID, "avatar-btn").click()
             print(' Click Language or Location.')
-            WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.XPATH, "(//yt-icon[@id='right-icon'])[6]")))
-            WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.XPATH, "(//yt-icon[@id='right-icon'])[6]")))
-            self.driver.find_element(By.XPATH,"(//yt-icon[@id='right-icon'])[6]").click()
+            WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located(
+                (By.XPATH, "(//yt-icon[@id='right-icon'])[6]")))
+            WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable(
+                (By.XPATH, "(//yt-icon[@id='right-icon'])[6]")))
+            self.driver.find_element(
+                By.XPATH, "(//yt-icon[@id='right-icon'])[6]").click()
             print('Click the language or location you’d like to use.')
-            WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.XPATH, "(//yt-formatted-string[@id='label'])[26]")))
-            WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.XPATH, "(//yt-formatted-string[@id='label'])[26]")))
-            self.driver.find_element(By.XPATH,"(//yt-formatted-string[@id='label'])[26]").click()            
+            WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located(
+                (By.XPATH, "(//yt-formatted-string[@id='label'])[26]")))
+            WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable(
+                (By.XPATH, "(//yt-formatted-string[@id='label'])[26]")))
+            self.driver.find_element(
+                By.XPATH, "(//yt-formatted-string[@id='label'])[26]").click()
             return True
         except TimeoutError:
             return False
@@ -390,16 +402,21 @@ class Upload:
         # wait until video uploads
         # uploading progress text contains ": " - Timp ramas/Remaining time: 3 minutes.
         # we wait until ': ' is removed, so we know the text has changed and video has entered processing stage
-        uploading_progress_text = self.browser.find(By.CSS_SELECTOR, UPLOADING_PROGRESS_SELECTOR).text
+        uploading_progress_text = self.browser.find(
+            By.CSS_SELECTOR, UPLOADING_PROGRESS_SELECTOR).text
         while ': ' in uploading_progress_text:
             sleep(5)
-            uploading_progress_text = self.browser.find(By.CSS_SELECTOR, UPLOADING_PROGRESS_SELECTOR).text
-    def _wait_for_processing(self,process):
+            uploading_progress_text = self.browser.find(
+                By.CSS_SELECTOR, UPLOADING_PROGRESS_SELECTOR).text
+
+    def _wait_for_processing(self, process):
         driver = self.driver
-        if process==True:
+        if process == True:
             # Wait for processing to complete
-            progress_label: WebElement = driver.find_element_by_css_selector("span.progress-label")
-            pattern = re.compile(r"(finished processing)|(processing hd.*)|(check.*)")
+            progress_label: WebElement = driver.find_element_by_css_selector(
+                "span.progress-label")
+            pattern = re.compile(
+                r"(finished processing)|(processing hd.*)|(check.*)")
             current_progress = progress_label.get_attribute("textContent")
             last_progress = None
             while not pattern.match(current_progress.lower()):
@@ -410,18 +427,19 @@ class Upload:
                 current_progress = progress_label.get_attribute("textContent")
         else:
             while True:
-                x_path = '//span[@class="progress-label style-scope ytcp-video-upload-progress"]' 
-    #TypeError: 'WebElement' object  is not subscriptable
-                upload_progress = self.driver.find_elements_by_css_selector('[class="progress-label style-scope ytcp-video-upload-progress"]')[0].text
+                x_path = '//span[@class="progress-label style-scope ytcp-video-upload-progress"]'
+    # TypeError: 'WebElement' object  is not subscriptable
+                upload_progress = self.driver.find_elements_by_css_selector(
+                    '[class="progress-label style-scope ytcp-video-upload-progress"]')[0].text
 
-                innerhtml =self.driver.find_element(By.XPATH,x_path).get_attribute('innerHTML')
-                if re.match(r"\D \.\.\. \D", innerhtml) or re.match(r"^[^\.]+$",innerhtml):
+                innerhtml = self.driver.find_element(
+                    By.XPATH, x_path).get_attribute('innerHTML')
+                if re.match(r"\D \.\.\. \D", innerhtml) or re.match(r"^[^\.]+$", innerhtml):
                     break
-                if  not '%' in upload_progress.lower():
+                if not '%' in upload_progress.lower():
                     break
                 if 'complete' in upload_progress.lower():
                     break
-
 
     def _set_basic_settings(self, title: str, description: str, thumbnail_path: str = None):
         driver = self.driver
@@ -450,8 +468,7 @@ class Upload:
         if thumbnail_path:
             thumbnail_input.send_keys(thumbnail_path)
 
-
-    def _set_advanced_settings(self,game_title: str, made_for_kids: bool):
+    def _set_advanced_settings(self, game_title: str, made_for_kids: bool):
         # Open advanced options
         driver = self.driver
 
@@ -478,7 +495,6 @@ class Upload:
             (By.NAME, "VIDEO_MADE_FOR_KIDS_MFK" if made_for_kids else "VIDEO_MADE_FOR_KIDS_NOT_MFK")
         )).click()
 
-
     def _set_endcard(self):
         driver = self.driver
 
@@ -489,24 +505,81 @@ class Upload:
         for i in range(1, 11):
             try:
                 # Select endcard type from last video or first suggestion if no prev. video
-                driver.find_element_by_css_selector("div.card:nth-child(1)").click()
+                driver.find_element_by_css_selector(
+                    "div.card:nth-child(1)").click()
                 break
             except (NoSuchElementException, ElementNotInteractableException):
-                logging.warning(f"Couldn't find endcard button. Retry in 5s! ({i}/10)")
+                logging.warning(
+                    f"Couldn't find endcard button. Retry in 5s! ({i}/10)")
                 sleep(5)
 
-        WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, "save-button"))).click()
+        WebDriverWait(driver, 20).until(
+            EC.element_to_be_clickable((By.ID, "save-button"))).click()
+    def _setscheduletime(self,publish_date: datetime):
+        driver = self.driver
+        hour_to_post, date_to_post, publish_date_hour = self.hour_and_date(publish_date)        
+        date_to_post = publish_date.strftime("%b %d, %Y")
+        hour_xpath = self.get_hour_xpath(hour_to_post)
+        #Clicking in schedule video
+        driver.find_element_by_xpath('/html/body/ytcp-uploads-dialog/tp-yt-paper-dialog/div/ytcp-animatable[1]/ytcp-uploads-review/div[2]/div[1]/ytcp-video-visibility-select/div[2]/tp-yt-paper-radio-button/div[1]/div[1]').click()
+        sleep(1)
+        #Writing date
+        driver.find_element_by_xpath('/html/body/ytcp-uploads-dialog/tp-yt-paper-dialog/div/ytcp-animatable[1]/ytcp-uploads-review/div[2]/div[1]/ytcp-video-visibility-select/div[2]/ytcp-visibility-scheduler/div[1]/ytcp-datetime-picker/div/ytcp-text-dropdown-trigger[1]/ytcp-dropdown-trigger/div/div[3]').click()
+        sleep(1)
+        input_date = driver.find_element_by_xpath('/html/body/ytcp-date-picker/tp-yt-paper-dialog/div/form/tp-yt-paper-input/tp-yt-paper-input-container/div[2]/div/iron-input/input')
+        input_date.send_keys(Keys.CONTROL, 'a')
+        input_date.send_keys(date_to_post)
+        input_date.send_keys(Keys.RETURN)
 
+        sleep(1)
+   
+        try:
+            driver.find_element_by_xpath('/html/body/ytcp-uploads-dialog/tp-yt-paper-dialog/div/ytcp-animatable[1]/ytcp-uploads-review/div[2]/div[1]/ytcp-video-visibility-select/div[2]/ytcp-visibility-scheduler/div[1]/ytcp-datetime-picker/div/ytcp-text-dropdown-trigger[2]/ytcp-dropdown-trigger/div/div[2]/span').click()
+            sleep(1)
+            driver.find_element_by_xpath(hour_xpath).click()
+        except:
+            input_hour = driver.find_element_by_xpath('/html/body/ytcp-uploads-dialog/tp-yt-paper-dialog/div/ytcp-animatable[1]/ytcp-uploads-review/div[2]/div[1]/ytcp-video-visibility-select/div[2]/ytcp-visibility-scheduler/div[1]/ytcp-datetime-picker/div/form/ytcp-form-input-container/div[1]/div/tp-yt-paper-input/tp-yt-paper-input-container/div[2]/div/iron-input/input')
+            input_hour.send_keys(Keys.CONTROL, 'a')
+            input_hour.send_keys(hour_to_post, Keys.ENTER)
+        sleep(1)  
+
+    def hour_and_date(self, now_date_hour):
+        # now_date_hour += datetime.timedelta(seconds=TIME_BETWEEN_POSTS)
+        hour_to_post = now_date_hour.strftime('%H:%M')
+        hour, minutes = hour_to_post.split(':')[0], int(hour_to_post.split(':')[1])
+        setting_minutes = minutes//15
+        minutes = setting_minutes * 15
+        if minutes == 0:
+            minutes = '00'
+        hour_to_post = f'{hour}:{minutes}'
+        date_to_post = now_date_hour.strftime('%d/%m/%Y')
+        return hour_to_post, date_to_post, now_date_hour
+
+    def get_hour_xpath(self, input_hour):
+        hour_xpath = dict()
+        xpath_time = 0
+        for hour in range(24):
+            if hour < 10 and hour >= 0:
+                hour = f'0{hour}'
+            for minute in range(0, 46, 15):
+                if minute == 0:
+                    minute = '00'
+                xpath_time += 1
+                hour_xpath.update({f'{hour}:{minute}':f'/html/body/ytcp-time-of-day-picker/tp-yt-paper-dialog/tp-yt-paper-listbox/tp-yt-paper-item[{xpath_time}]'})
+        return hour_xpath[input_hour]
 
     def _set_time(self, publish_date: datetime):
         # Start time scheduling
         driver = self.driver
-        WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.NAME, "SCHEDULE"))).click()
+        WebDriverWait(driver, 20).until(
+            EC.element_to_be_clickable((By.NAME, "SCHEDULE"))).click()
 
         # Open date_picker
-        driver.find_element_by_css_selector("#datepicker-trigger > ytcp-dropdown-trigger:nth-child(1)").click()
+        driver.find_element_by_css_selector(
+            "#datepicker-trigger > ytcp-dropdown-trigger:nth-child(1)").click()
 
-        date_input: WebElement = driver.find_element_by_css_selector("input.tp-yt-paper-input")
+        date_input: WebElement = driver.find_element_by_css_selector(
+            "input.tp-yt-paper-input")
         date_input.clear()
         # Transform date into required format: Mar 19, 2021
         date_input.send_keys(publish_date.strftime("%b %d, %Y"))
@@ -517,18 +590,19 @@ class Upload:
             "#time-of-day-trigger > ytcp-dropdown-trigger:nth-child(1) > div:nth-child(2)"
         ).click()
 
-        time_list = driver.find_elements_by_css_selector("tp-yt-paper-item.tp-yt-paper-item")
+        time_list = driver.find_elements_by_css_selector(
+            "tp-yt-paper-item.tp-yt-paper-item")
         # Transform time into required format: 8:15 PM
         time_str = publish_date.strftime("%I:%M %p").strip("0")
 
         time = [time for time in time_list[2:] if time.text == time_str][0]
-        time.click()       
+        time.click()
+
     def close(self):
         self.driver.close()
         self.driver.quit()
 
         self.log.debug("Closed Firefox")
-
 
     def remove_unwatched_videos(self, remove_copyrighted, remove_unwatched_views):
         try:
@@ -546,10 +620,12 @@ class Upload:
             if self.__is_videos_available():
                 return True
 
-            self.driver.find_element_by_css_selector("#page-size .ytcp-text-dropdown-trigger").click()
+            self.driver.find_element_by_css_selector(
+                "#page-size .ytcp-text-dropdown-trigger").click()
             sleep(USER_WAITING_TIME)
             # clock 50 items per page
-            pagination_sizes = self.driver.find_elements_by_css_selector("#select-menu-for-page-size #dialog .paper-item")
+            pagination_sizes = self.driver.find_elements_by_css_selector(
+                "#select-menu-for-page-size #dialog .paper-item")
             pagination_sizes[2].click()
             sleep(USER_WAITING_TIME)
 
@@ -557,7 +633,8 @@ class Upload:
             if remove_copyrighted:
                 self.driver.find_element_by_id("filter-icon").click()
                 sleep(USER_WAITING_TIME)
-                self.driver.find_element_by_css_selector("ytcp-text-menu#menu tp-yt-paper-dialog tp-yt-paper-listbox paper-item#text-item-1 ytcp-ve div").click()
+                self.driver.find_element_by_css_selector(
+                    "ytcp-text-menu#menu tp-yt-paper-dialog tp-yt-paper-listbox paper-item#text-item-1 ytcp-ve div").click()
                 sleep(USER_WAITING_TIME)
 
             # filter to delete videos with views lower than 100
@@ -565,19 +642,26 @@ class Upload:
                 views_no = "100000"
                 self.driver.find_element_by_id("filter-icon").click()
                 sleep(USER_WAITING_TIME)
-                self.driver.find_element_by_css_selector("ytcp-text-menu#menu tp-yt-paper-dialog tp-yt-paper-listbox paper-item#text-item-5 ytcp-ve div").click()
+                self.driver.find_element_by_css_selector(
+                    "ytcp-text-menu#menu tp-yt-paper-dialog tp-yt-paper-listbox paper-item#text-item-5 ytcp-ve div").click()
                 sleep(USER_WAITING_TIME)
-                self.driver.find_element_by_xpath("//iron-input[@id='input-2']/input").click()
+                self.driver.find_element_by_xpath(
+                    "//iron-input[@id='input-2']/input").click()
                 sleep(USER_WAITING_TIME)
-                self.driver.find_element_by_xpath("//iron-input[@id='input-2']/input").clear()
+                self.driver.find_element_by_xpath(
+                    "//iron-input[@id='input-2']/input").clear()
                 sleep(USER_WAITING_TIME)
-                self.driver.find_element_by_xpath("//iron-input[@id='input-2']/input").send_keys(views_no)
+                self.driver.find_element_by_xpath(
+                    "//iron-input[@id='input-2']/input").send_keys(views_no)
                 sleep(USER_WAITING_TIME)
-                self.driver.find_element_by_xpath("//input[@type='text']").click()
+                self.driver.find_element_by_xpath(
+                    "//input[@type='text']").click()
                 sleep(USER_WAITING_TIME)
-                self.driver.find_element_by_xpath("//tp-yt-paper-listbox[@id='operator-list']/paper-item[2]").click()
+                self.driver.find_element_by_xpath(
+                    "//tp-yt-paper-listbox[@id='operator-list']/paper-item[2]").click()
                 sleep(USER_WAITING_TIME)
-                self.driver.find_element_by_xpath("//ytcp-button[@id='apply-button']/div").click()
+                self.driver.find_element_by_xpath(
+                    "//ytcp-button[@id='apply-button']/div").click()
                 sleep(USER_WAITING_TIME)
 
             return self.__remove_unwatched_videos()
@@ -589,35 +673,56 @@ class Upload:
         # if there are no videos to be deleted, this element should be visible
         # if not visible throw error, and proceed to delete more videos
         try:
-            self.driver.find_element_by_xpath("//ytcp-video-section-content[@id='video-list']/div/div[2]/div")
+            self.driver.find_element_by_xpath(
+                "//ytcp-video-section-content[@id='video-list']/div/div[2]/div")
             # return True, there are no more video to be deleted
             return True
         except:
             return False
-    def __set_scheduler(self,publish_date):
+
+    def __write_in_field(self, field, string, select_all=False):
+        field.click()
+
+        sleep(USER_WAITING_TIME)
+        if select_all:
+            if self.is_mac:
+                field.send_keys(Keys.COMMAND + 'a')
+            else:
+                field.send_keys(Keys.CONTROL + 'a')
+            sleep(USER_WAITING_TIME)
+        field.send_keys(string)
+
+    def __set_scheduler(self, publish_date):
         # Set upload time
         action = ActionChains(self.driver)
-        schedule_radio_button = self.driver.find_element_by_id("schedule-radio-button")
+        schedule_radio_button = self.driver.find_element_by_id(
+            "schedule-radio-button")
 
         action.move_to_element(schedule_radio_button)
         action.click(schedule_radio_button).perform()
         self.log.debug('Set delevery to {}'.format("schedule"))
         sleep(.33)
 
-        #Set close action
+        # Set close action
         action_close = ActionChains(self.driver)
         action_close.send_keys(Keys.ESCAPE)
 
-        #date picker
+        # date picker
         action_datepicker = ActionChains(self.driver)
-        datepicker_trigger = self.driver.find_element_by_id("datepicker-trigger")
+        datepicker_trigger = self.driver.find_element_by_id(
+            "datepicker-trigger")
 
         action_datepicker.move_to_element(datepicker_trigger)
         action_datepicker.click(datepicker_trigger).perform()
         sleep(.33)
 
         date_string = publish_date.strftime("%d.%m.%Y")
-        date_input = self.driver.find_element_by_xpath('//ytcp-date-picker/tp-yt-paper-dialog//iron-input/input')
+        date_input = self.driver.find_element_by_xpath(
+            '//ytcp-date-picker/tp-yt-paper-dialog//iron-input/input')
+        # date_input.clear()
+        # # Transform date into required format: Mar 19, 2021
+        # date_input.send_keys(publish_date.strftime("%b %d, %Y"))
+        # date_input.send_keys(Keys.RETURN)
 
         self.__write_in_field(date_input, date_string, True)
         self.log.debug('Set schedule date to {}'.format(date_string))
@@ -625,32 +730,34 @@ class Upload:
         action_close.perform()
         sleep(.33)
 
-
-        #time picker
+        # time picker
         action_timepicker = ActionChains(self.driver)
-        time_of_day_trigger = self.driver.find_element_by_id("time-of-day-trigger")
-        
+        time_of_day_trigger = self.driver.find_element_by_id(
+            "time-of-day-trigger")
+
         action_timepicker.move_to_element(time_of_day_trigger)
         action_timepicker.click(time_of_day_trigger).perform()
         sleep(.33)
 
-        time_dto = (publish_date - timedelta( 
-                            minutes = publish_date.minute % 15,
-                            seconds = publish_date.second,
-                            microseconds = publish_date.microsecond))
+        time_dto = (publish_date - timedelta(
+            minutes=publish_date.minute % 15,
+            seconds=publish_date.second,
+            microseconds=publish_date.microsecond))
         time_string = time_dto.strftime("%H:%M")
-        
-        time_container = self.driver.find_element_by_xpath('//ytcp-time-of-day-picker//*[@id="dialog"]')
-        time_item = self.driver.find_element_by_xpath('//ytcp-time-of-day-picker//tp-yt-paper-item[text() = "{}"]'.format(time_string))
-        
+
+        time_container = self.driver.find_element_by_xpath(
+            '//ytcp-time-of-day-picker//*[@id="dialog"]')
+        time_item = self.driver.find_element_by_xpath(
+            '//ytcp-time-of-day-picker//tp-yt-paper-item[text() = "{}"]'.format(time_string))
+
         self.log.debug('Set schedule date to {}'.format(time_string))
-        self.driver.execute_script("arguments[0].scrollTop = arguments[1].offsetTop; ", time_container, time_item)
+        self.driver.execute_script(
+            "arguments[0].scrollTop = arguments[1].offsetTop; ", time_container, time_item)
 
         time_item.click()
 
         action_close.perform()
         sleep(.33)
-
 
     def __remove_unwatched_videos(self):
         DELETE_WAIT_TIME = 60 * 2
@@ -658,7 +765,8 @@ class Upload:
         # check if videos deletion process has finished
         # if not visible throw error, and proceed to delete more videos
         try:
-            self.driver.find_element_by_xpath("//div[@id='header']/div/span[2]")
+            self.driver.find_element_by_xpath(
+                "//div[@id='header']/div/span[2]")
             # wait for the videos to be deleted and try delete videos after
             sleep(DELETE_WAIT_TIME)
             return self.__remove_unwatched_videos()
@@ -674,13 +782,15 @@ class Upload:
             .find_element_by_css_selector(".ytcp-bulk-actions .toolbar .ytcp-select .ytcp-text-dropdown-trigger .ytcp-dropdown-trigger .right-container .ytcp-dropdown-trigger")\
             .click()
         sleep(USER_WAITING_TIME)
-        self.driver.find_element_by_css_selector("#select-menu-for-additional-action-options #dialog #paper-list #text-item-1").click()
+        self.driver.find_element_by_css_selector(
+            "#select-menu-for-additional-action-options #dialog #paper-list #text-item-1").click()
         sleep(USER_WAITING_TIME)
-        self.driver.find_element_by_css_selector("#dialog-content-confirm-checkboxes #confirm-checkbox #checkbox-container").click()
+        self.driver.find_element_by_css_selector(
+            "#dialog-content-confirm-checkboxes #confirm-checkbox #checkbox-container").click()
         sleep(USER_WAITING_TIME)
-        self.driver.find_element_by_css_selector(".ytcp-confirmation-dialog #dialog-buttons #confirm-button").click()
+        self.driver.find_element_by_css_selector(
+            ".ytcp-confirmation-dialog #dialog-buttons #confirm-button").click()
         # wait 5 minutes for the videos to be deleted
         sleep(DELETE_WAIT_TIME)
 
         return self.__remove_unwatched_videos()
-

@@ -11,7 +11,7 @@ STATUS_CONTAINER = "/html/body/ytcp-uploads-dialog/tp-yt-paper-dialog/div/ytcp-a
 VIDEO_URL_CONTAINER = "//span[@class='video-url-fadeable style-scope ytcp-video-info']"
 DESCRIPTION_CONTAINER = "//*[@id='description-container']"
 MORE_OPTIONS_CONTAINER = "/html/body/ytcp-uploads-dialog/tp-yt-paper-dialog/div/ytcp-animatable[1]/ytcp-video-metadata-editor/div/div/ytcp-button"
-
+TIME_BETWEEN_POSTS = 3600
 # COUNTERS
 TAGS_COUNTER = 500
 TITLE_COUNTER = 100
