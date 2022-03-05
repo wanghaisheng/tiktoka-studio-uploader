@@ -9,10 +9,14 @@ AS a code dummy,I do accept any advice because of my only purpose is to get thin
 
 **if you encounter any issue,pls change headless to false,watch what happens in your browser,you will find the clue to your issue.Take care of title,description,tags word/character limit youtube **
 
+# setup 
+
 1. Download lastest firefox,open new tab and insert:    
 ```
 about:profiles
 ```
+
+usually  you need prepare/create a new profile for a youtube channel. profile file path can be under **assets**
 一般来说 一个youtube帐号要新建一个profile
 文件夹可以选在assets下
 
@@ -46,6 +50,14 @@ python auto_video.py
 pip install ytb-up
 ```
 
+6. publishpolicy setting
+
+
+配置文件说明 
+publishpolicy：1 表示上传以后立即公开  0 表示上传以后保持私享 2表示结合每天发布数量和视频文件夹中的数量 从上传当日起开始定时公开    
+publishpolicy：1 pulibc   0 private 2 schedule publish 表示结合每天发布数量和视频文件夹中的数量 从上传当日起开始定时公开
+
+
 
 # features YOU MAY NEED
 
@@ -68,6 +80,7 @@ THANKS FOR
 3. other I CAN NOT REMEMBER
 
 
+# buy me a coffee
 
-配置文件说明 
-publishpolicy：1 表示上传以后立即公开  0 表示上传以后保持私享 2表示结合每天发布数量和视频文件夹中的数量 从上传当日起开始定时公开
+https://www.buymeacoffee.com/madegamedev
+
