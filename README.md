@@ -7,6 +7,8 @@ This project aims to automate the upload process for YouTube Videos. Since video
 AS a code dummy,I do accept any advice because of my only purpose is to get things work
 
 
+**if you encounter any issue,pls change headless to false,watch what happens in your browser,you will find the clue to your issue.Take care of title,description,tags word/character limit youtube **
+
 1. Download lastest firefox,open new tab and insert:    
 ```
 about:profiles
