@@ -84,3 +84,8 @@ THANKS FOR
 
 https://www.buymeacoffee.com/madegamedev
 
+
+# future plan
+
+1. playwright support
+2. 
