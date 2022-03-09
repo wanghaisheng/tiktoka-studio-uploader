@@ -1,3 +1,9 @@
+demo video you may need
+
+[youtube](https://youtu.be/Sqj0uO9VCy4)    
+
+[bilibili](https://www.bilibili.com/video/BV1ei4y1C7DY)
+
 there is a GUI demo you can just use that
 
 https://github.com/wanghaisheng/autovideo
