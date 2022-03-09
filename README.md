@@ -6,6 +6,19 @@ This project aims to automate the upload process for YouTube Videos. Since video
 
 AS a code dummy,I do accept any advice because of my only purpose is to get things work
 
+**if you are a selenium guy,pls check  main branch,if not just use this playwright branch.**
+
+## rewrite it with microsoft playwright
+
+1.speed is much  faster than selenium version
+
+2.you dont have to worry browser driver any more 
+
+3.more like category setting,auto publish date,subtitle upload etc are considered
+
+
+## steps you can reproduce 
+if anything you dont understand ,just google it first,for example  firefox profile
 
 1. Download lastest firefox,open new tab and insert:    
 ```
@@ -17,7 +30,7 @@ about:profiles
 2.install firefox addon, **Cookie-Editor**，mannually login into youtube channel，click profile icon, choose english language,export a  cookie.json 
 
 
-3. if you want to ajust source code, pls do    
+3. if you want to modify source code, use as a library for your project,pls do    
 ```
 
 git clone https://github.com/wanghaisheng/ytb_up
@@ -26,20 +39,21 @@ pip install -r requirements.txt
 all codes under **ytb_up**, twist them as you wish
 
 ```
-4. run demo project
+4. if you are dumb as me, wanna a try,run demo project
 ```
 git clone https://github.com/wanghaisheng/autovideo
 
 conda create -n autovideo python=3.9
 conda activate autovideo
 
-下面这两个二选一就行
-pip install -i http://mirrors.aliyun.com/pypi/simple/ requests pillow itemdbs selenium-wire moviepy ytb_up
+pip install -r requirements.txt
 
-pip install -i  https://pypi.tuna.tsinghua.edu.cn/simple requests pillow itemdbs selenium-wire moviepy ytb_up
 python auto_video.py
 ```
-5. use as a lib
+
+woola  you can see a ugly gui  for your demo purpose
+
+5. use existing without modification as a lib
 ```
 pip install ytb-up
 ```
