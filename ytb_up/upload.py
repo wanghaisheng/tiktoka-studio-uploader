@@ -275,8 +275,9 @@ class Upload:
             sleep(self.timeout)
 
         self.log.debug('Trying to set video to "Not made for kids"...')
+        
         kids_section=page.locator(NOT_MADE_FOR_KIDS_LABEL)
-        page.locator(RADIO_LABEL).click()
+        page.locator(NOT_MADE_FOR_KIDS_RADIO_LABEL).click()
         sleep(self.timeout)
         print('not made for kids done')
         if tags is None or tags =="" or len(tags)==0:
