@@ -6,7 +6,7 @@ from datetime import datetime
 from playwright.sync_api import *
 from .constants import *
 from pathlib import Path
-
+import os
 from typing import Tuple, Optional,Union
 
 
@@ -61,18 +61,13 @@ def verify(self, page):
                 "#password > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > input:nth-child(1)", self.password)
             page.locator(
                 ".VfPpkd-LgbsSe-OWXEXe-k8QpJ > span:nth-child(4)").click()
-
-            # gmail =''
-            # password='%R00b'
-            # page.wait_for_selector((By.XPATH,'//*[@id="confirm-button"]').click()
-            # self.__verifyitsyou(self,gmail,password)
-            x_path = '//*[@id="textbox"]'
-            if page.wait_for_selector(x_path):
-                break
+            time.sleep(60)
 
     except:
         time.sleep(1)
-    time.sleep(60)
+    # x_path = '//*[@id="textbox"]'
+    # if page.wait_for_selector(x_path):
+        # break        
 
 
 def wait_for_processing(page, process):
@@ -112,32 +107,40 @@ def setscheduletime(page, publish_date: datetime):
     date_to_post=publish_date.strftime("%b %d, %Y")
     hour_xpath=get_hour_xpath(hour_to_post)
     # Clicking in schedule video
+    print('click schedule')
     page.locator(
         '//html/body/ytcp-uploads-dialog/tp-yt-paper-dialog/div/ytcp-animatable[1]/ytcp-uploads-review/div[2]/div[1]/ytcp-video-visibility-select/div[2]/tp-yt-paper-radio-button/div[1]/div[1]').click()
     sleep(1)
     # Writing date
-    page.locator(
-        '//html/body/ytcp-uploads-dialog/tp-yt-paper-dialog/div/ytcp-animatable[1]/ytcp-uploads-review/div[2]/div[1]/ytcp-video-visibility-select/div[2]/ytcp-visibility-scheduler/div[1]/ytcp-datetime-picker/div/ytcp-text-dropdown-trigger[1]/ytcp-dropdown-trigger/div/div[3]').click()
+    print('click date')
+    page.locator('#datepicker-trigger > ytcp-dropdown-trigger:nth-child(1) > div:nth-child(2) > div:nth-child(4)').click()
+
+    # page.locator(
+        # '//html/body/ytcp-uploads-dialog/tp-yt-paper-dialog/div/ytcp-animatable[1]/ytcp-uploads-review/div[2]/div[1]/ytcp-video-visibility-select/div[2]/ytcp-visibility-scheduler/div[1]/ytcp-datetime-picker/div/ytcp-text-dropdown-trigger[1]/ytcp-dropdown-trigger/div/div[3]').click()
     sleep(1)
-    page.locator(
-        '//html/body/ytcp-date-picker/tp-yt-paper-dialog/div/form/tp-yt-paper-input/tp-yt-paper-input-container/div[2]/div/iron-input/input').click()
+    page.locator('//*[@id="input-4"]')
+    
+    # page.locator(
+        # '//html/body/ytcp-date-picker/tp-yt-paper-dialog/div/form/tp-yt-paper-input/tp-yt-paper-input-container/div[2]/div/iron-input/input').click()
     page.keyboard.press("Control+KeyA")
     page.keyboard.type(date_to_post)
     page.keyboard.press("Enter")
 
     sleep(1)
-
+    print('click hour')
+# #input-1
     try:
         page.locator(
-            '//html/body/ytcp-uploads-dialog/tp-yt-paper-dialog/div/ytcp-animatable[1]/ytcp-uploads-review/div[2]/div[1]/ytcp-video-visibility-select/div[2]/ytcp-visibility-scheduler/div[1]/ytcp-datetime-picker/div/ytcp-text-dropdown-trigger[2]/ytcp-dropdown-trigger/div/div[2]/span').click()
+            'input.tp-yt-paper-input').click()
         sleep(1)
         page.locator(hour_xpath).click()
     except:
-        input_hour=page.wait_for_selector(
-            '//html/body/ytcp-uploads-dialog/tp-yt-paper-dialog/div/ytcp-animatable[1]/ytcp-uploads-review/div[2]/div[1]/ytcp-video-visibility-select/div[2]/ytcp-visibility-scheduler/div[1]/ytcp-datetime-picker/div/form/ytcp-form-input-container/div[1]/div/tp-yt-paper-input/tp-yt-paper-input-container/div[2]/div/iron-input/input').click()
-        page.keyboard.press("Control+KeyA")
-        page.keyboard.type(hour_to_post)
-        page.keyboard.press("Enter")
+        # input_hour=page.wait_for_selector(
+            # 'input.tp-yt-paper-input').click()
+        print('no hour input found')
+    page.keyboard.press("Control+KeyA")
+    page.keyboard.type(hour_to_post)
+    page.keyboard.press("Enter")
 
     sleep(1)
 
@@ -456,3 +459,49 @@ def waitfordone(page):
     while ': ' in uploading_progress_text:
         sleep(5)
         page.locator( UPLOADING_PROGRESS_SELECTOR).text_content()
+
+def uploadTikTok(username, tiktok, deletionStatus, file):
+    regex = re.compile('[0-9]{17}')
+    regexA = re.compile('[0-9]{18}')
+    regexB = re.compile('[0-9]{19}')
+    regexC = re.compile('[0-9]{8}')
+    regexD = re.compile('[0-9]{9}')
+    if os.path.isdir(tiktok):
+        if (
+            regex.match(str(tiktok))
+            or (regexA.match(str(tiktok)))
+            or (regexB.match(str(tiktok)))
+            or (regexC.match(str(tiktok)))
+            or (regexD.match(str(tiktok)))
+        ):  # TODO: use or regex with "|" instead of this
+            item = get_item('tiktok-' + tiktok)
+            if username is None:
+                if file is not None:
+                    file.write(str(tiktok))
+                    file.write('\n')
+                return None
+            item.upload(
+                './' + tiktok + '/',
+                verbose=True,
+                checksum=True,
+                delete=deletionStatus,
+                metadata=dict(
+                    collection='opensource_media',
+                    subject='tiktok',
+                    creator=username,
+                    title='TikTok Video by ' + username,
+                    originalurl='https://www.tiktok.com/@' + username + '/video/' + tiktok,
+                    scanner='TikUp ' + getVersion(),
+                ),
+                retries=9001,
+                retries_sleep=60,
+            )
+            if deletionStatus:
+                os.rmdir(tiktok)
+            print()
+            print('Uploaded to https://archive.org/details/tiktok-' + tiktok)
+            print()
+            if file is not None:
+                file.write(str(tiktok))
+                file.write('\n')
+

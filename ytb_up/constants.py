@@ -1,10 +1,13 @@
 # URLS
+TIKTOK_URL= f"https://www.tiktok.com/upload?lang=en"
+
 YOUTUBE_URL = "https://www.youtube.com"
 YOUTUBE_STUDIO_URL = "https://studio.youtube.com"
 YOUTUBE_UPLOAD_URL = "https://www.youtube.com/upload"
 USER_WAITING_TIME = 1
 
 # CONTAINERS
+CONFIRM_CONTAINER='#confirmation-dialog'
 TAGS_CONTAINER = '//*[@id="tags-container"]'
 ERROR_CONTAINER = '//*[@id="error-message"]'
 STATUS_CONTAINER = "//html/body/ytcp-uploads-dialog/tp-yt-paper-dialog/div/ytcp-animatable[2]/div/div[1]/ytcp-video-upload-progress/span"

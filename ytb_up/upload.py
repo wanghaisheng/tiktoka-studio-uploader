@@ -1,14 +1,13 @@
 import json
+from tkinter import EXCEPTION
 from .constants import *
 from .logging import Log
 from .exceptions import *
 from .utils import *
 import os
 from .login import *
-from datetime import timedelta, date
-
 from time import sleep
-from datetime import datetime, date
+from datetime import datetime, date,timedelta
 import logging
 import re
 from playwright.sync_api import *
@@ -26,7 +25,9 @@ class Upload:
         debug: bool = True,
         username:str ="",
         password:str ="",
-        CHANNEL_COOKIES: str = ""
+        CHANNEL_COOKIES: str = "",
+        ytb_cookies:str="",
+        tiktok_cookies:str="",
 
     ) -> None:
         self._playwright = self._start_playwright()
@@ -40,7 +41,7 @@ class Upload:
             print('start web page without proxy')
 
             browserLaunchOptionDict = {
-                "headless": False,
+                "headless": headless,
                 # "executable_path": executable_path,
                 "timeout": 30000
             }
@@ -81,7 +82,7 @@ class Upload:
         self.CHANNEL_COOKIES = CHANNEL_COOKIES
         self.log.debug("Firefox is now running")
 
-    def click(self, element):
+    def click(self, elementSelector):
         element.click()
         sleep(self.timeout)
         return element
@@ -123,16 +124,11 @@ class Upload:
         print('============tags',tags)
         if not file:
             raise FileNotFoundError(f'Could not find file with path: "{file}"')
+
+
         if self.CHANNEL_COOKIES and not self.CHANNEL_COOKIES == '':
             print('cookies existing', self.CHANNEL_COOKIES)
-            # with open(self.CHANNEL_COOKIES) as file:
-            #     cookies: List = json.load(file)
-            # browser_context = self.browser.new_context(ignore_https_errors=True)
-            #     browser_context.clear_cookies()
-            #     browser_context.add_cookies(cookies)
 
-            # Create a new context with the saved storage state.
-            # page.goto(YOUTUBE_URL)
             self.context.clear_cookies()
 
             self.context.add_cookies(
@@ -192,13 +188,7 @@ class Upload:
         print('finish change locale to english')
         page.goto(YOUTUBE_UPLOAD_URL)
         # sleep(self.timeout)
-        self.log.debug(f'found to YouTube account check')
-
-        if page.locator("#select-files-button")is None and page.locator("//*[@id='dialog-title']"):
-            print('try to input credentials')
-            verify(self,page)
-        #confirm-button > div:nth-child(2)
-
+        self.log.debug("Found YouTube upload Dialog Modal")
 
         self.log.debug(f'Trying to upload "{file}" to YouTube...')
         if os.path.exists(get_path(file)):
@@ -212,11 +202,17 @@ class Upload:
                     INPUT_FILE_VIDEO)
                 page.set_input_files(INPUT_FILE_VIDEO, file.encode('utf-8'))
         sleep(self.timeout)
-        self.log.debug("Found YouTube upload Dialog Modal")
+        if not page.locator(TEXTBOX).is_editable:
+            self.log.debug(f'found to YouTube account check')
 
-        # page = page.locator(UPLOAD_DIALOG_MODAL)
-
-
+            try:
+                page.locator(CONFIRM_CONTAINER).is_visible()
+                print('try to input credentials')
+                verify(self,page)
+                page.goto(YOUTUBE_UPLOAD_URL)
+            except:
+                print('there is no verify')
+        #confirm-button > div:nth-child(2)
         # # Catch max uploads/day limit errors
         # if page.get_attribute(NEXT_BUTTON, 'hidden') == 'true':
         #     error_short_by_xpath=page.locator(ERROR_SHORT_XPATH)
@@ -279,7 +275,7 @@ class Upload:
             sleep(self.timeout)
 
         self.log.debug('Trying to set video to "Not made for kids"...')
-        # kids_section=page.locator(NOT_MADE_FOR_KIDS_LABEL)
+        kids_section=page.locator(NOT_MADE_FOR_KIDS_LABEL)
         page.locator(RADIO_LABEL).click()
         sleep(self.timeout)
         print('not made for kids done')
@@ -340,6 +336,10 @@ class Upload:
             public_main_button=page.locator(PUBLIC_BUTTON)
             page.locator(PUBLIC_RADIO_LABEL).click()
         else:
+        # mode a:release_offset exist,publish_data exist will take date value as a starting date to schedule videos
+        # mode b:release_offset not exist, publishdate exist , schedule to this specific date
+        # mode c:release_offset not exist, publishdate not exist,daily count to increment schedule from tomorrow
+        # mode d: offset exist, publish date not exist, daily count to increment with specific offset schedule from tomorrow            
             self.log.debug(
                 "Trying to set video schedule time...{publish_date}")
             if release_offset and not release_offset == "":
@@ -367,7 +367,8 @@ class Upload:
                 
 
             setscheduletime(page,publish_date)
-            # self.__set_scheduler(publish_date)
+            # set_time_cssSelector(page,publish_date)
+
         video_id=self.get_video_id(page)
         # option 1 to check final upload status
         while self.not_uploaded(page):
@@ -388,20 +389,24 @@ class Upload:
 
         # # Go back to endcard settings
         # page.wait_for_selector("#step-badge-1").click()
-        # self._set_endcard()
+        # # self._set_endcard()
 
         # for _ in range(2):
         #     # Sometimes, the button is clickable but clicking it raises an error, so we add a "safety-sleep" here
         #     sleep(5)
-        #     WebDriverWait(self.page, 20).until(EC.element_to_be_clickable("next-button"))).click()
+        #     self.click_next(page)
 
         # sleep(5)
-        # WebDriverWait(self.page, 20).until(EC.element_to_be_clickable("done-button"))).click()
+        # page.locator("done-button").click()
 
         # # Wait for the dialog to disappear
-        # sleep(5)
-        # logging.info("Upload is complete")
-
+        sleep(5)
+        logging.info("Upload is complete")
+        self.browser.close()
+        # page.locator("#close-icon-button > tp-yt-iron-icon:nth-child(1)").click()
+        # print(page.expect_popup().locator("#html-body > ytcp-uploads-still-processing-dialog:nth-child(39)"))
+        # page.wait_for_selector("ytcp-dialog.ytcp-uploads-still-processing-dialog > tp-yt-paper-dialog:nth-child(1)")
+        # page.locator("ytcp-button.ytcp-uploads-still-processing-dialog > div:nth-child(2)").click()
         return True, video_id
 
     def get_video_id(self, page) -> Optional[str]:
@@ -456,3 +461,6 @@ class Upload:
         raise RuntimeError(
             "You have to select either 'chromium', 'firefox' or 'webkit' as browser."
         )
+    def close(self):
+        self.browser.close()
+        self._playwright.stop()
