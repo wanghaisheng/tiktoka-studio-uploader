@@ -131,7 +131,7 @@ def setscheduletime(page, publish_date: datetime):
 # #input-1
     try:
         page.locator(
-            'input.tp-yt-paper-input').click()
+            '#input-1').click()
         sleep(1)
         page.locator(hour_xpath).click()
     except:
