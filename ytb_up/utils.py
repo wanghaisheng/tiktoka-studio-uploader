@@ -92,11 +92,12 @@ def wait_for_processing(page, process):
             x_path = "//span[@class='progress-label style-scope ytcp-video-upload-progress']"
 # TypeError: 'WebElement' object  is not subscriptable
             upload_progress = page.locator(
-                '[class="progress-label style-scope ytcp-video-upload-progress"]').text_content()
+                '[class="progress-label style-scope ytcp-video-upload-progress"]').all_text_contents()
 
             # innerhtml = page.locator(x_path).get_attribute('innerHTML')
             # if re.match(r"\D \.\.\. \D", innerhtml) or re.match(r"^[^\.]+$", innerhtml):
             #     break
+            upload_progress=' '.join(upload_progress)
             if not '%' in upload_progress.lower():
                 break
             elif 'complete' in upload_progress.lower():

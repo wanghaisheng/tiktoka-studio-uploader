@@ -10,8 +10,8 @@ from time import sleep
 from datetime import datetime, date,timedelta
 import logging
 import re
-from playwright.sync_api import *
-
+import asyncio
+from playwright.async_api import async_playwright
 
 
 
@@ -30,62 +30,21 @@ class Upload:
         tiktok_cookies:str="",
 
     ) -> None:
-        self._playwright = self._start_playwright()
-            #     browser = p.chromium.launch()
-
-        PROXY_SOCKS5 = "socks5://127.0.0.1:1080"
-
-        if not headless:
-            headless = True
-        if proxy_option == "":
-            print('start web page without proxy')
-
-            browserLaunchOptionDict = {
-                "headless": headless,
-                # "executable_path": executable_path,
-                "timeout": 30000
-            }
-
-            if not root_profile_directory:
-                self.browser = self._start_browser("firefox", **browserLaunchOptionDict)
-            else:
-                self.browser = self._start_persistent_browser(
-                    "firefox", user_data_dir=root_profile_directory, **browserLaunchOptionDict
-                )
-        # Open new page
-            self.context = self.browser.new_context()
-        else:
-            print('start web page with proxy')
-
-            browserLaunchOptionDict = {
-                "headless": False,
-                "proxy": {
-                    "server": PROXY_SOCKS5,
-                },
-
-                # timeout <float> Maximum time in milliseconds to wait for the browser instance to start. Defaults to 30000 (30 seconds). Pass 0 to disable timeout.#
-                "timeout": 30000
-            }
-
-            if not root_profile_directory:
-                self.browser = self._start_browser("firefox", **browserLaunchOptionDict)
-            else:
-                self.browser = self._start_persistent_browser(
-                    "firefox", user_data_dir=root_profile_directory, **browserLaunchOptionDict
-                )
-        # Open new page
-            self.context = self.browser.new_context()
         self.timeout = timeout
         self.log = Log(debug)
         self.username=username
         self.password=password
-        self.CHANNEL_COOKIES = CHANNEL_COOKIES
-        self.log.debug("Firefox is now running")
-
-    def click(self, elementSelector):
-        element.click()
-        sleep(self.timeout)
-        return element
+        self.CHANNEL_COOKIES = CHANNEL_COOKIES    
+        self.root_profile_directory=root_profile_directory
+        self.proxy_option=proxy_option
+        self.headless=headless
+        self.ytb_cookies=ytb_cookies
+        self.tiktok_cookies=tiktok_cookies
+        self._playwright=''
+        self.browser=''
+        self.context=''
+        self.page=''
+        # self.setup()
 
     def send(self, element, text: str) -> None:
         element.clear()
@@ -100,7 +59,7 @@ class Upload:
     def not_uploaded(self, page) -> bool:
         return page.locator(STATUS_CONTAINER).text_content().find(UPLOADED) != -1
 
-    def upload(
+    async def upload(
         self,
         file: str,
         title: str = "",
@@ -120,7 +79,54 @@ class Upload:
         """Uploads a video to YouTube.
         Returns if the video was uploaded and the video id.
         """
-        page = self.context.new_page()
+        self._playwright = await self._start_playwright()
+            #     browser = p.chromium.launch()
+
+        PROXY_SOCKS5 = "socks5://127.0.0.1:1080"
+
+        if not self.headless:
+            self.headless = True
+        if self.proxy_option == "":
+            print('start web page without proxy')
+
+            browserLaunchOptionDict = {
+                "headless": self.headless,
+                # "executable_path": executable_path,
+                "timeout": 30000
+            }
+
+            if not self.root_profile_directory:
+                self.browser = await self._start_browser("firefox", **browserLaunchOptionDict)
+            else:
+                self.browser = await self._start_persistent_browser(
+                    "firefox", user_data_dir=self.root_profile_directory, **browserLaunchOptionDict
+                )
+        # Open new page
+            self.context = await self.browser.new_context()
+        else:
+            print('start web page with proxy')
+
+            browserLaunchOptionDict = {
+                "headless": False,
+                "proxy": {
+                    "server": PROXY_SOCKS5,
+                },
+
+                # timeout <float> Maximum time in milliseconds to wait for the browser instance to start. Defaults to 30000 (30 seconds). Pass 0 to disable timeout.#
+                "timeout": 30000
+            }
+
+            if not self.root_profile_directory:
+                self.browser = await self._start_browser("firefox", **browserLaunchOptionDict)
+            else:
+                self.browser = await self._start_persistent_browser(
+                    "firefox", user_data_dir=self.root_profile_directory, **browserLaunchOptionDict
+                )
+        # Open new page
+            self.context = await self.browser.new_context()
+
+        self.log.debug("Firefox is now running")
+        page = await self.context.new_page()
         print('============tags',tags)
         if not file:
             raise FileNotFoundError(f'Could not find file with path: "{file}"')
@@ -129,9 +135,9 @@ class Upload:
         if self.CHANNEL_COOKIES and not self.CHANNEL_COOKIES == '':
             print('cookies existing', self.CHANNEL_COOKIES)
 
-            self.context.clear_cookies()
+            await self.context.clear_cookies()
 
-            self.context.add_cookies(
+            await self.context.add_cookies(
                 json.load(
                     open(
                         self.CHANNEL_COOKIES, 
@@ -140,24 +146,24 @@ class Upload:
                 )
             )            
             # login_using_cookie_file(self,self.CHANNEL_COOKIES,page)         
-            page.goto(YOUTUBE_URL)
+            await page.goto(YOUTUBE_URL)
 
-            page.reload()
+            await page.reload()
         else:
             self.log.info('Please sign in and then press enter')
             # input()
 
-            page.goto(YOUTUBE_URL)
+            await page.goto(YOUTUBE_URL)
             # Interact with login form
-            browser_context = self.browser.new_context(
+            browser_context = await self.browser.new_context(
                 ignore_https_errors=True)
-            browser_context.clear_cookies()
+            await browser_context.clear_cookies()
             # page.click('text=Login')
             # page.fill('input[name="login"]', USERNAME)
             # page.fill('input[name="password"]', PASSWORD)
             # page.click('text=Submit')
             sleep(USER_WAITING_TIME)
-            storage = browser_context.storage_state(path=self.CHANNEL_COOKIES)
+            storage = await browser_context.storage_state(path=self.CHANNEL_COOKIES)
             self.context = browser_context
 
         islogin = confirm_logged_in(page)
@@ -165,9 +171,9 @@ class Upload:
 
         if not islogin:
             print('try to load cookie files')
-            self.context.clear_cookies()
+            await self.context.clear_cookies()
 
-            self.context.add_cookies(
+            await self.context.add_cookies(
                 json.load(
                     open(
                         self.CHANNEL_COOKIES, 
@@ -177,16 +183,18 @@ class Upload:
             )            
 
             print('success load cookie files')
-            page.get(YOUTUBE_URL)
+            await page.get(YOUTUBE_URL)
             print('start to check login status')
 
             islogin = confirm_logged_in(page)
+
+            # https://github.com/xtekky/google-login-bypass/blob/main/login.py
 
         print('start change locale to english')
 
         set_channel_language_english(page)
         print('finish change locale to english')
-        page.goto(YOUTUBE_UPLOAD_URL)
+        await page.goto(YOUTUBE_UPLOAD_URL)
         # sleep(self.timeout)
         self.log.debug("Found YouTube upload Dialog Modal")
 
@@ -403,7 +411,7 @@ class Upload:
         # # Wait for the dialog to disappear
         sleep(5)
         logging.info("Upload is complete")
-        self.browser.close()
+        await self.browser.close()
         # page.locator("#close-icon-button > tp-yt-iron-icon:nth-child(1)").click()
         # print(page.expect_popup().locator("#html-body > ytcp-uploads-still-processing-dialog:nth-child(39)"))
         # page.wait_for_selector("ytcp-dialog.ytcp-uploads-still-processing-dialog > tp-yt-paper-dialog:nth-child(1)")
@@ -425,43 +433,43 @@ class Upload:
 
         return video_id
 
-    @staticmethod
-    def _start_playwright():
-        return sync_playwright().start()
-
-    def _start_browser(self, browser: str, **kwargs):
+    # @staticmethod
+    async  def _start_playwright(self):
+        #  sync_playwright().start()
+        return await  async_playwright().start()
+    async def _start_browser(self, browser: str, **kwargs):
         if browser == "chromium":
-            return self._playwright.chromium.launch(**kwargs)
+            return await self._playwright.chromium.launch(**kwargs)
 
         if browser == "firefox":
-            return self._playwright.firefox.launch(**kwargs)
+            return await self._playwright.firefox.launch(**kwargs)
 
         if browser == "webkit":
-            return self._playwright.webkit.launch(**kwargs)
+            return await self._playwright.webkit.launch(**kwargs)
 
         raise RuntimeError(
             "You have to select either 'chromium', 'firefox', or 'webkit' as browser."
         )
 
-    def _start_persistent_browser(
+    async def _start_persistent_browser(
         self, browser: str, user_data_dir: Optional[Union[str, Path]], **kwargs
     ):
         if browser == "chromium":
-            return self._playwright.chromium.launch_persistent_context(
+            return await self._playwright.chromium.launch_persistent_context(
                 user_data_dir, **kwargs
             )
         if browser == "firefox":
-            return self._playwright.firefox.launch_persistent_context(
+            return await self._playwright.firefox.launch_persistent_context(
                 user_data_dir, **kwargs
             )
         if browser == "webkit":
-            return self._playwright.webkit.launch_persistent_context(
+            return await self._playwright.webkit.launch_persistent_context(
                 user_data_dir, **kwargs
             )
 
         raise RuntimeError(
             "You have to select either 'chromium', 'firefox' or 'webkit' as browser."
         )
-    def close(self):
-        self.browser.close()
-        self._playwright.stop()
+    async def close(self):
+        await self.browser.close()
+        await self._playwright.stop()

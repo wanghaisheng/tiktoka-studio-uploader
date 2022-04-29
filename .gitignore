@@ -6,3 +6,4 @@ main.spec
 ytb_up.egg-info
 /build/*
 /dist/*
+example.py
