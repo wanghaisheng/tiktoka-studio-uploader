@@ -1,6 +1,8 @@
-there is a GUI demo you can just use that
 
-https://github.com/wanghaisheng/autovideo
+[video demo](https://youtu.be/IXaEQG1BCkw)
+
+currently  I am working on a web and GUI app for those want to have a try, please sponsor me
+
 
 This project aims to automate the upload process for YouTube Videos. Since videos can only be publicly uploaded through the YouTube Data API by using a Google Workspaces Account (not free!), I decided to figure out a headless uploader using Selenium. This approach also bypasses API restrictions (e.g. Rate Limits/Endcards can't be set through the API).There are tons of library existing  but not for me .
 
@@ -28,6 +30,13 @@ about:profiles
 文件夹可以选在assets下
 
 2.install firefox addon, **Cookie-Editor**，mannually login into youtube channel，click profile icon, choose english language,export a  cookie.json 
+
+![1hamburger](https://user-images.githubusercontent.com/2363295/167280864-7f8fe860-7258-4267-8e54-a8f0a4eb870b.png)
+![2hamburger](https://user-images.githubusercontent.com/2363295/167280866-521fbc81-8c30-4b5d-b7db-6e1c4549f2e6.png)
+![5hamburger](https://user-images.githubusercontent.com/2363295/167280869-5e01a666-f10e-4620-b6c5-a12bfe2c25fb.png)
+
+
+
 
 
 3. if you want to modify source code, use as a library for your project,pls do    
