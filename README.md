@@ -31,6 +31,13 @@ about:profiles
 
 2.install firefox addon, **Cookie-Editor**，mannually login into youtube channel，click profile icon, choose english language,export a  cookie.json 
 
+![1hamburger](https://user-images.githubusercontent.com/2363295/167280864-7f8fe860-7258-4267-8e54-a8f0a4eb870b.png)
+![2hamburger](https://user-images.githubusercontent.com/2363295/167280866-521fbc81-8c30-4b5d-b7db-6e1c4549f2e6.png)
+![5hamburger](https://user-images.githubusercontent.com/2363295/167280869-5e01a666-f10e-4620-b6c5-a12bfe2c25fb.png)
+
+
+
+
 
 3. if you want to modify source code, use as a library for your project,pls do    
 ```
