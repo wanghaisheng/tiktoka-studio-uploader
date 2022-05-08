@@ -22,7 +22,7 @@ DESCRIPTION_COUNTER = 5000
 
 # OTHER
 HREF = "href"
-TEXTBOX = "#title-textarea > ytcp-form-input-container:nth-child(1) > div:nth-child(1) > div:nth-child(3) > div:nth-child(1) > ytcp-mention-input:nth-child(1)"
+TEXTBOX = "#title-textarea"
 UPLOADED = "Uploading"
 TEXT_INPUT = "#text-input"
 NOT_MADE_FOR_KIDS_RADIO_LABEL = "tp-yt-paper-radio-button.ytkc-made-for-kids-select:nth-child(2) > div:nth-child(2) > ytcp-ve:nth-child(1)"

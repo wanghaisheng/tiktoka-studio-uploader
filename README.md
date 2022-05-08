@@ -67,6 +67,15 @@ auto detect whether need a proxy
 # 2. cookie support
 for those multiple channels under same google account
 
+
+pls check 
+https://github.com/microsoft/playwright/issues/12616
+
+manually change no_restriction to
+
+>        "sameSite": "None",
+
+
 # 3. schedule time publish
 
 you can explictly specify a date and time for each video or you can set publish policy and daily public count,for example,daily count is 4,you got 5 videos,then first 4 will be published 1 day after the upload date ,the other 1 will be 2 days after the upload date
@@ -79,7 +88,3 @@ THANKS FOR
 2. https://github.com/offish/opplast
 3. other I CAN NOT REMEMBER
 
-
-
-配置文件说明 
-publishpolicy：1 表示上传以后立即公开  0 表示上传以后保持私享 2表示结合每天发布数量和视频文件夹中的数量 从上传当日起开始定时公开

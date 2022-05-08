@@ -3,7 +3,7 @@ import re
 import logging
 from time import sleep
 from datetime import datetime
-from playwright.sync_api import *
+from playwright.async_api import *
 from .constants import *
 from pathlib import Path
 import os
@@ -19,20 +19,21 @@ def get_path(file_path: str) -> str:
 def close_browser(self):
     self.browser.close()
     self._playwright.stop()
-def set_channel_language_english(page):
+async def set_channel_language_english(page):
     # why does not work again
     try:
         print('Click your profile icon .')
         page.locator(
             "yt-img-shadow.ytd-topbar-menu-button-renderer > img:nth-child(1)")
-        page.click(
+        await page.click(
             "yt-img-shadow.ytd-topbar-menu-button-renderer > img:nth-child(1)")
         print(' Click Language or Location icon')
         page.locator("yt-multi-page-menu-section-renderer.style-scope:nth-child(2) > div:nth-child(2) > ytd-compact-link-renderer:nth-child(2) > a:nth-child(1) > tp-yt-paper-item:nth-child(1) > div:nth-child(2) > yt-formatted-string:nth-child(2)")
-        page.click("yt-multi-page-menu-section-renderer.style-scope:nth-child(2) > div:nth-child(2) > ytd-compact-link-renderer:nth-child(2) > a:nth-child(1) > tp-yt-paper-item:nth-child(1) > div:nth-child(2) > yt-formatted-string:nth-child(2)")
-        selector_en = "ytd-compact-link-renderer.style-scope:nth-child(13) > a:nth-child(1) > tp-yt-paper-item:nth-child(1) > div:nth-child(2) > yt-formatted-string:nth-child(1)"
+        await page.click("yt-multi-page-menu-section-renderer.style-scope:nth-child(2) > div:nth-child(2) > ytd-compact-link-renderer:nth-child(2) > a:nth-child(1) > tp-yt-paper-item:nth-child(1) > div:nth-child(2) > yt-formatted-string:nth-child(2)")
+        selector_en_path = "ytd-compact-link-renderer.style-scope:nth-child(13) > a:nth-child(1) > tp-yt-paper-item:nth-child(1) > div:nth-child(2) > yt-formatted-string:nth-child(1)"
         print('choose the language or location you like to use.')
-        page.locator(selector_en).click()
+        selector_en=page.locator(selector_en_path)
+        await selector_en.click()
         # page.click(selector_en)
 
         # print(page.text_content('//*[@id="label"]'))
@@ -46,20 +47,20 @@ def set_channel_language_english(page):
 # fix google account verify
 
 
-def verify(self, page):
+async def verify(self, page):
     try:
 
         while True:
-            page.locator('#confirm-button > div:nth-child(2)').click()
-            page.goto("https://accounts.google.com/signin/v2/identifier?service=youtube&uilel=3&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Ddesktop%26next%3Dhttps%253A%252F%252Fstudio.youtube.com%252Freauth%26feature%3Dreauth%26authuser%3D2%26skip_identity_prompt%3Dtrue&hl=en&authuser=2&rart=ANgoxcfF1TrrQp5lP5ySTmlJmdnwuMbSDi81WlN2aDXRgvpTnD1cv0nXHlRcMz6yv6hnqfERyjXMCgJqa8thKIAqVqatu9kTtA&flowName=GlifWebSignIn&flowEntry=ServiceLogin")
-            page.locator("#identifierId").click()
-            page.fill("#identifierId", self.username)
-            page.locator(
+            await page.locator('#confirm-button > div:nth-child(2)').click()
+            await page.goto("https://accounts.google.com/signin/v2/identifier?service=youtube&uilel=3&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Ddesktop%26next%3Dhttps%253A%252F%252Fstudio.youtube.com%252Freauth%26feature%3Dreauth%26authuser%3D2%26skip_identity_prompt%3Dtrue&hl=en&authuser=2&rart=ANgoxcfF1TrrQp5lP5ySTmlJmdnwuMbSDi81WlN2aDXRgvpTnD1cv0nXHlRcMz6yv6hnqfERyjXMCgJqa8thKIAqVqatu9kTtA&flowName=GlifWebSignIn&flowEntry=ServiceLogin")
+            await page.locator("#identifierId").click()
+            await page.fill("#identifierId", self.username)
+            await page.locator(
                 ".VfPpkd-LgbsSe-OWXEXe-k8QpJ > span:nth-child(4)").click()
             time.sleep(3)
-            page.fill(
+            await page.fill(
                 "#password > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > input:nth-child(1)", self.password)
-            page.locator(
+            await page.locator(
                 ".VfPpkd-LgbsSe-OWXEXe-k8QpJ > span:nth-child(4)").click()
             time.sleep(60)
 
@@ -70,28 +71,28 @@ def verify(self, page):
         # break        
 
 
-def wait_for_processing(page, process):
+async def wait_for_processing(page, process):
     page = page
     if process == True:
         # Wait for processing to complete
-        progress_label = page.wait_for_selector(
+        progress_label = await page.wait_for_selector(
             "span.progress-label")
         pattern = re.compile(
             r"(finished processing)|(processing hd.*)|(check.*)")
-        current_progress = progress_label.get_attribute("textContent")
+        current_progress = await progress_label.get_attribute("textContent")
         last_progress = None
         while not pattern.match(current_progress.lower()):
             if last_progress != current_progress:
                 logging.info(f'Current progress: {current_progress}')
             last_progress = current_progress
             sleep(5)
-            current_progress = progress_label.get_attribute("textContent")
+            current_progress = await progress_label.get_attribute("textContent")
     else:
         while True:
 
             x_path = "//span[@class='progress-label style-scope ytcp-video-upload-progress']"
 # TypeError: 'WebElement' object  is not subscriptable
-            upload_progress = page.locator(
+            upload_progress = await page.locator(
                 '[class="progress-label style-scope ytcp-video-upload-progress"]').all_text_contents()
 
             # innerhtml = page.locator(x_path).get_attribute('innerHTML')
@@ -102,19 +103,19 @@ def wait_for_processing(page, process):
                 break
             elif 'complete' in upload_progress.lower():
                 break
-def setscheduletime(page, publish_date: datetime):
+async def setscheduletime(page, publish_date: datetime):
     hour_to_post, date_to_post, publish_date_hour=hour_and_date(
         publish_date)
     date_to_post=publish_date.strftime("%b %d, %Y")
     hour_xpath=get_hour_xpath(hour_to_post)
     # Clicking in schedule video
     print('click schedule')
-    page.locator(
+    await page.locator(
         '//html/body/ytcp-uploads-dialog/tp-yt-paper-dialog/div/ytcp-animatable[1]/ytcp-uploads-review/div[2]/div[1]/ytcp-video-visibility-select/div[2]/tp-yt-paper-radio-button/div[1]/div[1]').click()
     sleep(1)
     # Writing date
     print('click date')
-    page.locator('#datepicker-trigger > ytcp-dropdown-trigger:nth-child(1) > div:nth-child(2) > div:nth-child(4)').click()
+    await page.locator('#datepicker-trigger > ytcp-dropdown-trigger:nth-child(1) > div:nth-child(2) > div:nth-child(4)').click()
 
     # page.locator(
         # '//html/body/ytcp-uploads-dialog/tp-yt-paper-dialog/div/ytcp-animatable[1]/ytcp-uploads-review/div[2]/div[1]/ytcp-video-visibility-select/div[2]/ytcp-visibility-scheduler/div[1]/ytcp-datetime-picker/div/ytcp-text-dropdown-trigger[1]/ytcp-dropdown-trigger/div/div[3]').click()
@@ -123,25 +124,25 @@ def setscheduletime(page, publish_date: datetime):
     
     # page.locator(
         # '//html/body/ytcp-date-picker/tp-yt-paper-dialog/div/form/tp-yt-paper-input/tp-yt-paper-input-container/div[2]/div/iron-input/input').click()
-    page.keyboard.press("Control+KeyA")
-    page.keyboard.type(date_to_post)
-    page.keyboard.press("Enter")
+    await page.keyboard.press("Control+KeyA")
+    await page.keyboard.type(date_to_post)
+    await page.keyboard.press("Enter")
 
     sleep(1)
     print('click hour')
 # #input-1
     try:
-        page.locator(
+        await page.locator(
             '#input-1').click()
         sleep(1)
-        page.locator(hour_xpath).click()
+        await page.locator(hour_xpath).click()
     except:
         # input_hour=page.wait_for_selector(
             # 'input.tp-yt-paper-input').click()
         print('no hour input found')
-    page.keyboard.press("Control+KeyA")
-    page.keyboard.type(hour_to_post)
-    page.keyboard.press("Enter")
+    await page.keyboard.press("Control+KeyA")
+    await page.keyboard.type(hour_to_post)
+    await page.keyboard.press("Enter")
 
     sleep(1)
 
@@ -235,9 +236,9 @@ def _set_advanced_settings(page, game_title: str, made_for_kids: bool):
         # Select first item in game drop down
         page.wait_for_selector("#text-item-2").click()
 
-    WebDriverWait(page, 20).until(EC.element_to_be_clickable(
-        ("VIDEO_MADE_FOR_KIDS_MFK" if made_for_kids else "VIDEO_MADE_FOR_KIDS_NOT_MFK")
-    )).click()
+    # WebDriverWait(page, 20).until(EC.element_to_be_clickable(
+        # ("VIDEO_MADE_FOR_KIDS_MFK" if made_for_kids else "VIDEO_MADE_FOR_KIDS_NOT_MFK")
+    # )).click()
 
 def _set_endcard(self):
     page=page
