@@ -1,7 +1,7 @@
+[currently  I am working on a web and GUI app for those want to have a try, please sponsor me](https://github.com/sponsors/wanghaisheng)
 
 [video demo](https://youtu.be/IXaEQG1BCkw)
 
-currently  I am working on a web and GUI app for those want to have a try, please sponsor me
 
 
 This project aims to automate the upload process for YouTube Videos. Since videos can only be publicly uploaded through the YouTube Data API by using a Google Workspaces Account (not free!), I decided to figure out a headless uploader using Selenium. This approach also bypasses API restrictions (e.g. Rate Limits/Endcards can't be set through the API).There are tons of library existing  but not for me .
