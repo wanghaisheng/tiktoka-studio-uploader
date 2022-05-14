@@ -1,7 +1,7 @@
+[currently  I am working on a web and GUI app for those want to have a try, please sponsor me](https://github.com/sponsors/wanghaisheng)
 
 [video demo](https://youtu.be/IXaEQG1BCkw)
 
-currently  I am working on a web and GUI app for those want to have a try, please sponsor me
 
 
 
