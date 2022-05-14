@@ -8,3 +8,4 @@ ytb_up.egg-info
 /dist/*
 example.py
 /test-results/*
+screen-recording/*
