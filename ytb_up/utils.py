@@ -103,6 +103,31 @@ async def wait_for_processing(page, process):
                 break
             elif 'complete' in upload_progress.lower():
                 break
+async def setscheduletime_douyin(page, publish_date: datetime):
+    hour_to_post, date_to_post, publish_date_hour=hour_and_date_douyin(
+        publish_date)
+
+    # Clicking in schedule video
+    print('click schedule')
+    await page.locator('label.one-line--2rHu9:nth-child(2)').click()
+
+    sleep(1)
+    # Writing date
+    date_to_post=publish_date.strftime("%Y-%m-%d")
+    hour_xpath=get_hour_xpath(hour_to_post)    
+    print('click date',date_to_post,publish_date_hour)
+    # 2022-05-15 09:24
+    await page.locator('//html/body/div[1]/div/div[2]/div[3]/div/div/div[2]/div/div/div/div[2]/div[1]/div[12]/div[2]/div[2]/div[1]/div/div/div/input').click()
+
+    sleep(1)
+    await page.keyboard.press("Control+KeyA")
+    await page.keyboard.type(date_to_post+' '+hour_to_post)
+    await page.keyboard.press("Enter")
+
+    sleep(1)
+
+
+    sleep(1)
 async def setscheduletime(page, publish_date: datetime):
     hour_to_post, date_to_post, publish_date_hour=hour_and_date(
         publish_date)
@@ -145,6 +170,22 @@ async def setscheduletime(page, publish_date: datetime):
     await page.keyboard.press("Enter")
 
     sleep(1)
+
+
+
+def hour_and_date_douyin( now_date_hour):
+    # now_date_hour += datetime.timedelta(seconds=TIME_BETWEEN_POSTS)
+    hour_to_post=now_date_hour.strftime('%H:%M')
+    hour, minutes=hour_to_post.split(
+        ':')[0], int(hour_to_post.split(':')[1])
+    setting_minutes=minutes//15
+    minutes=setting_minutes * 15
+    if minutes == 0:
+        minutes='00'
+    hour_to_post=f'{hour}:{minutes}'
+    
+    date_to_post=now_date_hour.strftime('%H:%M:%')
+    return hour_to_post, date_to_post, now_date_hour
 
 def hour_and_date( now_date_hour):
     # now_date_hour += datetime.timedelta(seconds=TIME_BETWEEN_POSTS)

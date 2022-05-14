@@ -7,3 +7,4 @@ ytb_up.egg-info
 /build/*
 /dist/*
 example.py
+/test-results/*

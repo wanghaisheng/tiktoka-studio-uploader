@@ -9,8 +9,6 @@ from .login import *
 from time import sleep
 from datetime import datetime, date,timedelta
 import logging
-import re
-import asyncio
 from playwright.async_api import async_playwright
 
 
@@ -64,7 +62,7 @@ class Upload:
 
     async def upload(
         self,
-        file: str,
+        videopath: str="",
         title: str = "",
         description: str = "",
         thumbnail: str = "",
@@ -107,7 +105,7 @@ class Upload:
                     "firefox", user_data_dir=self.root_profile_directory, **browserLaunchOptionDict
                 )
             if self.recordvideo:
-                self.context = await self.browser.new_context(record_video_dir="test-results")
+                self.context = await self.browser.new_context(record_video_dir=os.getcwd()+os.sep+"screen-recording")
             else:
                 self.context = await self.browser.new_context()
         else:
@@ -137,8 +135,8 @@ class Upload:
         self.log.debug("Firefox is now running")
         page = await self.context.new_page()
         print('============tags',tags)
-        if not file:
-            raise FileNotFoundError(f'Could not find file with path: "{file}"')
+        if not videopath:
+            raise FileNotFoundError(f'Could not find file with path: "{videopath}"')
 
 
         if self.CHANNEL_COOKIES and not self.CHANNEL_COOKIES == '':
@@ -207,17 +205,17 @@ class Upload:
         # sleep(self.timeout)
         self.log.debug("Found YouTube upload Dialog Modal")
 
-        self.log.debug(f'Trying to upload "{file}" to YouTube...')
-        if os.path.exists(get_path(file)):
+        self.log.debug(f'Trying to upload "{videopath}" to YouTube...')
+        if os.path.exists(get_path(videopath)):
             page.locator(
                 INPUT_FILE_VIDEO)
-            await page.set_input_files(INPUT_FILE_VIDEO, get_path(file))
+            await page.set_input_files(INPUT_FILE_VIDEO, get_path(videopath))
         else:
-            if os.path.exists(file.encode('utf-8')):
-                print('file found', file)
+            if os.path.exists(videopath.encode('utf-8')):
+                print('file found', videopath)
                 page.locator(
                     INPUT_FILE_VIDEO)
-                await page.set_input_files(INPUT_FILE_VIDEO, file.encode('utf-8'))
+                await page.set_input_files(INPUT_FILE_VIDEO, videopath.encode('utf-8'))
         sleep(self.timeout)
         textbox=page.locator(TEXTBOX)
         # accountcheck=await textbox.is_editable()

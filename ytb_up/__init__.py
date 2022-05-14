@@ -1,5 +1,5 @@
 __name__ = "ytb-up"
-__version__ = "0.1.11"
+__version__ = "0.1.13"
 
 from .exceptions import *
 from .constants import *

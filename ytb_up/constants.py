@@ -1,6 +1,37 @@
 # URLS
 TIKTOK_URL= f"https://www.tiktok.com/upload?lang=en"
 
+DOUYIN_URL = "https://creator.douyin.com/creator-micro/home"
+DOUYIN_STUDIO_URL = "https://creator.douyin.com/creator-micro/home"
+DOUYIN_UPLOAD_URL = "https://creator.douyin.com/creator-micro/content/upload"
+
+DOUYIN_INPUT_FILE_VIDEO='.upload-btn--9eZLd'
+DOUYIN_TEXTBOX  ='.notranslate'
+DOUYIN_TITLE_COUNTER=500
+DOUYIN_INPUT_FILE_THUMBNAIL_EDIT='.mycard-info-text-span--1vcFz'
+
+DOUYIN_INPUT_FILE_THUMBNAIL_OPTION_UPLOAD='.header--3-YMH > div:nth-child(1) > div:nth-child(1) > div:nth-child(2)'
+DOUYIN_INPUT_FILE_THUMBNAIL='.upload-btn--9eZLd'
+DOUYIN_INPUT_FILE_THUMBNAIL_UPLOAD_TRIM_CONFIRM='button.primary--1AMXd:nth-child(2)'
+DOUYIN_INPUT_FILE_THUMBNAIL_UPLOAD_CONFIRM='.submit--3Qt1n'
+DOUYIN_LOCATION='.select--148Qe > div:nth-child(1) > div:nth-child(1)'
+DOUYIN_LOCATION_RESULT='div.semi-select-option:nth-child(1) > div:nth-child(2) > div:nth-child(1)'
+DOUYIN_MINI_SELECT='.select--2uNK1'
+DOUYIN_MINI_SELECT_OPTION='.select--2uNK1 > div:nth-child(1) > div:nth-child(1) > span:nth-child(1)'
+DOUYIN_MINI='.semi-input'
+DOUYIN_MINI_RESULT=''
+
+DOUYIN_HOT_TOPIC='div.semi-select-filterable:nth-child(2) > div:nth-child(1) > div:nth-child(1) > span:nth-child(1)'
+DOUYIN_HOT_TOPIC_RESULT='//html/body/div[7]/div/div/div/div/div/div/div[1]/div[2]/div[1]/div'
+
+DOUYIN_HEJI_SELECT_OPTION='.sel-area--2hBSM > div:nth-child(2) > div:nth-child(1) > div:nth-child(1)'
+DOUYIN_HEJI_SELECT_OPTION_VALUE='.sel-area--2hBSM > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > span:nth-child(1) > div:nth-child(1)'
+DOUYIN_UP2='.semi-switch-native-control'
+
+
+
+
+WEIXIN_URL="https://channels.weixin.qq.com/post/create"
 YOUTUBE_URL = "https://www.youtube.com"
 YOUTUBE_STUDIO_URL = "https://studio.youtube.com"
 YOUTUBE_UPLOAD_URL = "https://www.youtube.com/upload"

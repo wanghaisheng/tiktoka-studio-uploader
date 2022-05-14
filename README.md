@@ -4,6 +4,7 @@
 currently  I am working on a web and GUI app for those want to have a try, please sponsor me
 
 
+
 This project aims to automate the upload process for YouTube Videos. Since videos can only be publicly uploaded through the YouTube Data API by using a Google Workspaces Account (not free!), I decided to figure out a headless uploader using Selenium. This approach also bypasses API restrictions (e.g. Rate Limits/Endcards can't be set through the API).There are tons of library existing  but not for me .
 
 AS a code dummy,I do accept any advice because of my only purpose is to get things work
@@ -92,6 +93,10 @@ THANKS FOR
 2. https://github.com/offish/opplast
 3. other I CAN NOT REMEMBER
 
+
+video file format: pls use mp4、webm
+douyin title format:
+bababala #话题1 #话题2 @好友1 @好友2
 
 # 6 feed me hamburger
 

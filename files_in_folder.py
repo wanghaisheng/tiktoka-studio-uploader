@@ -9,6 +9,15 @@ import os
 # -2.png
 
 
+VIDEO_EXTENSIONS = ('.avi',
+                    '.divx',
+                    '.flv',
+                    '.m4v',
+                    '.mkv',
+                    '.mov',
+                    '.mp4',
+                    '.mpg',
+                    '.wmv')
 def check_video_thumb_pair(folder):
     # print('detecting----------',folder)
     videofiles = []
