@@ -1,6 +1,15 @@
 [currently  I am working on a web and GUI app for those want to have a try, please sponsor me](https://github.com/sponsors/wanghaisheng)
 
-[video demo](https://youtu.be/IXaEQG1BCkw)
+
+draft GUI you can check.sponsor me you can get the exe version on windows
+
+https://youtu.be/tp69CzU1y7s
+
+https://youtu.be/IXaEQG1BCkw
+
+https://youtu.be/Sqj0uO9VCy4
+
+
 
 
 
