@@ -27,6 +27,10 @@ at some day if you got viral  someone will steal your content to repost over oth
 
 as newbie you will not want to have egg stay in one blanket.it will save your time to success
 
+### auto set schedule time to public for each video
+
+it seems no other lib support this feature yet
+
 
 This project aims to automate the upload process for YouTube Videos. Since videos can only be publicly uploaded through the YouTube Data API by using a Google Workspaces Account (not free!), I decided to figure out a headless uploader using Selenium. This approach also bypasses API restrictions (e.g. Rate Limits/Endcards can't be set through the API).There are tons of library existing  but not for me .
 
