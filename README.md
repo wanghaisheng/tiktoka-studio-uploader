@@ -9,8 +9,23 @@ https://youtu.be/IXaEQG1BCkw
 
 https://youtu.be/Sqj0uO9VCy4
 
+## features including in the GUI version
 
+### auto generate thumbnail from video hightlight
 
+you can using these as startpoint to add overlay text to make it more clickbait to get traffic
+
+### auto add Free copyright music 
+
+some music is the secret weapon to traffic, you need dig it by yourself.and also not to share with others
+
+### invisible watermark
+
+at some day if you got viral  someone will steal your content to repost over other platform, cut off your logo or other visible watermark,with this invisible/hidden watermark technology, you can hardless lost the battle
+
+### multi account and multi channel under one account
+
+as newbie you will not want to have egg stay in one blanket.it will save your time to success
 
 
 This project aims to automate the upload process for YouTube Videos. Since videos can only be publicly uploaded through the YouTube Data API by using a Google Workspaces Account (not free!), I decided to figure out a headless uploader using Selenium. This approach also bypasses API restrictions (e.g. Rate Limits/Endcards can't be set through the API).There are tons of library existing  but not for me .
@@ -46,25 +61,16 @@ about:profiles
 3. if you want to modify source code, use as a library for your project,pls do    
 ```
 
-git clone https://github.com/wanghaisheng/ytb_up
+git clone https://github.com/wanghaisheng/youtube-auto-upload
+
 pip install -r requirements.txt
 
 all codes under **ytb_up**, twist them as you wish
 
 ```
-4. if you are dumb as me, wanna a try,run demo project
-```
-git clone https://github.com/wanghaisheng/autovideo
 
-conda create -n autovideo python=3.9
-conda activate autovideo
-
-pip install -r requirements.txt
-
-python auto_video.py
-```
-
-woola  you can see a ugly gui  for your demo purpose
+4. we got selenium and playwright two version ,choose as you like
+switch branch you can find that 
 
 5. use existing without modification as a lib
 ```
@@ -92,9 +98,13 @@ manually change no_restriction to
 # 3. schedule time publish
 
 you can explictly specify a date and time for each video or you can set publish policy and daily public count,for example,daily count is 4,you got 5 videos,then first 4 will be published 1 day after the upload date ,the other 1 will be 2 days after the upload date
+
 # 4. fix google account verify
 
-# 5. seleniumwire
+auto verify is not working,you need manually input verify code in the browser
+
+
+# 5. 
 
 THANKS FOR 
 1. https://github.com/ContentAutomation/YouTubeUploader
