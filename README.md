@@ -1,4 +1,9 @@
-[currently  I am working on a web and GUI app for those want to have a try, please sponsor me](https://github.com/sponsors/wanghaisheng)
+[Get the early bird version  please sponsor me here](https://github.com/sponsors/wanghaisheng)
+
+or click any link you find in the repo
+
+![firefox_GJdnBty8d8](https://user-images.githubusercontent.com/2363295/168556947-a1c3025a-aa76-4873-9d7f-d4475712296a.png)
+
 
 [I  have released one draft version GUI and got tested by about 5 friends]  you can check.sponsor me you can get the exe version on windows
 
