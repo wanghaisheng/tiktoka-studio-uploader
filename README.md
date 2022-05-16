@@ -5,7 +5,7 @@ or click any link you find in the repo
 ![firefox_GJdnBty8d8](https://user-images.githubusercontent.com/2363295/168556947-a1c3025a-aa76-4873-9d7f-d4475712296a.png)
 
 
-[I  have released one draft version GUI and got tested by about 5 friends]  you can check.sponsor me you can get the exe version on windows
+**I  have released one draft version GUI and got tested by about 5 friends you can check.sponsor me you can get the exe version on windows**
 
 in the future i plan to add more features like invisible watermark to protect your copyright from being stealing  and cross platform that you may post videos not only on youtube.
 
