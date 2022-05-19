@@ -5,9 +5,22 @@ or click any link you find in the repo
 ![firefox_GJdnBty8d8](https://user-images.githubusercontent.com/2363295/168556947-a1c3025a-aa76-4873-9d7f-d4475712296a.png)
 
 
-**I  have released one draft version GUI and got tested by about 5 friends you can check.sponsor me you can get the exe version on windows**
+
+
+**I  have released one draft version GUI for those want a one click solution  and got tested by about 5 friends you can check.sponsor me you can get the exe version on windows**
 
 in the future i plan to add more features like invisible watermark to protect your copyright from being theft  and cross platform publish that you may post videos not only on youtube.
+
+
+## video demo 
+
+[English version detailed intro and demo ](https://youtu.be/Xh-Dmm1POBo)
+
+https://youtu.be/tp69CzU1y7s
+
+https://youtu.be/IXaEQG1BCkw
+
+https://youtu.be/Sqj0uO9VCy4
 
 
 ------
@@ -37,16 +50,6 @@ it seems no other lib support this feature yet
 ### video upload in batch
 
 all you need is choose the video dir
-
-## video demo 
-
-[English version detailed intro and demo ](https://youtu.be/Xh-Dmm1POBo)
-
-https://youtu.be/tp69CzU1y7s
-
-https://youtu.be/IXaEQG1BCkw
-
-https://youtu.be/Sqj0uO9VCy4
 
 
 ------
