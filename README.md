@@ -7,12 +7,12 @@ or click any link you find in the repo
 
 **I  have released one draft version GUI and got tested by about 5 friends you can check.sponsor me you can get the exe version on windows**
 
-in the future i plan to add more features like invisible watermark to protect your copyright from being stealing  and cross platform that you may post videos not only on youtube.
+in the future i plan to add more features like invisible watermark to protect your copyright from being theft  and cross platform publish that you may post videos not only on youtube.
 
 
+------
 
-
-## features including in the GUI version
+## features included in the GUI version
 
 ### auto generate thumbnail from video hightlight
 
@@ -47,6 +47,10 @@ https://youtu.be/tp69CzU1y7s
 https://youtu.be/IXaEQG1BCkw
 
 https://youtu.be/Sqj0uO9VCy4
+
+
+------
+
 This project aims to automate the upload process for YouTube Videos. Since videos can only be publicly uploaded through the YouTube Data API by using a Google Workspaces Account (not free!), I decided to figure out a headless uploader using Selenium. This approach also bypasses API restrictions (e.g. Rate Limits/Endcards can't be set through the API).There are tons of library existing  but not for me .
 
 AS a code dummy,I do accept any advice because of my only purpose is to get things work
@@ -76,13 +80,14 @@ about:profiles
 
 
 
-
 3. if you want to modify source code, use as a library for your project,pls do    
 ```
 
 git clone https://github.com/wanghaisheng/youtube-auto-upload
 
 pip install -r requirements.txt
+
+python onefile-example.py 
 
 all codes under **ytb_up**, twist them as you wish
 
