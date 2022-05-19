@@ -133,18 +133,5 @@ THANKS FOR
 
 # 6 feed me hamburger
 
-## 1hamburger is good 
-
-![1hamburger](https://user-images.githubusercontent.com/2363295/167280864-7f8fe860-7258-4267-8e54-a8f0a4eb870b.png)
-
-
-## 2hamburger  is great
-
-![2hamburger](https://user-images.githubusercontent.com/2363295/167280866-521fbc81-8c30-4b5d-b7db-6e1c4549f2e6.png)
-
-
-## 5hamburger I wont need lose weight. 
-
-![5hamburger](https://user-images.githubusercontent.com/2363295/167280869-5e01a666-f10e-4620-b6c5-a12bfe2c25fb.png)
 
 
