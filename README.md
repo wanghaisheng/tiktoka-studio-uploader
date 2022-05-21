@@ -1,18 +1,19 @@
 <!-- MANPAGE: BEGIN EXCLUDED SECTION -->
 <div align="center">
 
-[![YT-DLP](https://raw.githubusercontent.com/wanghaisheng/youtube-auto-upload/master/assets/images.png)](#readme)
+[![YTB-UP](https://raw.githubusercontent.com/wanghaisheng/youtube-auto-upload/master/assets/images.png)](#readme)
 
 [![Release version](https://img.shields.io/github/v/release/wanghaisheng/youtube-auto-upload?color=brightgreen&label=Download&style=for-the-badge)](#release-files "Release")
 [![PyPi](https://img.shields.io/badge/-PyPi-blue.svg?logo=pypi&labelColor=555555&style=for-the-badge)](https://pypi.org/project/ytb-up "PyPi")
-[![Donate](https://img.shields.io/badge/_-Donate-red.svg?logo=githubsponsors&labelColor=555555&style=for-the-badge)](Collaborators.md#collaborators "Donate")
-[![Matrix](https://img.shields.io/matrix/ytb-up:matrix.org?color=brightgreen&labelColor=555555&label=&logo=element&style=for-the-badge)](https://matrix.to/#/#ytb-up:matrix.org "Matrix")
+[![Donate](https://img.shields.io/badge/_-Donate-red.svg?logo=githubsponsors&labelColor=555555&style=for-the-badge)](https://img.shields.io/github/sponsors/wanghaisheng "Donate")
+
+[![Sponsors](https://img.shields.io/github/sponsors/wanghaisheng)]("sponsors")
+
 [![Discord](https://img.shields.io/discord/807245652072857610?color=blue&labelColor=555555&label=&logo=discord&style=for-the-badge)](https://discord.gg/xxxxx "Discord")
 [![Supported Sites](https://img.shields.io/badge/-Supported_Sites-brightgreen.svg?style=for-the-badge)](supportedsites.md "Supported Sites")
 [![License: Unlicense](https://img.shields.io/badge/-Unlicense-blue.svg?style=for-the-badge)](LICENSE "License")
-[![CI Status](https://img.shields.io/github/workflow/status/wanghaisheng/youtube-auto-upload/Core%20Tests/master?label=Tests&style=for-the-badge)](https://github.com/wanghaisheng/youtube-auto-upload/actions "CI Status")
 [![Commits](https://img.shields.io/github/commit-activity/m/wanghaisheng/youtube-auto-upload?label=commits&style=for-the-badge)](https://github.com/wanghaisheng/youtube-auto-upload/commits "Commit History")
-[![Last Commit](https://img.shields.io/github/last-commit/wanghaisheng/youtube-auto-upload/master?label=&style=for-the-badge)](https://github.com/wanghaisheng/youtube-auto-upload/commits "Commit History")
+[![Last Commit](https://img.shields.io/github/last-commit/wanghaisheng/youtube-auto-upload/playwright?label=&style=for-the-badge)](https://github.com/wanghaisheng/youtube-auto-upload/commits "Commit History")
 
 </div>
 <!-- MANPAGE: END EXCLUDED SECTION -->
@@ -74,7 +75,6 @@ all you need is choose the video dir
 
 ------
 
->>>>>>> c59524911f8acd15a6df5ca04f8cc85b4a0115c7
 This project aims to automate the upload process for YouTube Videos. Since videos can only be publicly uploaded through the YouTube Data API by using a Google Workspaces Account (not free!), I decided to figure out a headless uploader using Selenium. This approach also bypasses API restrictions (e.g. Rate Limits/Endcards can't be set through the API).There are tons of library existing  but not for me .
 
 AS a code dummy,I do accept any advice because of my only purpose is to get things work
@@ -90,7 +90,7 @@ AS a code dummy,I do accept any advice because of my only purpose is to get thin
 3.more like category setting,auto publish date,subtitle upload etc are considered
 
 
-## steps you can reproduce 
+## USAGE
 if anything you dont understand ,just google it first,for example  firefox profile
 
 1. Download lastest firefox,open new tab and insert:    
@@ -163,5 +163,9 @@ THANKS FOR
 
 # 6 feed me hamburger
 
+
+# 7. Join Online video chat and easily share your desktop for debug your issue
+
+https://vdo.ninja/?room=Youtube_Auto_Upload&broadcast
 
 
