@@ -3,9 +3,9 @@ from ytb_up.douyin import DouyinUpload
 from datetime import datetime,date,timedelta
 import asyncio
 import json
-profilepath = r'D:\Download\audio-visual\make-text-video\reddit-to-video\assets\profile\aww'
-CHANNEL_COOKIES=r'D:\Download\audio-visual\saas\tiktoka\ytb-up\douyin-cookie.json'
-videopath = './hello.mp4'
+profilepath = ''
+CHANNEL_COOKIES='assets/douyin-cookie.json'
+videopath = 'assets/hello.mp4'
 tags = ['ba,baaa,bababa']
 publish_date = ''
 # if you use some kinda of proxy to access youtube, 
@@ -79,7 +79,7 @@ def scheduletopublish_tomorrow():
         thumbnail=thumbnail,
         tags=tags,
         closewhen100percentupload=True,
-        location='深圳',
+        location='深圳市',
         miniprogram='',
         heji='heji1',
         hottopic='老公',

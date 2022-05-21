@@ -49,19 +49,7 @@ class DouyinUpload:
         self.recordvideo=recordvideo
         # self.setup()
 
-    def send(self, element, text: str) -> None:
-        element.clear()
-        sleep(self.timeout)
-        element.send_keys(text)
-        sleep(self.timeout)
 
-    async def click_next(self, page) -> None:
-        await page.locator(NEXT_BUTTON).click()
-        sleep(self.timeout)
-
-    async def not_uploaded(self, page) -> bool:
-        s=await page.locator(STATUS_CONTAINER).text_content()
-        return s.find(UPLOADED) != -1
 
     async def upload(
         self,
@@ -143,6 +131,7 @@ class DouyinUpload:
             else:
                 self.context = await self.browser.new_context()
         self.log.debug("Firefox is now running")
+        await self.context.grant_permissions(['geolocation'])
         page = await self.context.new_page()
         print('============tags',tags)
         if not videopath:
@@ -167,9 +156,9 @@ class DouyinUpload:
 
             await page.goto(DOUYIN_URL,timeout=300000)
             # Interact with login form
-            browser_context = await self.browser.new_context(
-                ignore_https_errors=True)
-            await browser_context.clear_cookies()
+
+
+            await self.context.clear_cookies()
             await page.locator('.login').click()
             await page.locator('.semi-button-content').click()
             if self.login_method=='phone-verify':
@@ -190,8 +179,9 @@ class DouyinUpload:
 
             # page.click('text=Submit')
             sleep(USER_WAITING_TIME)
-            storage = await browser_context.storage_state(path=self.CHANNEL_COOKIES)
-            self.context = browser_context
+            storage = await self.context.storage_state(path=self.CHANNEL_COOKIES)
+        await self.context.grant_permissions(['geolocation'])
+
         try:
             page.locator('.semi-modal-content')
             print('there is hint for 开始体验')
@@ -320,10 +310,13 @@ class DouyinUpload:
             await page.keyboard.press("Control+KeyA")
             await page.keyboard.press("Delete")
             await page.keyboard.type(location)
-            locationresultscount=await page.locator('.semi-select-option-list>div.semi-select-option').count()
-            if locationresultscount>0:
-                await page.locator('div.semi-select-option:nth-child(1)').click()
-
+            await page.keyboard.press("Enter")
+            try:
+                locationresultscount=await page.locator('.semi-select-option-list>div.semi-select-option').count()
+                if locationresultscount>0:
+                    await page.locator('div.semi-select-option:nth-child(1)').click()
+            except:
+                print('no hint for location ',location)
             self.log.debug(f'Trying to set "{location}" as location...')
 
 
@@ -366,11 +359,12 @@ class DouyinUpload:
             await page.keyboard.type(hottopic)
             # 输入准确的热点词 可以保存
             #输入的如果是提示词， 需从下拉列表中选择第一项
-
-            hottopiccount=await page.locator('.semi-select-option-list > div.semi-select-option').count()
-            if hottopiccount>0:
-                await page.locator('.semi-select-option-list div.semi-select-option:nth-child(1)').click()
-
+            try:
+                hottopiccount=await page.locator('.semi-select-option-list > div.semi-select-option').count()
+                if hottopiccount>0:
+                    await page.locator('.semi-select-option-list div.semi-select-option:nth-child(1)').click()
+            except:
+                pass
             self.log.debug(f'Trying to set "{hottopic}" as hottopic...')
 
 
@@ -390,24 +384,27 @@ class DouyinUpload:
             print('click to 选择合集')
             await page.locator(DOUYIN_HEJI_SELECT_OPTION).click()
             print('罗列已有合集')
-            hejicount=await page.locator('div.mix-dropdown>div.semi-select-option-list').count()
-            print('we found he ji count ',hejicount)
-            if hejicount==0:
-                print('pleas manual create 合集 first',heji)
-            else:
-                index=0
-                for i in hejicount:
-                    
-                    text=await page.locator('.semi-select-option-list > div.semi-select-option').nth(i).text_content()
-                    text=text.strip()
+            try:
 
-                    if text==heji:
-                        index=i
-                if index==0:
-                    print('we cannot detect this heji,pleas  create 合集 first',heji)
+                hejicount=await page.locator('div.mix-dropdown>div.semi-select-option-list').count()
+                print('we found he ji count ',hejicount)
+                if hejicount==0:
+                    print('pleas manual create 合集 first',heji)
                 else:
-                    await page.locator('.semi-select-option-list div.semi-select-option:nth-child({index})').click()
-                    
+                    index=0
+                    for i in hejicount:
+                        
+                        text=await page.locator('.semi-select-option-list > div.semi-select-option').nth(i).text_content()
+                        text=text.strip()
+
+                        if text==heji:
+                            index=i
+                    if index==0:
+                        print('we cannot detect this heji,pleas  create 合集 first',heji)
+                    else:
+                        await page.locator('.semi-select-option-list div.semi-select-option:nth-child({index})').click()
+            except:
+                print('暂无合集',heji)
 
             self.log.debug(f'Trying to set "{heji}" as heji...')
 
@@ -482,16 +479,37 @@ class DouyinUpload:
 
             await setscheduletime_douyin(page,publish_date)
             # set_time_cssSelector(page,publish_date)
-        await page.locator('button.button--1SZwR:nth-child(1)').click()
 
-        # video_id=await self.get_video_id(page)
-        video_id=''
-        # option 1 to check final upload status
+        retry_btn = r'//div[@class="word-card--1neCx"]/*[@class="text--GjPv4" and contains(text(),"重新上传")]'
+        try:
+            print('video is 100 uploading')
 
-        sleep(5)
-        logging.info("Upload is complete")
-        await self.close()
-        return True, video_id
+            page.locator(retry_btn)
+
+            print('click publish button')
+            await page.locator('//button[text()="发布"]').click()
+            video_id=''
+            print(page.url)
+            if 'https://creator.douyin.com/creator-micro/content/manage' in page.url :
+                print('提交成功:' + videopath)
+            else:
+                await page.screenshot(full_page=True)
+                print('稿件提交失败，截图记录')
+            sleep(5)
+            logging.info("Upload is complete")
+            await self.close()
+
+
+
+            return True, video_id
+        except:            
+
+            print('still uploading')
+            return True
+
+
+
+
 
     async def get_video_id(self, page) -> Optional[str]:
         video_id=None
@@ -504,6 +522,14 @@ class DouyinUpload:
 
             video_id=await video_url_element.get_attribute(HREF)
             video_id=video_id.split("/")[-1]
+
+            # if 'https://creator.douyin.com/creator-micro/content/manage' in self.driver.current_url :
+            #     print('提交成功:' + videopath)
+            #     print('Remove ' + videopath)
+            #     os.remove(videopath)
+            # else:
+            #     self.driver.save_screenshot('err.png')
+            #     print('稿件提交失败，截图记录')            
         except:
             raise VideoIDError("Could not get video ID")
 

@@ -1,0 +1,32 @@
+name: Ask question
+description: Ask ytb-up related question
+labels: [question]
+body:
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      description: |
+        Carefully read and work through this check list in order to prevent the most common mistakes and misuse of ytb-up:
+      options:
+        - label: I'm asking a question and **not** reporting a bug/feature request
+          required: true
+        - label: I've looked through the [README](https://github.com/wanghaisheng/youtube-auto-upload#readme)
+          required: true
+        - label: I've read the [guidelines for opening an issue](https://github.com/wanghaisheng/youtube-auto-upload/blob/master/CONTRIBUTING.md#opening-an-issue)
+          required: true
+        - label: I've searched the [bugtracker](https://github.com/wanghaisheng/youtube-auto-upload/issues?q=) for similar questions including closed ones
+          required: true
+  - type: textarea
+    id: question
+    attributes:
+      label: Question
+      description: |
+        Ask your question in an arbitrary form.
+        Please make sure it's worded well enough to be understood, see [is-the-description-of-the-issue-itself-sufficient](https://github.com/ytdl-org/youtube-dl#is-the-description-of-the-issue-itself-sufficient).
+        Provide any additional information and as much context and examples as possible.
+        If your question contains "isn't working" or "can you add", this is most likely the wrong template.
+        If you are in doubt if this is the right template, use another template!
+      placeholder: WRITE QUESTION HERE
+    validations:
+      required: true

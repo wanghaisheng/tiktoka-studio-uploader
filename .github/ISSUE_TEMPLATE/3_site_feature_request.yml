@@ -1,0 +1,49 @@
+name: Site feature request
+description: Request a new functionality for a supported site
+labels: [triage, site-enhancement]
+body:
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      description: |
+        Carefully read and work through this check list in order to prevent the most common mistakes and misuse of ytb-up:
+      options:
+        - label: I'm reporting a site feature request
+          required: true
+        - label: I've verified that I'm running ytb-up version **2022.05.18** ([update instructions](https://github.com/wanghaisheng/youtube-auto-upload#update)) or later (specify commit)
+          required: true
+        - label: I've checked that all provided URLs are playable in a browser with the same IP and same login details
+          required: true
+        - label: I've searched the [bugtracker](https://github.com/wanghaisheng/youtube-auto-upload/issues?q=) for similar issues including closed ones. DO NOT post duplicates
+          required: true
+        - label: I've read the [guidelines for opening an issue](https://github.com/wanghaisheng/youtube-auto-upload/blob/master/CONTRIBUTING.md#opening-an-issue)
+          required: true
+        - label: I've read about [sharing account credentials](https://github.com/wanghaisheng/youtube-auto-upload/blob/master/CONTRIBUTING.md#are-you-willing-to-share-account-details-if-needed) and I'm willing to share it if required
+  - type: input
+    id: region
+    attributes:
+      label: Region
+      description: "Enter the region the site is accessible from"
+      placeholder: "India"
+  - type: textarea
+    id: example-urls
+    attributes:
+      label: Example URLs
+      description: |
+        Detailed screen shot image or video can be used to demonstrate the requested feature
+      placeholder: |
+        https://www.youtube.com/watch?v=BaW_jenozKc
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: |
+        Provide an explanation of your site feature request in an arbitrary form.
+        Please make sure the description is worded well enough to be understood, see [is-the-description-of-the-issue-itself-sufficient](https://github.com/ytdl-org/youtube-dl#is-the-description-of-the-issue-itself-sufficient).
+        Provide any additional information, any suggested solutions, and as much context and examples as possible
+      placeholder: WRITE DESCRIPTION HERE
+    validations:
+      required: true

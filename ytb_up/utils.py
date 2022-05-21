@@ -115,13 +115,14 @@ async def setscheduletime_douyin(page, publish_date: datetime):
     # Writing date
     date_to_post=publish_date.strftime("%Y-%m-%d")
     hour_xpath=get_hour_xpath(hour_to_post)    
-    print('click date',date_to_post,publish_date_hour)
+    print('click date',str(publish_date_hour),type(publish_date_hour))
     # 2022-05-15 09:24
-    await page.locator('//html/body/div[1]/div/div[2]/div[3]/div/div/div[2]/div/div/div/div[2]/div[1]/div[12]/div[2]/div[2]/div[1]/div/div/div/input').click()
+    # await page.locator('.semi-input').click()
 
     sleep(1)
+    
     await page.keyboard.press("Control+KeyA")
-    await page.keyboard.type(date_to_post+' '+hour_to_post)
+    await page.keyboard.type(str(publish_date_hour))
     await page.keyboard.press("Enter")
 
     sleep(1)
@@ -183,8 +184,9 @@ def hour_and_date_douyin( now_date_hour):
     if minutes == 0:
         minutes='00'
     hour_to_post=f'{hour}:{minutes}'
-    
-    date_to_post=now_date_hour.strftime('%H:%M:%')
+        # 2022-05-15 09:24
+    print('now_date_hour',now_date_hour)
+    date_to_post=now_date_hour.strftime('%d/%m/%Y')
     return hour_to_post, date_to_post, now_date_hour
 
 def hour_and_date( now_date_hour):
