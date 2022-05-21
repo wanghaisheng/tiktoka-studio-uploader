@@ -49,6 +49,15 @@ https://youtu.be/Sqj0uO9VCy4
 
 ## features included in the GUI version
 
+### no limit of video counts 
+
+1000+ is easy especially for backup usage as private 
+
+###  you dont have to edit all metadata one by one
+description combine from prefix,suffix and video filename
+tags combine from preferred tags and ai based generated topic related tags
+pulish time can automatically set without any effort
+
 ### auto generate thumbnail from video hightlight
 
 you can using these as startpoint to add overlay text to make it more clickbait to get traffic
@@ -66,7 +75,7 @@ at some day if you got viral  someone will steal your content to repost over oth
 as newbie you will not want to have egg stay in one blanket.it will save your time to success
 
 ### auto set schedule time to public for each video
-
+bulk publish .
 it seems no other lib support this feature yet
 
 ### video upload in batch
