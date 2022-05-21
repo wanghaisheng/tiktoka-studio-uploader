@@ -6,7 +6,7 @@
 [![Release version](https://img.shields.io/github/v/release/wanghaisheng/youtube-auto-upload?color=brightgreen&label=Download&style=for-the-badge)](#release-files "Release")
 [![PyPi](https://img.shields.io/badge/-PyPi-blue.svg?logo=pypi&labelColor=555555&style=for-the-badge)](https://pypi.org/project/ytb-up "PyPi")
 [![Donate](https://img.shields.io/badge/_-Donate-red.svg?logo=githubsponsors&labelColor=555555&style=for-the-badge)](https://github.com/sponsors/wanghaisheng "Donate")
-[![Sponsors](https://img.shields.io/github/sponsors/wanghaisheng)]("sponsors")
+[![Sponsors](https://img.shields.io/github/sponsors/wanghaisheng)]("Sponsors")
 <!-- [![Discord](https://img.shields.io/discord/807245652072857610?color=blue&labelColor=555555&label=&logo=discord&style=for-the-badge)](https://discord.gg/xxxxx "Discord") -->
 [![Supported Sites](https://img.shields.io/badge/-Supported_Sites-brightgreen.svg?style=for-the-badge)](supportedsites.md "Supported Sites")
 [![License: Unlicense](https://img.shields.io/badge/-Unlicense-blue.svg?style=for-the-badge)](LICENSE "License")
@@ -17,6 +17,9 @@
 <!-- MANPAGE: END EXCLUDED SECTION -->
 
 
+
+**I  have released one draft version GUI to ease the usage for those non-coding guys  want a one click lazy solution  and got tested by about 5 friends you can check.sponsor me you can get the exe version on windows**
+
 [Get the early bird version  please sponsor me here](https://github.com/sponsors/wanghaisheng)
 
 or click any link you find in the repo
@@ -24,9 +27,7 @@ or click any link you find in the repo
 ![firefox_GJdnBty8d8](https://user-images.githubusercontent.com/2363295/168556947-a1c3025a-aa76-4873-9d7f-d4475712296a.png)
 
 
-
-
-**I  have released one draft version GUI for those want a one click solution  and got tested by about 5 friends you can check.sponsor me you can get the exe version on windows**
+A cross platform GUI is developing.
 
 in the future i plan to add more features like invisible watermark to protect your copyright from being theft  and cross platform publish that you may post videos not only on youtube.
 
@@ -69,6 +70,9 @@ it seems no other lib support this feature yet
 ### video upload in batch
 
 all you need is choose the video dir
+
+
+### Installed on PC, access from PC and mobile 
 
 
 ------
