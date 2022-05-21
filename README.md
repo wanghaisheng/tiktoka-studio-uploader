@@ -1,3 +1,23 @@
+<!-- MANPAGE: BEGIN EXCLUDED SECTION -->
+<div align="center">
+
+[![YT-DLP](https://raw.githubusercontent.com/wanghaisheng/youtube-auto-upload/master/assets/images.png)](#readme)
+
+[![Release version](https://img.shields.io/github/v/release/wanghaisheng/youtube-auto-upload?color=brightgreen&label=Download&style=for-the-badge)](#release-files "Release")
+[![PyPi](https://img.shields.io/badge/-PyPi-blue.svg?logo=pypi&labelColor=555555&style=for-the-badge)](https://pypi.org/project/ytb-up "PyPi")
+[![Donate](https://img.shields.io/badge/_-Donate-red.svg?logo=githubsponsors&labelColor=555555&style=for-the-badge)](Collaborators.md#collaborators "Donate")
+[![Matrix](https://img.shields.io/matrix/ytb-up:matrix.org?color=brightgreen&labelColor=555555&label=&logo=element&style=for-the-badge)](https://matrix.to/#/#ytb-up:matrix.org "Matrix")
+[![Discord](https://img.shields.io/discord/807245652072857610?color=blue&labelColor=555555&label=&logo=discord&style=for-the-badge)](https://discord.gg/xxxxx "Discord")
+[![Supported Sites](https://img.shields.io/badge/-Supported_Sites-brightgreen.svg?style=for-the-badge)](supportedsites.md "Supported Sites")
+[![License: Unlicense](https://img.shields.io/badge/-Unlicense-blue.svg?style=for-the-badge)](LICENSE "License")
+[![CI Status](https://img.shields.io/github/workflow/status/wanghaisheng/youtube-auto-upload/Core%20Tests/master?label=Tests&style=for-the-badge)](https://github.com/wanghaisheng/youtube-auto-upload/actions "CI Status")
+[![Commits](https://img.shields.io/github/commit-activity/m/wanghaisheng/youtube-auto-upload?label=commits&style=for-the-badge)](https://github.com/wanghaisheng/youtube-auto-upload/commits "Commit History")
+[![Last Commit](https://img.shields.io/github/last-commit/wanghaisheng/youtube-auto-upload/master?label=&style=for-the-badge)](https://github.com/wanghaisheng/youtube-auto-upload/commits "Commit History")
+
+</div>
+<!-- MANPAGE: END EXCLUDED SECTION -->
+
+
 [Get the early bird version  please sponsor me here](https://github.com/sponsors/wanghaisheng)
 
 or click any link you find in the repo

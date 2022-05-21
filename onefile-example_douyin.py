@@ -19,7 +19,9 @@ password = ""
 description = '========================'
 thumbnail = './9-16.jpeg'
 thumbnail = './hello.png'
-
+# video file format: pls use mp4、webm
+# douyin title format:
+# bababala #话题1 #话题2 @好友1 @好友2
 upload = DouyinUpload(
     # use r"" for paths, this will not give formatting errors e.g. "\n"
     root_profile_directory='',
