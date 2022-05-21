@@ -24,7 +24,9 @@
 
 or click any link you find in the repo
 
-![firefox_GJdnBty8d8](https://user-images.githubusercontent.com/2363295/168556947-a1c3025a-aa76-4873-9d7f-d4475712296a.png)
+![Tiktoka Uploader](https://user-images.githubusercontent.com/2363295/168556947-a1c3025a-aa76-4873-9d7f-d4475712296a.png)
+
+![Tiktoka Uploader GUI](https://raw.githubusercontent.com/wanghaisheng/youtube-auto-upload/master/assets/autovideopublisher_cCU22EfevT.png)
 
 
 A cross platform GUI is developing.
