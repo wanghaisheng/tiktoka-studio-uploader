@@ -18,9 +18,9 @@
 
 
 
-**I  have released one draft version GUI to ease the usage for those non-coding guys  want a one click lazy solution  and got tested by about 5 friends you can check.sponsor me you can get the exe version on windows**
+**I  have released one draft version GUI to ease the usage for those non-coding people that want a one click easy solution.  It's been tested by about 5 friends. You can check it. If you sponsor me you can get the exe version on Windows**
 
-[Get the early bird version  please sponsor me here](https://github.com/sponsors/wanghaisheng)
+[Get the early bird version. Please sponsor me here](https://github.com/sponsors/wanghaisheng)
 
 or click any link you find in the repo
 
@@ -29,9 +29,9 @@ or click any link you find in the repo
 ![Tiktoka Uploader GUI](https://raw.githubusercontent.com/wanghaisheng/youtube-auto-upload/master/assets/autovideopublisher_cCU22EfevT.png)
 
 
-A cross platform GUI is developing.
+A cross platform GUI is being developed.
 
-in the future i plan to add more features like invisible watermark to protect your copyright from being theft  and cross platform publish that you may post videos not only on youtube.
+In the future I plan to add more features like invisible watermark to protect your copyright from theft and cross platform publish that you may post videos not only on Youtube.
 
 
 ## video demo 
