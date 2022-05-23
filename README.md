@@ -106,14 +106,14 @@ AS a code dummy, I do accept any advice because my only purpose is to get things
 ## USAGE
 if there's anything you don't understand, just google it first, for example firefox profile
 
-1. Download lastest firefox,open new tab and insert:    
+1. Download the lastest Firefox, open a new tab and insert:    
 ```
 about:profiles
 ```
 一般来说 一个youtube帐号要新建一个profile
 文件夹可以选在assets下
 
-2.install firefox addon, **Cookie-Editor**，mannually login into Youtube channel，click profile icon, choose English language, export and save as cookie.json 
+2.install the Firefox addon, **Cookie-Editor**，mannually login into your Youtube channel，click the profile icon, choose English language, export and save as cookie.json 
 
 
 
@@ -130,14 +130,15 @@ all codes under **ytb_up**, twist them as you wish
 
 ```
 
-4. we got selenium and playwright two versions, choose as you like
-switch branch you can find that 
+4. There is a selenium and playwright version, choose the one you like
+switch branches to find it
 
 5. use existing without modification as a lib
 ```
 pip install ytb-up
 ```
 
+6. to get started edit onefile-example.py and enter in your CHANNEL_COOKIES path, videopath etc. Then run the file.
 
 # features YOU MAY NEED
 
