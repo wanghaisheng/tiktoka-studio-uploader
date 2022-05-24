@@ -1,4 +1,4 @@
-from ytb_up import *
+from ytb_up.youtube import *
 from datetime import datetime,date,timedelta
 import asyncio
 import os

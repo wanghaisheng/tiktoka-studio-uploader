@@ -40,7 +40,7 @@ class YoutubeUpload:
         self.ytb_cookies=ytb_cookies
         self.tiktok_cookies=tiktok_cookies
         self._playwright=''
-        self.browser=''
+        self.browser=None
         self.context=''
         self.page=''
         self.recordvideo=recordvideo
@@ -459,14 +459,14 @@ class YoutubeUpload:
     async  def _start_playwright(self):
         #  sync_playwright().start()
         return await  async_playwright().start()
-    async def _start_browser(self, browser: str, **kwargs):
-        if browser == "chromium":
+    async def _start_browser(self, browsertype: str, **kwargs):
+        if browsertype == "chromium":
             return await self._playwright.chromium.launch(**kwargs)
 
-        if browser == "firefox":
+        if browsertype == "firefox":
             return await self._playwright.firefox.launch(**kwargs)
 
-        if browser == "webkit":
+        if browsertype == "webkit":
             return await self._playwright.webkit.launch(**kwargs)
 
         raise RuntimeError(
@@ -477,10 +477,13 @@ class YoutubeUpload:
         self, browser: str, user_data_dir: Optional[Union[str, Path]], **kwargs
     ):
         if browser == "chromium":
+
             return await self._playwright.chromium.launch_persistent_context(
                 user_data_dir, **kwargs
             )
         if browser == "firefox":
+            self.browser=await self._playwright.firefox.launch(**kwargs)
+
             if self.recordvideo:
                 return await self._playwright.firefox.launch_persistent_context(user_data_dir,record_video_dir=os.getcwd()+os.sep+"screen-recording", **kwargs)
             else:
