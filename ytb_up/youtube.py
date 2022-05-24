@@ -13,7 +13,7 @@ from playwright.async_api import async_playwright
 
 
 
-class Upload:
+class YoutubeUpload:
     def __init__(
         self,
         root_profile_directory: str,
@@ -99,15 +99,17 @@ class Upload:
             }
 
             if not self.root_profile_directory:
+
                 self.browser = await self._start_browser("firefox", **browserLaunchOptionDict)
+                if self.recordvideo:
+                    self.context = await self.browser.new_context(record_video_dir=os.getcwd()+os.sep+"screen-recording")
+                else:
+                    self.context = await self.browser.new_context()
             else:
-                self.browser = await self._start_persistent_browser(
+                self.context = await self._start_persistent_browser(
                     "firefox", user_data_dir=self.root_profile_directory, **browserLaunchOptionDict
                 )
-            if self.recordvideo:
-                self.context = await self.browser.new_context(record_video_dir=os.getcwd()+os.sep+"screen-recording")
-            else:
-                self.context = await self.browser.new_context()
+
         else:
             print('start web page with proxy')
 
@@ -121,17 +123,19 @@ class Upload:
                 "timeout": 30000
             }
 
+
             if not self.root_profile_directory:
+
                 self.browser = await self._start_browser("firefox", **browserLaunchOptionDict)
+                if self.recordvideo:
+                    self.context = await self.browser.new_context(record_video_dir=os.getcwd()+os.sep+"screen-recording")
+                else:
+                    self.context = await self.browser.new_context()
             else:
-                self.browser = await self._start_persistent_browser(
+                self.context = await self._start_persistent_browser(
                     "firefox", user_data_dir=self.root_profile_directory, **browserLaunchOptionDict
                 )
-        # Open new page
-            if self.recordvideo:
-                self.context = await self.browser.new_context(record_video_dir="test-results")
-            else:
-                self.context = await self.browser.new_context()
+
         self.log.debug("Firefox is now running")
         page = await self.context.new_page()
         print('============tags',tags)
@@ -162,16 +166,13 @@ class Upload:
 
             await page.goto(YOUTUBE_URL,timeout=300000)
             # Interact with login form
-            browser_context = await self.browser.new_context(
-                ignore_https_errors=True)
-            await browser_context.clear_cookies()
+            await self.context.clear_cookies()
             # page.click('text=Login')
             # page.fill('input[name="login"]', USERNAME)
             # page.fill('input[name="password"]', PASSWORD)
             # page.click('text=Submit')
             sleep(USER_WAITING_TIME)
-            storage = await browser_context.storage_state(path=self.CHANNEL_COOKIES)
-            self.context = browser_context
+            storage = await self.context.storage_state(path=self.CHANNEL_COOKIES)
 
         islogin = confirm_logged_in(page)
         print('checking login status', islogin)
@@ -480,9 +481,11 @@ class Upload:
                 user_data_dir, **kwargs
             )
         if browser == "firefox":
-            return await self._playwright.firefox.launch_persistent_context(
-                user_data_dir, **kwargs
-            )
+            if self.recordvideo:
+                return await self._playwright.firefox.launch_persistent_context(user_data_dir,record_video_dir=os.getcwd()+os.sep+"screen-recording", **kwargs)
+            else:
+                return await self._playwright.firefox.launch_persistent_context(user_data_dir, **kwargs)
+
         if browser == "webkit":
             return await self._playwright.webkit.launch_persistent_context(
                 user_data_dir, **kwargs

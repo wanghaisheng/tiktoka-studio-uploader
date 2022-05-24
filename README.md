@@ -49,9 +49,10 @@ https://youtu.be/Sqj0uO9VCy4
 
 ## features included in the GUI version
 
-### no limit of video counts 
+### no limit of video counts
+you may got hundreds of historical videos or prepare 200+ viedo for new product.
 
-1000+ is easy especially for backup usage as private 
+1000+ is possible especially for backup usage as private 
 
 ###  you dont have to edit all metadata one by one
 description combine from prefix,suffix and video filename
@@ -88,7 +89,7 @@ all you need is choose the video dir
 
 ------
 
-This project aims to automate the upload process for YouTube Videos. Since videos can only be publicly uploaded through the YouTube Data API by using a Google Workspaces Account (not free!), I decided to figure out a headless uploader using Selenium. This approach also bypasses API restrictions (e.g. Rate Limits/Endcards can't be set through the API).There are tons of library existing  but not for me .
+This project aims to automate the upload process for YouTube Videos. Since videos can only be publicly uploaded through the YouTube Data API by using a Google Workspaces Account (not free!), I decided to figure out a headless uploader using Selenium and Playwright. This approach also bypasses API restrictions (e.g. Rate Limits/Endcards can't be set through the API).There are tons of library existing  but not for me .
 
 AS a code dummy,I do accept any advice because of my only purpose is to get things work
 

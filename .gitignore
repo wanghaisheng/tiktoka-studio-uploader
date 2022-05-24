@@ -3,9 +3,10 @@
 ytb.db
 geckodriver.log
 main.spec
-ytb_up.egg-info
+/ytb_up.egg-info/*
 /build/*
 /dist/*
 example.py
 /test-results/*
 screen-recording/*
+/ytb_up/__pycache__/*

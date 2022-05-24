@@ -19,9 +19,9 @@ password = ""
 description = '========================'
 driverpath = r'D:\Download\audio-visual\make-reddit-video\autovideo\assets\driver\geckodriver-v0.30.0-win64\geckodriver.exe'
 thumbnail = r'D:\Download\audio-visual\make-reddit-video\reddit-to-video\assets\ace\ace-attorney_feature.jpg'
-upload = Upload(
+upload = YoutubeUpload(
     # use r"" for paths, this will not give formatting errors e.g. "\n"
-    root_profile_directory='',
+    root_profile_directory=profilepath,
     proxy_option=proxy_option,
     watcheveryuploadstep=True,
     # if you want to silent background running, set watcheveryuploadstep false
