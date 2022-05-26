@@ -1,5 +1,4 @@
 name: "Describe yourself"
-fields:
 - type: "textarea"
   attributes:
     label: "Username"
