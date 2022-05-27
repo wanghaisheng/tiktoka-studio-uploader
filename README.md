@@ -49,42 +49,40 @@ https://youtu.be/Sqj0uO9VCy4
 
 ## features included in the GUI version
 
-### no limit of video counts
-you may got hundreds of historical videos or prepare 200+ viedo for new product.
+* → no limit of video counts
 
-1000+ is possible especially for backup usage as private 
+you may got hundreds of historical videos or prepare 200+ video for new product.
 
-###  you don't have to edit all metadata one by one
-description combine from prefix, suffix and video filename
-tags combine from preferred tags and ai based generated topic related tags
-pulish time can automatically set without any effort
+1000+ is possible especially for archive or backup usage as private
 
-### auto generate thumbnail from video hightlight
+* → you don't have to edit all metadata one by one
 
-you can using these as startpoint to add overlay text to make it more clickbait to get traffic
+Full description combine from prefix, suffix and video filename tags combine from preferred tags and AI based generated topic related tags publish time can automatically set without any effort
 
-### auto add Free copyright music 
+* → auto generate thumbnail from video highlight
 
+you can using these as starting point to add overlay text to make it more click-bait to get traffic
+
+* → auto generate Tags from AI
+It can detect keywords search and  existing video gaps in your niche and generate suggestions. 
+
+* → auto add Free copyright music
 some music is the secret weapon to traffic, you need dig it by yourself.and also not to share with others
-
-### invisible watermark
-
-at some day if you got viral  someone will steal your content to repost over other platform, cut off your logo or other visible watermark,with this invisible/hidden watermark technology, you can hardless lost the battle
-
-### multi-account and multi-channel under one account
-
+* → invisible watermark
+at some day if you got viral someone will steal your content to re-post over other platform, cut off your logo or other visible watermark,with this invisible/hidden watermark technology, you can hardly lost the battle
+* → multi-account and multi-channel under one account
 as a newbie you will not want to be limited to only using one account. It will save your time to success
+* → auto set schedule time to public for each video
+bulk publish. it seems no other lib supports this feature yet
+you can explicitly specify a date and time for each video or you can set publish policy and daily public count, for example, daily count is 4, you got 5 videos, then first 4 will be published 1 day after the upload date, the other 1 will be 2 days after the upload date
 
-### auto set schedule time to public for each video
-bulk publish.
-it seems no other lib supports this feature yet
-
-### video upload in batch
-
+* → video upload in batch
+for those who want a one click setting and went to bed ,get jobs all  done after wake up in th morning
 all you need is choose the video directory
+* → Installed on PC, access from PC and mobile
 
+We'd love to hear your feedback on our new feature! 😊
 
-### Installed on PC, access from PC and mobile 
 
 
 ------
