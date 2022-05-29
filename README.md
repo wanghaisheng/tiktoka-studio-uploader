@@ -59,6 +59,10 @@ you may got hundreds of historical videos or prepare 200+ video for new product.
 
 1000+ is possible especially for archive or backup usage as private
 
+does this uploader (gui version specifically) bypass the youtube upload limit of 100 uploads per day? could it do 10k uploads in a day?
+No.be aware of that this is automation instead of crack tech.If it can be done,definitely be flagged as spam and you lost your account ,that is not the price you want to pay
+all of automation task are meant to act like human but ease your boring hand work
+
 * → you don't have to edit all metadata one by one
 
 Full description combine from prefix, suffix and video filename tags combine from preferred tags and AI based generated topic related tags publish time can automatically set without any effort
