@@ -63,6 +63,9 @@ does this uploader (gui version specifically) bypass the youtube upload limit of
 No.be aware of that this is automation instead of crack tech.If it can be done,definitely be flagged as spam and you lost your account ,that is not the price you want to pay
 all of automation task are meant to act like human but ease your boring hand work
 
+![image](https://user-images.githubusercontent.com/2363295/170889182-e3a12d5f-d1cb-45db-93a0-2ce8e405c9d1.png)
+
+
 * → you don't have to edit all metadata one by one
 
 Full description combine from prefix, suffix and video filename tags combine from preferred tags and AI based generated topic related tags publish time can automatically set without any effort
