@@ -1,0 +1,55 @@
+name: "Describe yourself"
+body:
+- type: "textarea"
+  attributes:
+    label: "Username"
+    description: "First name and Lastname"
+  validations:
+    required: true
+- type: "textarea"
+  attributes:
+    label: "UseCase"
+    description: "The problem you encounter and the pain point you are trying to fix "
+  validations:
+    required: true
+- type: "textarea"
+  attributes:
+    label: "Requirements"
+    description: "What did you expect to ?"
+    placeholder: "I want to schedule publish my archive videos in local drive in one batch instead of being spammed\nI want to publish video to tiktok when upload to youtube daily"
+  validations:
+    required: true
+- type: "checkboxes"
+  attributes:
+    label: "Service"
+    description: "choose one or more"
+    options:
+    - label: "Tiktok to Youtube"
+      required: false
+    - label: "Youtube to Tiktok"
+      required: false
+    - label: "Twitch to Youtube"
+      required: false
+    - label: "Youtube to Podcast"
+      required: false
+  validations:
+    required: false
+- type: "checkboxes"
+  attributes:
+    label: "Plugins"
+    description: "which one  attracting you"
+    options:
+    - label: "AI generated thumbnail and resize"
+      required: false
+    - label: "AI generated tags"
+      required: false
+    - label: "Auto cut silence in video especially live streaming"
+      required: false
+    - label: "invisible watermark"
+      required: false
+    - label: "auto generated subtitles"
+      required: false
+    - label: "multi langague subtitle translation"
+      required: false
+  validations:
+    required: false

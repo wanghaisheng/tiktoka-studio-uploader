@@ -17,8 +17,16 @@
 <!-- MANPAGE: END EXCLUDED SECTION -->
 
 
+just launched on product hunt 
+
+<a href="https://www.producthunt.com/posts/tiktoka-studio?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-tiktoka&#0045;studio" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=347723&theme=light" alt="Tiktoka&#0032;Studio - one&#0032;in&#0032;all&#0032;toolbox&#0032;for&#0032;social&#0032;media&#0032;video&#0032;publish | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
+
 
 **I  have released one draft version of a GUI version to make the usage for those non-coding people that want a one click easy solution.  It's been tested by about 5 friends. You can check it out if you sponsor me. You can get the exe version on Windows**
+
+please DM me at tiktokadownloader@gmail.com after sponsor, I have not find a proper way to automatically to send the package yet
+
+
 
 [Get the early bird version. Please sponsor me here](https://github.com/sponsors/wanghaisheng)
 
@@ -49,42 +57,48 @@ https://youtu.be/Sqj0uO9VCy4
 
 ## features included in the GUI version
 
-### no limit of video counts
-you may got hundreds of historical videos or prepare 200+ viedo for new product.
+* → no limit of video counts
 
-1000+ is possible especially for backup usage as private 
+you may got hundreds of historical videos or prepare 200+ video for new product.
 
-###  you don't have to edit all metadata one by one
-description combine from prefix, suffix and video filename
-tags combine from preferred tags and ai based generated topic related tags
-pulish time can automatically set without any effort
+1000+ is possible especially for archive or backup usage as private
 
-### auto generate thumbnail from video hightlight
+**does this uploader (gui version specifically) bypass the youtube upload limit of 100 uploads per day? could it do 10k uploads in a day?**
 
-you can using these as startpoint to add overlay text to make it more clickbait to get traffic
+No.be aware of that this is automation instead of crack thing.If it can be done,definitely would be flagged as spam and you lost your account ,that is not the price you want to pay
+all of automation task are meant to act like human but ease your boring hand work
 
-### auto add Free copyright music 
+![image](https://user-images.githubusercontent.com/2363295/170889182-e3a12d5f-d1cb-45db-93a0-2ce8e405c9d1.png)
 
+
+* → you don't have to edit all metadata one by one
+
+Full description combine from prefix, suffix and video filename tags combine from preferred tags and AI based generated topic related tags publish time can automatically set without any effort
+
+* → auto generate thumbnail from video highlight
+
+you can using these as starting point to add overlay text to make it more click-bait to get traffic
+
+* → auto generate Tags from AI
+It can detect keywords search and  existing video gaps in your niche and generate suggestions. 
+
+* → auto add Free copyright music
 some music is the secret weapon to traffic, you need dig it by yourself.and also not to share with others
-
-### invisible watermark
-
-at some day if you got viral  someone will steal your content to repost over other platform, cut off your logo or other visible watermark,with this invisible/hidden watermark technology, you can hardless lost the battle
-
-### multi-account and multi-channel under one account
-
+* → invisible watermark
+at some day if you got viral someone will steal your content to re-post over other platform, cut off your logo or other visible watermark,with this invisible/hidden watermark technology, you can hardly lost the battle
+* → multi-account and multi-channel under one account
 as a newbie you will not want to be limited to only using one account. It will save your time to success
+* → auto set schedule time to public for each video
+bulk publish. it seems no other lib supports this feature yet
+you can explicitly specify a date and time for each video or you can set publish policy and daily public count, for example, daily count is 4, you got 5 videos, then first 4 will be published 1 day after the upload date, the other 1 will be 2 days after the upload date
 
-### auto set schedule time to public for each video
-bulk publish.
-it seems no other lib supports this feature yet
-
-### video upload in batch
-
+* → video upload in batch
+for those who want a one click setting and went to bed ,get jobs all  done after wake up in th morning
 all you need is choose the video directory
+* → Installed on PC, access from PC and mobile
 
+We'd love to hear your feedback on our new feature! 😊
 
-### Installed on PC, access from PC and mobile 
 
 
 ------
@@ -182,5 +196,8 @@ THANKS TO
 # 7. Join Online video chat and easily share your desktop for debugging your issues with me
 
 https://vdo.ninja/?room=Youtube_Auto_Upload&broadcast
+
+
+https://api.ossinsight.io/share/6c3c07e5-1957-4ecb-b0eb-30799badfd1b
 
 
