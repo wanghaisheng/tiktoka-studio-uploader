@@ -24,6 +24,10 @@ just launched on product hunt
 
 **I  have released one draft version of a GUI version to make the usage for those non-coding people that want a one click easy solution.  It's been tested by about 5 friends. You can check it out if you sponsor me. You can get the exe version on Windows**
 
+please DM me at tiktokadownloader@gmail.com after sponsor, I have not find a proper way to automatically to send the package yet
+
+
+
 [Get the early bird version. Please sponsor me here](https://github.com/sponsors/wanghaisheng)
 
 or click any link you find in the repo
