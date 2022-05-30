@@ -82,7 +82,6 @@ class DouyinUpload:
             #     browser = p.chromium.launch()
 
         # proxy_option = "socks5://127.0.0.1:1080"
-
         headless=True
         if self.watcheveryuploadstep:
             headless=False
@@ -97,15 +96,17 @@ class DouyinUpload:
             }
 
             if not self.root_profile_directory:
+
                 self.browser = await self._start_browser("firefox", **browserLaunchOptionDict)
+                if self.recordvideo:
+                    self.context = await self.browser.new_context(record_video_dir=os.getcwd()+os.sep+"screen-recording")
+                else:
+                    self.context = await self.browser.new_context()
             else:
-                self.browser = await self._start_persistent_browser(
+                self.context = await self._start_persistent_browser(
                     "firefox", user_data_dir=self.root_profile_directory, **browserLaunchOptionDict
                 )
-            if self.recordvideo:
-                self.context = await self.browser.new_context(record_video_dir=os.getcwd()+os.sep+"screen-recording")
-            else:
-                self.context = await self.browser.new_context()
+
         else:
             print('start web page with proxy')
 
@@ -119,17 +120,19 @@ class DouyinUpload:
                 "timeout": 30000
             }
 
+
             if not self.root_profile_directory:
+
                 self.browser = await self._start_browser("firefox", **browserLaunchOptionDict)
+                if self.recordvideo:
+                    self.context = await self.browser.new_context(record_video_dir=os.getcwd()+os.sep+"screen-recording")
+                else:
+                    self.context = await self.browser.new_context()
             else:
-                self.browser = await self._start_persistent_browser(
+                self.context = await self._start_persistent_browser(
                     "firefox", user_data_dir=self.root_profile_directory, **browserLaunchOptionDict
                 )
-        # Open new page
-            if self.recordvideo:
-                self.context = await self.browser.new_context(record_video_dir="test-results")
-            else:
-                self.context = await self.browser.new_context()
+
         self.log.debug("Firefox is now running")
         await self.context.grant_permissions(['geolocation'])
         page = await self.context.new_page()
@@ -172,7 +175,7 @@ class DouyinUpload:
                 time.sleep(10)
                 await page.fill('.semi-input-wrapper__with-prefix', self.username)
                 await page.fill('div.semi-form-field:nth-child(2)>div>div>input', self.password)
-                await page.locaotr('.agreement >img').click()                
+                await page.locator('.agreement >img').click()                
             elif   self.login_method=='qrcode':
                 print('pls open douyin to scan this qrcode')
                 time.sleep(30)
@@ -539,14 +542,20 @@ class DouyinUpload:
     async  def _start_playwright(self):
         #  sync_playwright().start()
         return await  async_playwright().start()
-    async def _start_browser(self, browser: str, **kwargs):
-        if browser == "chromium":
+    async def _start_browser(self, browsertype: str, **kwargs):
+        if browsertype == "chromium":
             return await self._playwright.chromium.launch(**kwargs)
 
-        if browser == "firefox":
-            return await self._playwright.firefox.launch(**kwargs)
+        if browsertype == "firefox":
+            # return await self._playwright.firefox.launch(**kwargs)
+            if self.recordvideo:
+                return await self._playwright.firefox.launch(record_video_dir=os.path.abspath('')+os.sep+"screen-recording", **kwargs)
+            else:
+                return await self._playwright.firefox.launch( **kwargs)
 
-        if browser == "webkit":
+
+
+        if browsertype == "webkit":
             return await self._playwright.webkit.launch(**kwargs)
 
         raise RuntimeError(
@@ -557,13 +566,18 @@ class DouyinUpload:
         self, browser: str, user_data_dir: Optional[Union[str, Path]], **kwargs
     ):
         if browser == "chromium":
+
             return await self._playwright.chromium.launch_persistent_context(
                 user_data_dir, **kwargs
             )
         if browser == "firefox":
-            return await self._playwright.firefox.launch_persistent_context(
-                user_data_dir, **kwargs
-            )
+            self.browser=await self._playwright.firefox.launch(**kwargs)
+
+            if self.recordvideo:
+                return await self._playwright.firefox.launch_persistent_context(user_data_dir,record_video_dir=os.path.abspath('')+os.sep+"screen-recording", **kwargs)
+            else:
+                return await self._playwright.firefox.launch_persistent_context(user_data_dir, **kwargs)
+
         if browser == "webkit":
             return await self._playwright.webkit.launch_persistent_context(
                 user_data_dir, **kwargs

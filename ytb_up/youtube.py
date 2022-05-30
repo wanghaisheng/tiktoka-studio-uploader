@@ -219,25 +219,44 @@ class YoutubeUpload:
                 await page.set_input_files(INPUT_FILE_VIDEO, videopath.encode('utf-8'))
         sleep(self.timeout)
         textbox=page.locator(TEXTBOX)
-        # accountcheck=await textbox.is_editable()
-        # if not accountcheck:
+        self.log.debug(f'Trying to detect verify...')
+    #     <h1 slot="primary-header" id="dialog-title" class="style-scope ytcp-confirmation-dialog">
+    #   Verify it's you
+    # </h1>
+        hint=await page.locator('#dialog-title').text_content()
+        if "Verify it's you" in hint:
 
 # fix google account verify
-        try:
+            print('verify its you')
+            # await page.click('text=Login')
+            # time.sleep(60)
+            # await page.locator('#confirm-button > div:nth-child(2)').click()
+            await page.goto('https://accounts.google.com/signin/v2/identifier?service=youtube&uilel=3&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Ddesktop%26next%3Dhttps%253A%252F%252Fstudio.youtube.com%252Freauth%26feature%3Dreauth%26authuser%3D3%26pageid%3D106691143538188646876%26skip_identity_prompt%3Dtrue&hl=en&authuser=3&rart=ANgoxcd6AUvx_ynaUmq5M6nROFwTagKglTZqT8c97xb1AEzoDasGeJ14cNlvYfH1_mJsl7us_sFLNGJskNrJyjMaIE2KklrO7Q&flowName=GlifWebSignIn&flowEntry=ServiceLogin')
+            page.locator('#identifierId')
+            print('input username or email')
 
-            while True:
-                check = page.locator('//*[@id="dialog-title"]')
-                self.log.debug(f'found to YouTube account check')
-                # sleep(60)
-                # await verify(self,page)
-                # await page.goto(YOUTUBE_UPLOAD_URL)
-                x_path = '//*[@id="textbox"]'
-                if page.locator(x_path):
-                    self.log.debug(f'fix  YouTube account check')
-                    break
+            # <div class="rFrNMe N3Hzgf jjwyfe QBQrY zKHdkd sdJrJc Tyc9J" jscontroller="pxq3x" jsaction="clickonly:KjsqPd; focus:Jt1EX; blur:fpfTEe; input:Lg5SV" jsshadow="" jsname="Vsb5Ub"><div class="aCsJod oJeWuf"><div class="aXBtI Wic03c"><div class="Xb9hP"><input type="email" class="whsOnd zHQkBf" jsname="YPqjbf" autocomplete="username" spellcheck="false" tabindex="0" aria-label="Email or phone" name="identifier" autocapitalize="none" id="identifierId" dir="ltr" data-initial-dir="ltr" data-initial-value=""><div jsname="YRMmle" class="AxOyFc snByac" aria-hidden="true">Email or phone</div></div><div class="i9lrp mIZh1c"></div><div jsname="XmnwAc" class="OabDMe cXrdqd Y2Zypf"></div></div></div><div class="LXRPh"><div jsname="ty6ygf" class="ovnfwe Is7Fhb"></div><div jsname="B34EJ" class="dEOOab RxsGPe" aria-atomic="true" aria-live="assertive"></div></div></div>
 
-        except:
-            sleep(1)
+            await page.fill('input[name="identifier"]', self.username)
+
+            await page.locator('.VfPpkd-LgbsSe-OWXEXe-k8QpJ > span:nth-child(4)').click()
+            time.sleep(10)
+
+            await page.fill('input[name="password"]', self.password)
+            time.sleep(10)
+
+            await page.locator('.VfPpkd-LgbsSe-OWXEXe-k8QpJ > span:nth-child(4)').click()
+            # await page.click('text=Submit')
+
+            Stephint=await page.locator('.bCAAsb > form:nth-child(1) > span:nth-child(1) > section:nth-child(1) > header:nth-child(1) > div:nth-child(1)').text_content()
+            print(Stephint)
+            if "2-Step Verification" in Stephint:            
+# <div class="L9iFZc" role="presentation" jsname="NjaE2c"><h2 class="kV95Wc TrZEUc"><span jsslot="" jsname="Ud7fr">2-Step Verification</span></h2><div class="yMb59d" jsname="HSrbLb" aria-hidden="true"></div></div>            
+            # <span jsslot="" jsname="Ud7fr">2-Step Verification</span>
+                print('you need google auth and sms very code')
+                time.sleep(60)
+            # await page.locator('#confirm-button > div:nth-child(2)').click()
+                await page.goto(YOUTUBE_UPLOAD_URL)
 
         #confirm-button > div:nth-child(2)
         # # Catch max uploads/day limit errors
@@ -245,6 +264,16 @@ class YoutubeUpload:
         #     error_short_by_xpath=page.locator(ERROR_SHORT_XPATH)
         #     # print(f"ERROR: {error_short_by_xpath.text} {self.cookie_working_dir}")
         #     return False
+        try:
+            daylimit=await self.page.is_visible(ERROR_SHORT_XPATH)
+                
+            print('catch daily limit,pls try tomorrow',daylimit)
+            if daylimit:
+                self.close()
+        except:
+            pass
+
+
 
         self.log.debug(f'Trying to set "{title}" as title...')
 
@@ -465,6 +494,12 @@ class YoutubeUpload:
 
         if browsertype == "firefox":
             return await self._playwright.firefox.launch(**kwargs)
+            # if self.recordvideo:
+            #     return await self._playwright.firefox.launch(record_video_dir=os.path.abspath('')+os.sep+"screen-recording", **kwargs)
+            # else:
+            #     return await self._playwright.firefox.launch( **kwargs)
+
+
 
         if browsertype == "webkit":
             return await self._playwright.webkit.launch(**kwargs)
@@ -485,7 +520,7 @@ class YoutubeUpload:
             self.browser=await self._playwright.firefox.launch(**kwargs)
 
             if self.recordvideo:
-                return await self._playwright.firefox.launch_persistent_context(user_data_dir,record_video_dir=os.getcwd()+os.sep+"screen-recording", **kwargs)
+                return await self._playwright.firefox.launch_persistent_context(user_data_dir,record_video_dir=os.path.abspath('')+os.sep+"screen-recording", **kwargs)
             else:
                 return await self._playwright.firefox.launch_persistent_context(user_data_dir, **kwargs)
 

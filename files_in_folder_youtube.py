@@ -2,6 +2,7 @@ from ytb_up.youtube import *
 from datetime import datetime,date,timedelta
 import asyncio
 import os
+import calendar
 ##prepare video and thumbnail with the same filename in pair, for example, 
 # -1.mp4 
 # -1.jpg
@@ -37,15 +38,18 @@ def check_video_thumb_pair(folder):
                     if ext in ('.mp4'):
                     # if ext in ('.flv', '.mp4', '.avi'):
 
-                        for image_ext in ('.jpeg', '.png', '.jpg'):
+                        for image_ext in ('.jpeg', '.png','.webp', '.jpg'):
                             videopath = os.path.join(r, entry.name)
                             thumbpath = os.path.join(r, filename+image_ext)
-
+                            title=''
+                            with open(folder+os.sep+filename+'.description','r',encoding='utf8') as f:
+                                title=f.read()
+                            
                             if os.path.exists(thumbpath):     
                                 video={
                                 "thumbpath":thumbpath,
                                 "videopath":videopath,
-                                "filename":filename
+                                "filename":title
 
                                 }  
                                 videofiles.append(video)                 
@@ -60,20 +64,30 @@ def check_video_thumb_pair(folder):
 
 
 
-profilepath = r'D:\Download\audio-visual\make-reddit-video\auddit\assets\profile\aww'
-CHANNEL_COOKIES = r'D:\Download\audio-visual\make-reddit-video\auddit\assets\cookies\aww.json'
+profilepath = ''
+CHANNEL_COOKIES = r'D:\Download\audio-visual\saas\capcut\tiktok-videos\cookie.json'
 
-videofolder = r'D:\Download\audio-visual\objection_engine'
-prefertags = ['ba,baaa,bababa']
+videofolder = r'D:\Download\audio-visual\saas\capcut\tiktok-videos\videos'
+prefertags = []
 publish_date = ''
 proxy_option = "socks5://127.0.0.1:1080"
 username = "antivte"
 password = ""
-description = '========================'
+description = """
+========================
+Here is the CapCut University
+ 
+CapCut is one of the most popular video editing apps for iPhone & Android right now. While it is from the same company behind TikTok (ByteDance), it’s not JUST a TikTok video editor - you can easily use it to create great videos on your smartphone for YouTube, Facebook, or any other use case!
+
+
+
+
+
+Are you looking for a free video editing tool? This channel will teach you how to edit videos using the free mobile app, CapCut. Many people use the app to edit videos for TikTok, but the opportunities are endless! We will outline most of the more popular and essential features. These range from basic editing tricks, including how to navigate the app, to more unique features such as adding background music and filters.
+
+"""
 #you can set prefered description
 
-driverpath = r'D:\Download\audio-visual\make-reddit-video\autovideo\assets\driver\geckodriver-v0.30.0-win64\geckodriver.exe'
-thumbnail = r'D:\Download\audio-visual\make-reddit-video\auddit\assets\ace\ace-attorney_feature.jpg'
 upload = YoutubeUpload(
     # use r"" for paths, this will not give formatting errors e.g. "\n"
     root_profile_directory='',
@@ -82,11 +96,13 @@ upload = YoutubeUpload(
     CHANNEL_COOKIES=CHANNEL_COOKIES,
     username=username,
     password=password,
+    recordvideo=True
+    
 )
 today = date.today()
 publish_date=''
 setting={}
-setting['dailycount']=20
+setting['dailycount']=4
 
 def scheduletopublish_tomorrow(videopath,thumbpath,filename):
         # mode a:release_offset exist,publishdate exist will take date value as a starting date to schedule videos
@@ -132,14 +148,14 @@ def scheduletopublish_7dayslater(videopath,thumbpath,filename):
 
 
 
-def scheduletopublish_specific_date(videopath,thumbpath,filename):
+def scheduletopublish_specific_date(videopath,thumbpath,filename,publish_date):
         # mode a:release_offset exist,publishdate exist will take date value as a starting date to schedule videos
         # mode b:release_offset not exist, publishdate exist , schedule to this specific date
         # mode c:release_offset not exist, publishdate not exist,daily count to increment schedule from tomorrow
         # mode d: offset exist, publish date not exist, daily count to increment with specific offset schedule from tomorrow         
-    publish_date = datetime(today.year, today.month, today.day, 10, 15)
+    # publish_date = datetime(today.year, today.month, today.day, 10, 15)
     #if you want tomorrow ,just change 7 to 1
-    publish_date += timedelta(days=3)
+    # publish_date += timedelta(days=3)
     # publish_date = datetime.strftime(publish_date, "%Y-%m-%d %H:%M:%S")
     asyncio.run(upload.upload(
         videopath,
@@ -156,16 +172,39 @@ def scheduletopublish_specific_date(videopath,thumbpath,filename):
 
 videofiles=check_video_thumb_pair(videofolder)
 videocount=len(videofiles)
+maxdays=calendar._monthlen(today.year, today.month)
 
 for i in range(videocount):
-    if i <int(setting['dailycount']):
-        publish_date =datetime(today.year, today.month, today.day+1, 20, 15)
+    monthoffset=int(int(i)/maxdays)
+    startingday=today.day
+    dayoffset=int(int(i)/int(setting['dailycount']))
+    if today.day+1>maxdays:
+        monthoffset=1
+        startingday=today.day+1-maxdays
+    publish_date =datetime(today.year, today.month+monthoffset, startingday+1+dayoffset, 20, 15)
 
+
+    # scheduletopublish_tomorrow(videofiles[i]['videopath'],videofiles[i]['thumbpath'],videofiles[i]['filename'])
+    # scheduletopublish_7dayslater(videofiles[i]['videopath'],videofiles[i]['thumbpath'],videofiles[i]['filename'])
+    data=[]
+    if os.path.exists('done.txt') and os.path.getsize('done.txt')>0:
+        with open('done.txt','r',encoding='utf8') as fr:
+            data=fr.readlines()
+            fr.close()
     else:
-
-        publish_date = datetime(today.year, today.month+int(int(i)/30), today.day+1+int(int(i)/int(setting['dailycount'])), 20, 15)
-    scheduletopublish_tomorrow(videofiles[i]['videopath'],videofiles[i]['thumbpath'],videofiles[i]['filename'])
-    scheduletopublish_7dayslater(videofiles[i]['videopath'],videofiles[i]['thumbpath'],videofiles[i]['filename'])
+        with open('done.txt','a',encoding='utf8') as f:
+            f.write('')        
+            f.close()
+    if not videofiles[i]['videopath'] in data:
+        scheduletopublish_specific_date(videofiles[i]['videopath'],videofiles[i]['thumbpath'],videofiles[i]['filename'],publish_date)
+        with open('done.txt','a',encoding='utf8') as f:
+            f.write(videofiles[i]['videopath']+'\r')
+            f.close()
+    #here we use video filename as video title, 
+    # in the later gui you can set title prefix/suffix added to filename,des prefix/suffix added to prefer description for channel
+    # and also tags too
+    # scheduletopublish_tomorrow(videofiles[i]['videopath'],videofiles[i]['thumbpath'],videofiles[i]['filename'])
+    # scheduletopublish_7dayslater(videofiles[i]['videopath'],videofiles[i]['thumbpath'],videofiles[i]['filename'])
     scheduletopublish_specific_date(videofiles[i]['videopath'],videofiles[i]['thumbpath'],videofiles[i]['filename'])
 
     #here we use video filename as video title, 

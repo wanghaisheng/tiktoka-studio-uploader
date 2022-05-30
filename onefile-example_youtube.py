@@ -2,8 +2,9 @@ from ytb_up.youtube import *
 from datetime import datetime,date,timedelta
 import asyncio
 
-profilepath = r'D:\Download\audio-visual\make-text-video\reddit-to-video\assets\profile\aww'
+profilepath = r'D:\Download\audio-visual\make-text-video\reddit-to-video\assets\profile\fastlane'
 CHANNEL_COOKIES = r'D:\Download\audio-visual\make-text-video\reddit-to-video\assets\cookies\aww.json'
+CHANNEL_COOKIES = r'D:\Download\audio-visual\make-text-video\reddit-to-video\assets\cookies\fastlane.json'
 
 videopath = r'D:\Download\audio-visual\objection_engine\hello.mp4'
 tags = ['ba,baaa,bababa']
@@ -14,14 +15,14 @@ proxy_option = "socks5://127.0.0.1:1080"
 # for cookie issue,
 title = 'bababala'
 title=title[:95]
-username = "antivte"
-password = ""
+username = "edwin.uestc@gmail.com"
+password = "U437P8Is9prmNquVerHJ9%R00b"
 description = '========================'
 driverpath = r'D:\Download\audio-visual\make-reddit-video\autovideo\assets\driver\geckodriver-v0.30.0-win64\geckodriver.exe'
 thumbnail = r'D:\Download\audio-visual\make-reddit-video\reddit-to-video\assets\ace\ace-attorney_feature.jpg'
 upload = YoutubeUpload(
     # use r"" for paths, this will not give formatting errors e.g. "\n"
-    root_profile_directory=profilepath,
+    root_profile_directory='',
     proxy_option=proxy_option,
     watcheveryuploadstep=True,
     # if you want to silent background running, set watcheveryuploadstep false
