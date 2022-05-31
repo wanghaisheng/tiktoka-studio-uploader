@@ -95,7 +95,7 @@ class YoutubeUpload:
             browserLaunchOptionDict = {
                 "headless": headless,
                 # "executable_path": executable_path,
-                "timeout": 30000
+                "timeout": 300000
             }
 
             if not self.root_profile_directory:
@@ -120,7 +120,7 @@ class YoutubeUpload:
                 },
 
                 # timeout <float> Maximum time in milliseconds to wait for the browser instance to start. Defaults to 30000 (30 seconds). Pass 0 to disable timeout.#
-                "timeout": 30000
+                "timeout": 300000
             }
 
 
@@ -219,45 +219,48 @@ class YoutubeUpload:
                 await page.set_input_files(INPUT_FILE_VIDEO, videopath.encode('utf-8'))
         sleep(self.timeout)
         textbox=page.locator(TEXTBOX)
-        self.log.debug(f'Trying to detect verify...')
     #     <h1 slot="primary-header" id="dialog-title" class="style-scope ytcp-confirmation-dialog">
     #   Verify it's you
     # </h1>
-        hint=await page.locator('#dialog-title').text_content()
-        if "Verify it's you" in hint:
+        try:
+            self.log.debug(f'Trying to detect verify...')
+           
+            hint=await page.locator('#dialog-title').text_content()
+            if "Verify it's you" in hint:
 
-# fix google account verify
-            print('verify its you')
-            # await page.click('text=Login')
-            # time.sleep(60)
-            # await page.locator('#confirm-button > div:nth-child(2)').click()
-            await page.goto('https://accounts.google.com/signin/v2/identifier?service=youtube&uilel=3&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Ddesktop%26next%3Dhttps%253A%252F%252Fstudio.youtube.com%252Freauth%26feature%3Dreauth%26authuser%3D3%26pageid%3D106691143538188646876%26skip_identity_prompt%3Dtrue&hl=en&authuser=3&rart=ANgoxcd6AUvx_ynaUmq5M6nROFwTagKglTZqT8c97xb1AEzoDasGeJ14cNlvYfH1_mJsl7us_sFLNGJskNrJyjMaIE2KklrO7Q&flowName=GlifWebSignIn&flowEntry=ServiceLogin')
-            page.locator('#identifierId')
-            print('input username or email')
+    # fix google account verify
+                print('verify its you')
+                # await page.click('text=Login')
+                # time.sleep(60)
+                # await page.locator('#confirm-button > div:nth-child(2)').click()
+                await page.goto('https://accounts.google.com/signin/v2/identifier?service=youtube&uilel=3&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Ddesktop%26next%3Dhttps%253A%252F%252Fstudio.youtube.com%252Freauth%26feature%3Dreauth%26authuser%3D3%26pageid%3D106691143538188646876%26skip_identity_prompt%3Dtrue&hl=en&authuser=3&rart=ANgoxcd6AUvx_ynaUmq5M6nROFwTagKglTZqT8c97xb1AEzoDasGeJ14cNlvYfH1_mJsl7us_sFLNGJskNrJyjMaIE2KklrO7Q&flowName=GlifWebSignIn&flowEntry=ServiceLogin')
+                page.locator('#identifierId')
+                print('input username or email')
 
-            # <div class="rFrNMe N3Hzgf jjwyfe QBQrY zKHdkd sdJrJc Tyc9J" jscontroller="pxq3x" jsaction="clickonly:KjsqPd; focus:Jt1EX; blur:fpfTEe; input:Lg5SV" jsshadow="" jsname="Vsb5Ub"><div class="aCsJod oJeWuf"><div class="aXBtI Wic03c"><div class="Xb9hP"><input type="email" class="whsOnd zHQkBf" jsname="YPqjbf" autocomplete="username" spellcheck="false" tabindex="0" aria-label="Email or phone" name="identifier" autocapitalize="none" id="identifierId" dir="ltr" data-initial-dir="ltr" data-initial-value=""><div jsname="YRMmle" class="AxOyFc snByac" aria-hidden="true">Email or phone</div></div><div class="i9lrp mIZh1c"></div><div jsname="XmnwAc" class="OabDMe cXrdqd Y2Zypf"></div></div></div><div class="LXRPh"><div jsname="ty6ygf" class="ovnfwe Is7Fhb"></div><div jsname="B34EJ" class="dEOOab RxsGPe" aria-atomic="true" aria-live="assertive"></div></div></div>
+                # <div class="rFrNMe N3Hzgf jjwyfe QBQrY zKHdkd sdJrJc Tyc9J" jscontroller="pxq3x" jsaction="clickonly:KjsqPd; focus:Jt1EX; blur:fpfTEe; input:Lg5SV" jsshadow="" jsname="Vsb5Ub"><div class="aCsJod oJeWuf"><div class="aXBtI Wic03c"><div class="Xb9hP"><input type="email" class="whsOnd zHQkBf" jsname="YPqjbf" autocomplete="username" spellcheck="false" tabindex="0" aria-label="Email or phone" name="identifier" autocapitalize="none" id="identifierId" dir="ltr" data-initial-dir="ltr" data-initial-value=""><div jsname="YRMmle" class="AxOyFc snByac" aria-hidden="true">Email or phone</div></div><div class="i9lrp mIZh1c"></div><div jsname="XmnwAc" class="OabDMe cXrdqd Y2Zypf"></div></div></div><div class="LXRPh"><div jsname="ty6ygf" class="ovnfwe Is7Fhb"></div><div jsname="B34EJ" class="dEOOab RxsGPe" aria-atomic="true" aria-live="assertive"></div></div></div>
 
-            await page.fill('input[name="identifier"]', self.username)
+                await page.fill('input[name="identifier"]', self.username)
 
-            await page.locator('.VfPpkd-LgbsSe-OWXEXe-k8QpJ > span:nth-child(4)').click()
-            time.sleep(10)
+                await page.locator('.VfPpkd-LgbsSe-OWXEXe-k8QpJ > span:nth-child(4)').click()
+                time.sleep(10)
 
-            await page.fill('input[name="password"]', self.password)
-            time.sleep(10)
+                await page.fill('input[name="password"]', self.password)
+                time.sleep(10)
 
-            await page.locator('.VfPpkd-LgbsSe-OWXEXe-k8QpJ > span:nth-child(4)').click()
-            # await page.click('text=Submit')
+                await page.locator('.VfPpkd-LgbsSe-OWXEXe-k8QpJ > span:nth-child(4)').click()
+                # await page.click('text=Submit')
 
-            Stephint=await page.locator('.bCAAsb > form:nth-child(1) > span:nth-child(1) > section:nth-child(1) > header:nth-child(1) > div:nth-child(1)').text_content()
-            print(Stephint)
-            if "2-Step Verification" in Stephint:            
-# <div class="L9iFZc" role="presentation" jsname="NjaE2c"><h2 class="kV95Wc TrZEUc"><span jsslot="" jsname="Ud7fr">2-Step Verification</span></h2><div class="yMb59d" jsname="HSrbLb" aria-hidden="true"></div></div>            
-            # <span jsslot="" jsname="Ud7fr">2-Step Verification</span>
-                print('you need google auth and sms very code')
-                time.sleep(60)
-            # await page.locator('#confirm-button > div:nth-child(2)').click()
-                await page.goto(YOUTUBE_UPLOAD_URL)
-
+                Stephint=await page.locator('.bCAAsb > form:nth-child(1) > span:nth-child(1) > section:nth-child(1) > header:nth-child(1) > div:nth-child(1)').text_content()
+                print(Stephint)
+                if "2-Step Verification" in Stephint:            
+    # <div class="L9iFZc" role="presentation" jsname="NjaE2c"><h2 class="kV95Wc TrZEUc"><span jsslot="" jsname="Ud7fr">2-Step Verification</span></h2><div class="yMb59d" jsname="HSrbLb" aria-hidden="true"></div></div>            
+                # <span jsslot="" jsname="Ud7fr">2-Step Verification</span>
+                    print('you need google auth and sms very code')
+                    time.sleep(60)
+                # await page.locator('#confirm-button > div:nth-child(2)').click()
+                    await page.goto(YOUTUBE_UPLOAD_URL)
+        except:
+            print('there is no verification at all')
         #confirm-button > div:nth-child(2)
         # # Catch max uploads/day limit errors
         # if page.get_attribute(NEXT_BUTTON, 'hidden') == 'true':
@@ -330,13 +333,15 @@ class YoutubeUpload:
                     await page.locator(INPUT_FILE_THUMBNAIL).set_input_files(
                         thumbnail.encode('utf-8'))
             sleep(self.timeout)
-
-        self.log.debug('Trying to set video to "Not made for kids"...')
-        
-        kids_section=page.locator(NOT_MADE_FOR_KIDS_LABEL)
-        await page.locator(NOT_MADE_FOR_KIDS_RADIO_LABEL).click()
-        sleep(self.timeout)
-        print('not made for kids done')
+        try:
+            self.log.debug('Trying to set video to "Not made for kids"...')
+            
+            kids_section=page.locator(NOT_MADE_FOR_KIDS_LABEL)
+            await page.locator(NOT_MADE_FOR_KIDS_RADIO_LABEL).click()
+            sleep(self.timeout)
+            print('not made for kids task done')
+        except:
+            print('failed to set not made for kids')
         if tags is None or tags =="" or len(tags)==0:
             pass
         else:
@@ -398,10 +403,9 @@ class YoutubeUpload:
         # mode b:release_offset not exist, publishdate exist , schedule to this specific date
         # mode c:release_offset not exist, publishdate not exist,daily count to increment schedule from tomorrow
         # mode d: offset exist, publish date not exist, daily count to increment with specific offset schedule from tomorrow            
-            self.log.debug(
-                "Trying to set video schedule time...{publish_date}")
-            if release_offset and not release_offset == "":
-                    print('mode a sta')
+
+            if release_offset and not release_offset == "0-1":
+                    print('mode a sta',release_offset)
                     if not int(release_offset.split('-')[0]) == 0:
                         offset = timedelta(months=int(release_offset.split(
                             '-')[0]), days=int(release_offset.split('-')[-1]))
@@ -424,41 +428,37 @@ class YoutubeUpload:
 
                 # release_offset=str(int(start_index/30))+'-'+str(int(start_index)/int(setting['dailycount']))
                 
-
+            self.log.debug(
+                f"Trying to set video schedule time...{publish_date}")
+            print('date',type(publish_date),publish_date)
+            if type(publish_date)==str:
+                publish_date=datetime.fromisoformat(publish_date)
             await setscheduletime(page,publish_date)
             # set_time_cssSelector(page,publish_date)
-
+        print('publish setting task done')
         video_id=await self.get_video_id(page)
         # option 1 to check final upload status
+        print('start to check whether upload is finished')
         while await self.not_uploaded(page):
             self.log.debug("Still uploading...")
             sleep(5)
+        try:
+            done_button=page.locator(DONE_BUTTON)
 
-        done_button=page.locator(DONE_BUTTON)
+            if await done_button.get_attribute("aria-disabled") == "true":
+                error_message= await page.locator(
+                    ERROR_CONTAINER).text_content()
+                return False, error_message
 
-        if await done_button.get_attribute("aria-disabled") == "true":
-            error_message= await page.locator(
-                ERROR_CONTAINER).text_content()
-            return False, error_message
-
-        await done_button.click()
+            await done_button.click()
+        except:
+            print('=======done buttone ')
         print('upload process is done')
 
-        # # option 2 to check final upload status
 
-        # # Go back to endcard settings
-        # page.wait_for_selector("#step-badge-1").click()
-        # # self._set_endcard()
+   
+ 
 
-        # for _ in range(2):
-        #     # Sometimes, the button is clickable but clicking it raises an error, so we add a "safety-sleep" here
-        #     sleep(5)
-        #     self.click_next(page)
-
-        # sleep(5)
-        # page.locator("done-button").click()
-
-        # # Wait for the dialog to disappear
         sleep(5)
         logging.info("Upload is complete")
         await self.close()

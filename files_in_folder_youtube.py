@@ -66,7 +66,7 @@ def check_video_thumb_pair(folder):
 
 profilepath = ''
 CHANNEL_COOKIES = r'D:\Download\audio-visual\saas\capcut\tiktok-videos\cookie.json'
-
+CHANNEL_COOKIES=r'D:\Download\audio-visual\make-text-video\reddit-to-video\assets\cookies\aww.json'
 videofolder = r'D:\Download\audio-visual\saas\capcut\tiktok-videos\videos'
 prefertags = []
 publish_date = ''
@@ -197,15 +197,14 @@ for i in range(videocount):
             f.close()
     if not videofiles[i]['videopath'] in data:
         scheduletopublish_specific_date(videofiles[i]['videopath'],videofiles[i]['thumbpath'],videofiles[i]['filename'],publish_date)
+        # scheduletopublish_tomorrow(videofiles[i]['videopath'],videofiles[i]['thumbpath'],videofiles[i]['filename'])
+        # scheduletopublish_7dayslater(videofiles[i]['videopath'],videofiles[i]['thumbpath'],videofiles[i]['filename'])
         with open('done.txt','a',encoding='utf8') as f:
             f.write(videofiles[i]['videopath']+'\r')
             f.close()
     #here we use video filename as video title, 
     # in the later gui you can set title prefix/suffix added to filename,des prefix/suffix added to prefer description for channel
     # and also tags too
-    # scheduletopublish_tomorrow(videofiles[i]['videopath'],videofiles[i]['thumbpath'],videofiles[i]['filename'])
-    # scheduletopublish_7dayslater(videofiles[i]['videopath'],videofiles[i]['thumbpath'],videofiles[i]['filename'])
-    scheduletopublish_specific_date(videofiles[i]['videopath'],videofiles[i]['thumbpath'],videofiles[i]['filename'])
 
     #here we use video filename as video title, 
     # in the later gui you can set title prefix/suffix added to filename,des prefix/suffix added to prefer description for channel
