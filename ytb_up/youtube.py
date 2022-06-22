@@ -191,7 +191,7 @@ class YoutubeUpload:
             )            
 
             print('success load cookie files')
-            await page.goto(YOUTUBE_URL,timeout=300000)
+            await page.goto(YOUTUBE_URL,timeout=30000)
             print('start to check login status')
 
             islogin = confirm_logged_in(page)
@@ -267,13 +267,18 @@ class YoutubeUpload:
         #     error_short_by_xpath=page.locator(ERROR_SHORT_XPATH)
         #     # print(f"ERROR: {error_short_by_xpath.text} {self.cookie_working_dir}")
         #     return False
-        try:
-            daylimit=await self.page.is_visible(ERROR_SHORT_XPATH)
+        hint=await page.locator('#error-short style-scope ytcp-uploads-dialog').text_content()
+        if 'Daily upload limit reached' in hint:
+        # try:
+# <div class="error-short style-scope ytcp-uploads-dialog">Daily upload limit reached</div>
+
+            # daylimit=await self.page.is_visible(ERROR_SHORT_XPATH)
+            self.close()
                 
-            print('catch daily limit,pls try tomorrow',daylimit)
-            if daylimit:
-                self.close()
-        except:
+            print('catch daily limit,pls try tomorrow')
+            # if daylimit:
+                # self.close()
+        else:
             pass
 
 
@@ -376,6 +381,7 @@ class YoutubeUpload:
             pass
         else:
             await wait_for_processing(page,process=False)
+            print('uploading progress check task done')
         # if "complete" in page.locator(".progress-label").text_content():
 
         # sometimes you have 4 tabs instead of 3
@@ -403,7 +409,9 @@ class YoutubeUpload:
         # mode b:release_offset not exist, publishdate exist , schedule to this specific date
         # mode c:release_offset not exist, publishdate not exist,daily count to increment schedule from tomorrow
         # mode d: offset exist, publish date not exist, daily count to increment with specific offset schedule from tomorrow            
-
+            print('date',type(publish_date),publish_date)
+            if type(publish_date)==str:
+                publish_date=datetime.fromisoformat(publish_date)
             if release_offset and not release_offset == "0-1":
                     print('mode a sta',release_offset)
                     if not int(release_offset.split('-')[0]) == 0:
@@ -430,18 +438,18 @@ class YoutubeUpload:
                 
             self.log.debug(
                 f"Trying to set video schedule time...{publish_date}")
-            print('date',type(publish_date),publish_date)
-            if type(publish_date)==str:
-                publish_date=datetime.fromisoformat(publish_date)
+
             await setscheduletime(page,publish_date)
             # set_time_cssSelector(page,publish_date)
         print('publish setting task done')
         video_id=await self.get_video_id(page)
         # option 1 to check final upload status
-        print('start to check whether upload is finished')
-        while await self.not_uploaded(page):
-            self.log.debug("Still uploading...")
-            sleep(5)
+        if closewhen100percentupload==True:
+
+            print('start to check whether upload is finished')
+            while await self.not_uploaded(page):
+                self.log.debug("Still uploading...")
+                sleep(1)
         try:
             done_button=page.locator(DONE_BUTTON)
 
