@@ -70,7 +70,7 @@ you may got hundreds of historical videos or prepare 200+ video for new product.
 No.be aware of that this is automation instead of crack thing.If it can be done,definitely would be flagged as spam and you lost your account ,that is not the price you want to pay
 all of automation task are meant to act like human but ease your boring hand work
 
-![image](https://user-images.githubusercontent.com/2363295/170889182-e3a12d5f-d1cb-45db-93a0-2ce8e405c9d1.png)
+![image](https://user-images.githubusercontent.com/2363295/175550183-38944ba1-aed2-4854-b80e-98c320089583.png)
 
 
 * → you don't have to edit all metadata one by one
