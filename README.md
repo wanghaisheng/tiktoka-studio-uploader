@@ -39,7 +39,7 @@ or click any link you find in the repo
 
 
 
-A cross platform GUI is being developed.Since my computer broken during the last 20 days, I  would add some features to old tkinter version
+The more modern web technology cross platform GUI is being delayed Since my computer broken during the last 20 days, I  would add some features to old tkinter version
 
 
 In the future I plan to add more features like invisible watermark to protect your copyright from theft and cross platform publish that you may post videos not only on Youtube.
