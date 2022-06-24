@@ -34,9 +34,11 @@ please DM me at tiktokadownloader@gmail.com after sponsor, I have not find a pro
 
 or click any link you find in the repo
 
-![Tiktoka Uploader](https://user-images.githubusercontent.com/2363295/168556947-a1c3025a-aa76-4873-9d7f-d4475712296a.png)
 
-![Tiktoka Uploader GUI](https://raw.githubusercontent.com/wanghaisheng/youtube-auto-upload/master/assets/autovideopublisher_cCU22EfevT.png)
+
+## GUI Version
+
+![Tiktoka Uploader GUI](https://user-images.githubusercontent.com/2363295/175550183-38944ba1-aed2-4854-b80e-98c320089583.png)
 
 
 A cross platform GUI is being developed.
@@ -70,7 +72,6 @@ you may got hundreds of historical videos or prepare 200+ video for new product.
 No.be aware of that this is automation instead of crack thing.If it can be done,definitely would be flagged as spam and you lost your account ,that is not the price you want to pay
 all of automation task are meant to act like human but ease your boring hand work
 
-![image](https://user-images.githubusercontent.com/2363295/175550183-38944ba1-aed2-4854-b80e-98c320089583.png)
 
 
 * → you don't have to edit all metadata one by one
