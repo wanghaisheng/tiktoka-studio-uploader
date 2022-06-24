@@ -32,12 +32,15 @@ please DM me at tiktokadownloader@gmail.com after sponsor, I have not find a pro
 
 or click any link you find in the repo
 
-![Tiktoka Uploader](https://user-images.githubusercontent.com/2363295/168556947-a1c3025a-aa76-4873-9d7f-d4475712296a.png)
 
-![Tiktoka Uploader GUI](https://raw.githubusercontent.com/wanghaisheng/youtube-auto-upload/master/assets/autovideopublisher_cCU22EfevT.png)
+## proposed function in future version gui 
+
+![image](https://user-images.githubusercontent.com/2363295/175556044-57f8af8e-a840-43fe-8cfc-120e0e74fef8.png)
 
 
-A cross platform GUI is being developed.
+
+A cross platform GUI is being developed.Since my computer broken during the last 20 days, I  would add some features to old tkinter version
+
 
 In the future I plan to add more features like invisible watermark to protect your copyright from theft and cross platform publish that you may post videos not only on Youtube.
 
