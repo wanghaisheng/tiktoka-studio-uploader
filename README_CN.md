@@ -17,6 +17,8 @@
 <!-- MANPAGE: END EXCLUDED SECTION -->
 
 
+集中上传，定时发布
+
 just launched on product hunt 
 
 <a href="https://www.producthunt.com/posts/tiktoka-studio?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-tiktoka&#0045;studio" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=347723&theme=light" alt="Tiktoka&#0032;Studio - one&#0032;in&#0032;all&#0032;toolbox&#0032;for&#0032;social&#0032;media&#0032;video&#0032;publish | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
