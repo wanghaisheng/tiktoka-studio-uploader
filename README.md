@@ -33,7 +33,7 @@ please DM me at tiktokadownloader@gmail.com after sponsor, I have not find a pro
 or click any link you find in the repo
 
 
-## proposed function in future version gui 
+## proposed features in future version gui 
 
 ![image](https://user-images.githubusercontent.com/2363295/175556044-57f8af8e-a840-43fe-8cfc-120e0e74fef8.png)
 
