@@ -45,7 +45,7 @@ The more modern web technology cross platform GUI is being delayed Since my comp
 In the future I plan to add more features like invisible watermark to protect your copyright from theft and cross platform publish that you may post videos not only on Youtube.
 
 
-## video demo 
+## how to use video demo 
 
 [English version detailed intro and demo ](https://youtu.be/Xh-Dmm1POBo)
 
