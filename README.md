@@ -22,7 +22,7 @@ just launched on product hunt
 <a href="https://www.producthunt.com/posts/tiktoka-studio?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-tiktoka&#0045;studio" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=347723&theme=light" alt="Tiktoka&#0032;Studio - one&#0032;in&#0032;all&#0032;toolbox&#0032;for&#0032;social&#0032;media&#0032;video&#0032;publish | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
 
 
-**I  have released one draft version of a GUI version to make the usage for those non-coding people that want a one click easy solution.  It's been tested by about 5 friends. You can check it out if you sponsor me. You can get the exe version on Windows**
+**I  have released one draft version of a GUI version to make the usage for those non-coding people that want a one click easy solution.  It's been tested by about 5 friends. You can check it out if you [sponsor me](https://github.com/sponsors/wanghaisheng). You can get the exe version on Windows**
 
 please DM me at tiktokadownloader@gmail.com after sponsor, I have not find a proper way to automatically to send the package yet
 
@@ -32,17 +32,20 @@ please DM me at tiktokadownloader@gmail.com after sponsor, I have not find a pro
 
 or click any link you find in the repo
 
-![Tiktoka Uploader](https://user-images.githubusercontent.com/2363295/168556947-a1c3025a-aa76-4873-9d7f-d4475712296a.png)
 
-![Tiktoka Uploader GUI](https://raw.githubusercontent.com/wanghaisheng/youtube-auto-upload/master/assets/autovideopublisher_cCU22EfevT.png)
+## proposed features in future version gui 
+
+![image](https://user-images.githubusercontent.com/2363295/175556044-57f8af8e-a840-43fe-8cfc-120e0e74fef8.png)
 
 
-A cross platform GUI is being developed.
+
+The more modern web technology cross platform GUI is being delayed Since my computer broken during the last 20 days, I  would add some features to old tkinter version
+
 
 In the future I plan to add more features like invisible watermark to protect your copyright from theft and cross platform publish that you may post videos not only on Youtube.
 
 
-## video demo 
+## how to use video demo 
 
 [English version detailed intro and demo ](https://youtu.be/Xh-Dmm1POBo)
 
