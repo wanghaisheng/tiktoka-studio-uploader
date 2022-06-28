@@ -267,6 +267,13 @@ class YoutubeUpload:
         #     error_short_by_xpath=page.locator(ERROR_SHORT_XPATH)
         #     # print(f"ERROR: {error_short_by_xpath.text} {self.cookie_working_dir}")
         #     return False
+
+        # await page.waitForXPath('//*[contains(text(),"Daily upload limit reached")]', { timeout: 15000 }).then(() => {
+        #     console.log("Daily upload limit reached.");
+        #     browser.close();
+        # }).catch(() => {});
+
+
         hint=await page.locator('#error-short style-scope ytcp-uploads-dialog').text_content()
         if 'Daily upload limit reached' in hint:
         # try:

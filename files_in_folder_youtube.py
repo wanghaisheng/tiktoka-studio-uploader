@@ -22,7 +22,17 @@ VIDEO_EXTENSIONS = ('.avi',
 def check_video_thumb_pair(folder):
     # print('detecting----------',folder)
     videofiles = []
-
+    data=[]
+    if os.path.exists('done.txt') and os.path.getsize('done.txt')>0:
+        with open('done.txt','r',encoding='utf8') as fr:
+            data=fr.readlines()
+            fr.close()
+    else:
+        with open('done.txt','a',encoding='utf8') as f:
+            f.write('')        
+            f.close()
+    data=[x.replace('\n','') for x in data]
+    print('done videos ',len(data))
     for r, d, f in os.walk(folder):
         with os.scandir(r) as i:
             print('detecting----------',r)
@@ -32,7 +42,7 @@ def check_video_thumb_pair(folder):
                 if entry.is_file():
                     filename = os.path.splitext(entry.name)[0]
                     ext = os.path.splitext(entry.name)[1]
-                    print(filename,'==',ext) 
+                    # print(filename,'==',ext) 
 
                     start_index=0
                     if ext in ('.mp4'):
@@ -52,7 +62,9 @@ def check_video_thumb_pair(folder):
                                 "filename":title
 
                                 }  
-                                videofiles.append(video)                 
+                                if not videopath.split(os.sep)[-1] in data:
+
+                                    videofiles.append(video)                 
 
                                 # print('========',videopath)
                                 # print('========',thumbpath)
@@ -66,7 +78,7 @@ def check_video_thumb_pair(folder):
 
 profilepath = ''
 CHANNEL_COOKIES = r'D:\Download\audio-visual\saas\capcut\tiktok-videos\cookie.json'
-CHANNEL_COOKIES=r'D:\Download\audio-visual\make-text-video\reddit-to-video\assets\cookies\aww.json'
+
 videofolder = r'D:\Download\audio-visual\saas\capcut\tiktok-videos\videos'
 prefertags = []
 publish_date = ''
@@ -170,39 +182,33 @@ def scheduletopublish_specific_date(videopath,thumbpath,filename,publish_date):
     ))
 
 
+
 videofiles=check_video_thumb_pair(videofolder)
+
+
 videocount=len(videofiles)
 maxdays=calendar._monthlen(today.year, today.month)
-
+print('max day in  month',maxdays)
 for i in range(videocount):
     monthoffset=int(int(i)/maxdays)
     startingday=today.day
     dayoffset=int(int(i)/int(setting['dailycount']))
-    if today.day+1>maxdays:
+    if today.day+dayoffset+1>maxdays:
         monthoffset=1
-        startingday=today.day+1-maxdays
+        startingday=today.day+dayoffset+1-maxdays
+    print('di jige',i,' yuji fabu sjian',dayoffset)
     publish_date =datetime(today.year, today.month+monthoffset, startingday+1+dayoffset, 20, 15)
 
 
     # scheduletopublish_tomorrow(videofiles[i]['videopath'],videofiles[i]['thumbpath'],videofiles[i]['filename'])
     # scheduletopublish_7dayslater(videofiles[i]['videopath'],videofiles[i]['thumbpath'],videofiles[i]['filename'])
-    data=[]
-    if os.path.exists('done.txt') and os.path.getsize('done.txt')>0:
-        with open('done.txt','r',encoding='utf8') as fr:
-            data=fr.readlines()
-            fr.close()
-    else:
-        with open('done.txt','a',encoding='utf8') as f:
-            f.write('')        
-            f.close()
-    print(videofiles[i]['videopath'],' in queue=========',data)
 
-    if not videofiles[i]['videopath'].split(os.sep)[-1] in data:
-        print(videofiles[i]['videopath'],' is progress=========')            
-        scheduletopublish_specific_date(videofiles[i]['videopath'],videofiles[i]['thumbpath'],videofiles[i]['filename'],publish_date)
-        with open('done.txt','a',encoding='utf8') as f:
-            f.write(videofiles[i]['videopath'].split(os.sep)[-1]+'\r')
-            f.close()
+
+    print(videofiles[i]['videopath'].split(os.sep)[-1],' is progress=========')            
+    scheduletopublish_specific_date(videofiles[i]['videopath'],videofiles[i]['thumbpath'],videofiles[i]['filename'],publish_date)
+    with open('done.txt','a',encoding='utf8') as f:
+        f.write('\r'+videofiles[i]['videopath'].split(os.sep)[-1]+'\r')
+        f.close()
     #here we use video filename as video title, 
     # in the later gui you can set title prefix/suffix added to filename,des prefix/suffix added to prefer description for channel
     # and also tags too
