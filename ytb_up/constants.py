@@ -59,7 +59,7 @@ TEXT_INPUT = "#text-input"
 NOT_MADE_FOR_KIDS_RADIO_LABEL = "tp-yt-paper-radio-button.ytkc-made-for-kids-select:nth-child(2) > div:nth-child(2) > ytcp-ve:nth-child(1)"
 DONE_BUTTON = "//*[@id='done-button']"
 NEXT_BUTTON = "//*[@id='next-button']"
-PUBLIC_RADIO_LABEL ="tp-yt-paper-radio-button.style-scope:nth-child(20)"
+PUBLIC_RADIO_LABEL ="tp-yt-paper-radio-button.style-scope:nth-child(19)"
 PRIVATE_RADIO_LABEL ="#private-radio-button > div:nth-child(1)"
 
 
