@@ -87,10 +87,13 @@ It can detect keywords search and  existing video gaps in your niche and generat
 
 * → auto add Free copyright music
 some music is the secret weapon to traffic, you need dig it by yourself.and also not to share with others
+
 * → invisible watermark
 at some day if you got viral someone will steal your content to re-post over other platform, cut off your logo or other visible watermark,with this invisible/hidden watermark technology, you can hardly lost the battle
+
 * → multi-account and multi-channel under one account
 as a newbie you will not want to be limited to only using one account. It will save your time to success
+
 * → auto set schedule time to public for each video
 bulk publish. it seems no other lib supports this feature yet
 you can explicitly specify a date and time for each video or you can set publish policy and daily public count, for example, daily count is 4, you got 5 videos, then first 4 will be published 1 day after the upload date, the other 1 will be 2 days after the upload date
@@ -98,6 +101,7 @@ you can explicitly specify a date and time for each video or you can set publish
 * → video upload in batch
 for those who want a one click setting and went to bed ,get jobs all  done after wake up in th morning
 all you need is choose the video directory
+
 * → Installed on PC, access from PC and mobile
 
 We'd love to hear your feedback on our new feature! 😊
@@ -184,7 +188,12 @@ you can explictly specify a date and time for each video or you can set publish 
 if auto verify is not working, you need to manually input verification code into your browser
 
 
-# 5. 
+# 5. batch support
+
+check **files_in_excel_youtube.py** to load video meta from a excel template
+
+check **files_in_folder_youtube.py** to monitor videos in specific folder
+
 
 THANKS TO
 1. https://github.com/ContentAutomation/YouTubeUploader
