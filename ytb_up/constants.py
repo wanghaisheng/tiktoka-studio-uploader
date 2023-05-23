@@ -1,4 +1,9 @@
 # URLS
+invalidCharacters = ['<', '>']
+
+YoutubeUploadURL = 'https://www.youtube.com/upload?persist_gl=1&gl=US&persist_hl=1&hl=en'
+YoutubeHomePageURL = 'https://www.youtube.com/?persist_gl=1&gl=US&persist_hl=1&hl=en'
+
 TIKTOK_URL= f"https://www.tiktok.com/upload?lang=en"
 
 DOUYIN_URL = "https://creator.douyin.com/creator-micro/home"
@@ -38,12 +43,21 @@ YOUTUBE_UPLOAD_URL = "https://www.youtube.com/upload"
 USER_WAITING_TIME = 1
 
 # CONTAINERS
+avatarButtonSelector='button#avatar-btn'
+langMenuItemSelector='yt-multi-page-menu-section-renderer.style-scope:nth-child(3) > div:nth-child(2) > ytd-compact-link-renderer:nth-child(2) > a'
+selector_en_path = "ytd-compact-link-renderer.style-scope:nth-child(13) > a:nth-child(1) > tp-yt-paper-item:nth-child(1) > div:nth-child(2) > yt-formatted-string:nth-child(1)"
+
 CONFIRM_CONTAINER='#confirmation-dialog'
+youtubeDescriptiontextBoxes = '//*[@id="textbox"]'
+
 TAGS_CONTAINER = '//*[@id="tags-container"]'
 ERROR_CONTAINER = '//*[@id="error-message"]'
 STATUS_CONTAINER = "//html/body/ytcp-uploads-dialog/tp-yt-paper-dialog/div/ytcp-animatable[2]/div/div[1]/ytcp-video-upload-progress/span"
 VIDEO_URL_CONTAINER = "//span[@class='video-url-fadeable style-scope ytcp-video-info']"
-DESCRIPTION_CONTAINER = "//*[@id='description-container']"
+
+TITLE_CONTAINER = "#title-textarea"
+
+DESCRIPTION_CONTAINER = "//*[@id='description-wrapper']"
 MORE_OPTIONS_CONTAINER = "#toggle-button > div:nth-child(2)"
 TIME_BETWEEN_POSTS = 3600
 # COUNTERS
@@ -53,7 +67,6 @@ DESCRIPTION_COUNTER = 5000
 
 # OTHER
 HREF = "href"
-TEXTBOX = "#title-textarea"
 UPLOADED = "Uploading"
 TEXT_INPUT = "#text-input"
 NOT_MADE_FOR_KIDS_RADIO_LABEL = "tp-yt-paper-radio-button.ytkc-made-for-kids-select:nth-child(2) > div:nth-child(2) > ytcp-ve:nth-child(1)"
@@ -65,8 +78,10 @@ PRIVATE_RADIO_LABEL ="#private-radio-button > div:nth-child(1)"
 
 PUBLIC_BUTTON = "PUBLIC"
 PRIVATE_BUTTON = "PRIVATE"
+SCHEDULE_BUTTON="#schedule-radio-button"
+SCHEDULE_PUBLISH_DATE="//html/body/ytcp-uploads-dialog/tp-yt-paper-dialog/div/ytcp-animatable[1]/ytcp-uploads-review/div[2]/div[1]/ytcp-video-visibility-select/div[3]/ytcp-visibility-scheduler/div[1]/ytcp-datetime-picker/div/div[1]/ytcp-text-dropdown-trigger/ytcp-dropdown-trigger/div"
+
 RADIO_CONTAINER = "//*[@id='radioContainer']"
-PUBLISH_DATE="//html/body/ytcp-uploads-dialog/tp-yt-paper-dialog/div/ytcp-animatable[1]/ytcp-uploads-review/div[2]/div[1]/ytcp-video-visibility-select/div[2]/ytcp-visibility-scheduler/div[1]/ytcp-datetime-picker/div/ytcp-text-dropdown-trigger[1]/ytcp-dropdown-trigger/div/div[2]/span"
 INPUT_FILE_VIDEO = "//input[@type='file']"
 VIDEO_URL_ELEMENT = "//a[@class='style-scope ytcp-video-info']"
 UPLOAD_DIALOG_MODAL = "#dialog.ytcp-uploads-dialog"

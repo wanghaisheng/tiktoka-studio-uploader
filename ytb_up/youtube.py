@@ -1,5 +1,4 @@
 import json
-from tkinter import EXCEPTION
 from .constants import *
 from .logging import Log
 from .exceptions import *
@@ -198,27 +197,39 @@ class YoutubeUpload:
 
             # https://github.com/xtekky/google-login-bypass/blob/main/login.py
 
-        print('start change locale to english')
 
-        await set_channel_language_english(page)
-        print('finish change locale to english')
-        await page.goto(YOUTUBE_UPLOAD_URL,timeout=300000)
-        # sleep(self.timeout)
+        print('check whether page in english') 
+        await changeHomePageLangIfNeeded(page)
+        print('go to youtube studio home page') 
+        print('Start check youtube studio home page display language') 
+
+        if not await page.locator('.page-title').text_content()=='Channel content':
+            print('start change locale to english again')
+            await set_channel_language_english(page)
+            print('finish change locale to english')
+        print('skip change locale to english') 
+
+        await page.goto(YOUTUBE_UPLOAD_URL)            
         self.log.debug("Found YouTube upload Dialog Modal")
+
+
 
         self.log.debug(f'Trying to upload "{videopath}" to YouTube...')
         if os.path.exists(get_path(videopath)):
             page.locator(
                 INPUT_FILE_VIDEO)
             await page.set_input_files(INPUT_FILE_VIDEO, get_path(videopath))
+            self.log.debug(f'Trying to upload "{get_path(videopath)}" to YouTube...')
+
         else:
             if os.path.exists(videopath.encode('utf-8')):
                 print('file found', videopath)
                 page.locator(
                     INPUT_FILE_VIDEO)
                 await page.set_input_files(INPUT_FILE_VIDEO, videopath.encode('utf-8'))
+            self.log.debug(f'Trying to upload "{videopath.encode("utf-8")}" to YouTube...')
+
         sleep(self.timeout)
-        textbox=page.locator(TEXTBOX)
     #     <h1 slot="primary-header" id="dialog-title" class="style-scope ytcp-confirmation-dialog">
     #   Verify it's you
     # </h1>
@@ -258,52 +269,39 @@ class YoutubeUpload:
                     print('you need google auth and sms very code')
                     time.sleep(60)
                 # await page.locator('#confirm-button > div:nth-child(2)').click()
-                    await page.goto(YOUTUBE_UPLOAD_URL)
+
         except:
             print('there is no verification at all')
-        #confirm-button > div:nth-child(2)
-        # # Catch max uploads/day limit errors
-        # if page.get_attribute(NEXT_BUTTON, 'hidden') == 'true':
-        #     error_short_by_xpath=page.locator(ERROR_SHORT_XPATH)
-        #     # print(f"ERROR: {error_short_by_xpath.text} {self.cookie_working_dir}")
-        #     return False
-
-        # await page.waitForXPath('//*[contains(text(),"Daily upload limit reached")]', { timeout: 15000 }).then(() => {
-        #     console.log("Daily upload limit reached.");
-        #     browser.close();
-        # }).catch(() => {});
+            self.log.debug(f'Finishing detect verification...')
 
 
-        hint=await page.locator('#error-short style-scope ytcp-uploads-dialog').text_content()
-        if 'Daily upload limit reached' in hint:
-        # try:
-# <div class="error-short style-scope ytcp-uploads-dialog">Daily upload limit reached</div>
 
-            # daylimit=await self.page.is_visible(ERROR_SHORT_XPATH)
-            self.close()
-                
-            print('catch daily limit,pls try tomorrow')
-            # if daylimit:
-                # self.close()
-        else:
-            pass
+        try:
+            self.log.debug(f'Trying to detect daily upload limit...')
+            hint=await page.locator('#error-short style-scope ytcp-uploads-dialog').waitfor().text_content()
+            if 'Daily upload limit reached' in hint:
+                self.log.debug(f'you have reached daily upload limit pls try tomorrow')
+
+                self.close()
+
+            else:
+                pass
+        except:
+            self.log.debug(f'Finishing detect daily upload limit...')
 
 
 
         self.log.debug(f'Trying to set "{title}" as title...')
 
 
-        # get file name (default) title
-        # title=title if title else page.locator(TEXTBOX).text_content()
-        # print(title)
-        sleep(self.timeout)
         if len(title) > TITLE_COUNTER:
             print(f"Title was not set due to exceeding the maximum allowed characters ({len(title)}/{TITLE_COUNTER})")
             title=title[:TITLE_COUNTER-1]
 
                 # TITLE
         print('click title field to input')
-        titlecontainer= page.locator(TEXTBOX)
+        titlecontainer= page.locator(TITLE_CONTAINER)
+
         await titlecontainer.click()
         print('clear existing title')
         await page.keyboard.press("Backspace")

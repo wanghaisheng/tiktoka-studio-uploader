@@ -19,17 +19,55 @@ def get_path(file_path: str) -> str:
 def close_browser(self):
     self.browser.close()
     self._playwright.stop()
+
+async def changeHomePageLangIfNeeded(localPage):
+    await localPage.goto(YoutubeHomePageURL)
+    try:
+        await localPage.locator(avatarButtonSelector).wait_for()
+    except Exception:
+        print('Avatar/Profile picture button not found : ' )
+
+    await localPage.click(avatarButtonSelector)   
+
+    try:
+        await localPage.locator(langMenuItemSelector).wait_for()
+    except:
+        print('Language menu item selector/button(">") not found : ')
+    
+    selectedLang = await localPage.evaluate('(langMenuItemSelector) => document.querySelector(langMenuItemSelector).innerText',langMenuItemSelector)
+
+    if (not selectedLang):
+        print('Failed to find selected language : Empty text')
+
+    if ('English' in selectedLang):
+        print("there is no need to change youtube homepage language")
+        await localPage.goto(YOUTUBE_STUDIO_URL)
+
+        return
+    await localPage.click(langMenuItemSelector)
+
+    englishItemXPath = "//*[normalize-space(text())='English (UK)']"
+
+    try:
+        await localPage.locator(englishItemXPath).wait_for()
+    except:
+        print('English(UK) item selector not found : ')
+    # await localPage.wait_for_timeout(3000)
+
+    await localPage.evaluate("(englishItemXPath: any) => {let element: HTMLElement = document?.evaluate(englishItemXPath,document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue as HTMLElement;element.click()}", englishItemXPath)
+    # Recursive language change, if YouTube, for some reason, did not change the language the first time, although the English (UK) button was pressed, the exit from the recursion occurs when the selectedLang selector is tested for the set language
+    await changeHomePageLangIfNeeded(localPage);    
+
+
+    return 
 async def set_channel_language_english(page):
     # why does not work again
+    await page.goto(YoutubeHomePageURL)
     try:
         print('Click your profile icon .')
-        page.locator(
-            "yt-img-shadow.ytd-topbar-menu-button-renderer > img:nth-child(1)")
-        await page.click(
-            "yt-img-shadow.ytd-topbar-menu-button-renderer > img:nth-child(1)")
+        await page.locator(avatarButtonSelector).click()
         print(' Click Language or Location icon')
-        page.locator("yt-multi-page-menu-section-renderer.style-scope:nth-child(2) > div:nth-child(2) > ytd-compact-link-renderer:nth-child(2) > a:nth-child(1) > tp-yt-paper-item:nth-child(1) > div:nth-child(2) > yt-formatted-string:nth-child(2)")
-        await page.click("yt-multi-page-menu-section-renderer.style-scope:nth-child(2) > div:nth-child(2) > ytd-compact-link-renderer:nth-child(2) > a:nth-child(1) > tp-yt-paper-item:nth-child(1) > div:nth-child(2) > yt-formatted-string:nth-child(2)")
+        await page.locator(langMenuItemSelector).click()
         selector_en_path = "ytd-compact-link-renderer.style-scope:nth-child(13) > a:nth-child(1) > tp-yt-paper-item:nth-child(1) > div:nth-child(2) > yt-formatted-string:nth-child(1)"
         print('choose the language or location you like to use.')
         selector_en=page.locator(selector_en_path)
@@ -135,10 +173,8 @@ async def setscheduletime(page, publish_date: datetime):
     date_to_post=publish_date.strftime("%b %d, %Y")
     hour_xpath=get_hour_xpath(hour_to_post)
     # Clicking in schedule video
-    print('click schedule')
-    await page.locator(
-        '//html/body/ytcp-uploads-dialog/tp-yt-paper-dialog/div/ytcp-animatable[1]/ytcp-uploads-review/div[2]/div[1]/ytcp-video-visibility-select/div[2]/tp-yt-paper-radio-button/div[1]/div[1]').click()
-    sleep(1)
+    print('choose  schedule publish')
+    await page.locator(SCHEDULE_BUTTON).click()
     # Writing date
     print('click date')
     await page.locator('#datepicker-trigger > ytcp-dropdown-trigger:nth-child(1) > div:nth-child(2) > div:nth-child(4)').click()

@@ -10,3 +10,8 @@ example.py
 /test-results/*
 screen-recording/*
 /ytb_up/__pycache__/*
+/cookies/*
+*.xlsx
+*.html
+onefile-*.py
+batch_files_*.py

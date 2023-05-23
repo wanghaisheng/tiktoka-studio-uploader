@@ -77,7 +77,7 @@ def check_video_thumb_pair(folder):
 
 
 profilepath = ''
-CHANNEL_COOKIES = r'D:\Download\audio-visual\saas\capcut\tiktok-videos\cookie.json'
+CHANNEL_COOKIES = r'D:\Download\audio-visual\saas\capcut\tiktok-videos\cookies\cap.json'
 
 videofolder = r'D:\Download\audio-visual\saas\capcut\tiktok-videos\videos'
 prefertags = []
@@ -198,7 +198,14 @@ for i in range(videocount):
         startingday=today.day+dayoffset+1-maxdays
     print('di jige',i,' yuji fabu sjian',dayoffset)
     publish_date =datetime(today.year, today.month+monthoffset, startingday+1+dayoffset, 20, 15)
+    
+    date_to_post=publish_date.strftime("%b %d, %Y")
+    print('=====date_to_post===',date_to_post)
+    publish_date_str=publish_date.strftime("%Y-%m-%d %H:%M:%S")
+    publish_date=    datetime.fromisoformat(publish_date_str)
+    date_to_post=publish_date.strftime("%b %d, %Y")
 
+    print('=====date_to_post===',date_to_post)
 
     # scheduletopublish_tomorrow(videofiles[i]['videopath'],videofiles[i]['thumbpath'],videofiles[i]['filename'])
     # scheduletopublish_7dayslater(videofiles[i]['videopath'],videofiles[i]['thumbpath'],videofiles[i]['filename'])

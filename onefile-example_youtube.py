@@ -4,9 +4,9 @@ import asyncio
 
 profilepath = r'D:\Download\audio-visual\make-text-video\reddit-to-video\assets\profile\fastlane'
 CHANNEL_COOKIES = r'D:\Download\audio-visual\make-text-video\reddit-to-video\assets\cookies\aww.json'
-CHANNEL_COOKIES = r'D:\Download\audio-visual\make-text-video\reddit-to-video\assets\cookies\fastlane.json'
+CHANNEL_COOKIES = r'D:\Download\audio-visual\saas\tiktoka\ytb-up\cookies\fastlane.json'
 
-videopath = r'D:\Download\audio-visual\objection_engine\hello.mp4'
+videopath = r'D:\Download\audio-visual\saas\tiktoka\ytb-up\tests\1.mp4'
 tags = ['ba,baaa,bababa']
 publish_date = ''
 # if you use some kinda of proxy to access youtube, 

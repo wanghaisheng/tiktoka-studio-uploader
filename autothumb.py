@@ -45,8 +45,8 @@ class AiThumbnailGenerator:
             main_scene = main_scene[0:3]
         for scene in main_scene:
             result.append(scene[-1])
-        print(self.filename,'==========')
+        print(self.filename.split(os.sep)[0],'==========')
         save_images(result, self.video_manager, num_images=1,
-                    image_name_template=self.filename+'-'+'$SCENE_NUMBER', output_dir=self.filename)
+                    image_name_template=self.filename+'-'+'$SCENE_NUMBER', output_dir=self.filename.split(os.sep)[0])
 
         return self.filename+'-1.jpg'
