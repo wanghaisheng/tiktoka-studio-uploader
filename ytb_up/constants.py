@@ -1,9 +1,12 @@
 # URLS
 invalidCharacters = ['<', '>']
+availableScheduleTimes=["0:00","0:15","0:30","0:45","1:00","1:15","1:30","1:45","2:00","2:15","2:30","2:45","3:00","3:15","3:30","3:45","4:00","4:15","4:30","4:45","5:00","5:15","5:30","5:45","6:00","6:15","6:30","6:45","7:00","7:15","7:30","7:45","8:00","8:15","8:30","8:45","9:00","9:15","9:30","9:45","10:00","10:15","10:30","10:45","11:00","11:15","11:30","11:45","12:00","12:15","12:30","12:45","13:00","13:15","13:30","13:45","14:00","14:15","14:30","14:45","15:00","15:15","15:30","15:45","16:00","16:15","16:30","16:45","17:00","17:15","17:30","17:45","18:00","18:15","18:30","18:45","19:00","19:15","19:30","19:45","20:00","20:15","20:30","20:45","21:00","21:15","21:30","21:45","22:00","22:15","22:30","22:45","23:00","23:15","23:30","23:45"]
+availableLanguages=["Not applicable","Abkhazian","Afar","Afrikaans","Akan","Akkadian","Albanian","American Sign Language","Amharic","Arabic","Aramaic","Armenian","Assamese","Aymara","Azerbaijani","Bambara","Bangla","Bashkir","Basque","Belarusian","Bhojpuri","Bislama","Bodo","Bosnian","Breton","Bulgarian","Burmese","Cantonese","Cantonese (Hong Kong)","Catalan","Cherokee","Chinese","Chinese (China)","Chinese (Hong Kong)","Chinese (Simplified)","Chinese (Singapore)","Chinese (Taiwan)","Chinese (Traditional)","Choctaw","Coptic","Corsican","Cree","Croatian","Czech","Danish","Dogri","Dutch","Dutch (Belgium)","Dutch (Netherlands)","Dzongkha","English","English (Canada)","English (India)","English (Ireland)","English (United Kingdom)","English (United States)","Esperanto","Estonian","Ewe","Faroese","Fijian","Filipino","Finnish","French","French (Belgium)","French (Canada)","French (France)","French (Switzerland)","Fula","Galician","Ganda","Georgian","German","German (Austria)","German (Germany)","German (Switzerland)","Greek","Guarani","Gujarati","Gusii","Haitian Creole","Hakka Chinese","Hakka Chinese (Taiwan)","Haryanvi","Hausa","Hawaiian","Hebrew","Hindi","Hindi (Latin)","Hiri Motu","Hungarian","Icelandic","Igbo","Indonesian","Interlingua","Interlingue","Inuktitut","Inupiaq","Irish","Italian","Japanese","Javanese","Kalaallisut","Kalenjin","Kamba","Kannada","Kashmiri","Kazakh","Khmer","Kikuyu","Kinyarwanda","Klingon","Konkani","Korean","Kurdish","Kyrgyz","Ladino","Lao","Latin","Latvian","Lingala","Lithuanian","Luba-Katanga","Luo","Luxembourgish","Luyia","Macedonian","Maithili","Malagasy","Malay","Malayalam","Maltese","Manipuri","Māori","Marathi","Masai","Meru","Min Nan Chinese","Min Nan Chinese (Taiwan)","Mixe","Mizo","Mongolian","Mongolian (Mongolian)","Nauru","Navajo","Nepali","Nigerian Pidgin","North Ndebele","Northern Sotho","Norwegian","Occitan","Odia","Oromo","Papiamento","Pashto","Persian","Persian (Afghanistan)","Persian (Iran)","Polish","Portuguese","Portuguese (Brazil)","Portuguese (Portugal)","Punjabi","Quechua","Romanian","Romanian (Moldova)","Romansh","Rundi","Russian","Russian (Latin)","Samoan","Sango","Sanskrit","Santali","Sardinian","Scottish Gaelic","Serbian","Serbian (Cyrillic)","Serbian (Latin)","Serbo-Croatian","Sherdukpen","Shona","Sicilian","Sindhi","Sinhala","Slovak","Slovenian","Somali","South Ndebele","Southern Sotho","Spanish","Spanish (Latin America)","Spanish (Mexico)","Spanish (Spain)","Spanish (United States)","Sundanese","Swahili","Swati","Swedish","Tagalog","Tajik","Tamil","Tatar","Telugu","Thai","Tibetan","Tigrinya","Tok Pisin","Toki Pona","Tongan","Tsonga","Tswana","Turkish","Turkmen","Twi","Ukrainian","Urdu","Uyghur","Uzbek","Venda","Vietnamese","Volapük","Võro","Welsh","Western Frisian","Wolaytta","Wolof","Xhosa","Yiddish","Yoruba","Zulu"]
+
+
 
 YoutubeUploadURL = 'https://www.youtube.com/upload?persist_gl=1&gl=US&persist_hl=1&hl=en'
 YoutubeHomePageURL = 'https://www.youtube.com/?persist_gl=1&gl=US&persist_hl=1&hl=en'
-
 TIKTOK_URL= f"https://www.tiktok.com/upload?lang=en"
 
 DOUYIN_URL = "https://creator.douyin.com/creator-micro/home"
@@ -37,9 +40,9 @@ DOUYIN_UP2='.semi-switch-native-control'
 
 
 WEIXIN_URL="https://channels.weixin.qq.com/post/create"
-YOUTUBE_URL = "https://www.youtube.com"
+YOUTUBE_URL = "https://www.youtube.com/?persist_gl=1&gl=US&persist_hl=1&hl=en"
 YOUTUBE_STUDIO_URL = "https://studio.youtube.com"
-YOUTUBE_UPLOAD_URL = "https://www.youtube.com/upload"
+YOUTUBE_UPLOAD_URL = "https://www.youtube.com/upload?persist_gl=1&gl=US&persist_hl=1&hl=en"
 USER_WAITING_TIME = 1
 
 # CONTAINERS
@@ -80,7 +83,7 @@ PUBLIC_BUTTON = "PUBLIC"
 PRIVATE_BUTTON = "PRIVATE"
 SCHEDULE_BUTTON="#schedule-radio-button"
 SCHEDULE_PUBLISH_DATE="//html/body/ytcp-uploads-dialog/tp-yt-paper-dialog/div/ytcp-animatable[1]/ytcp-uploads-review/div[2]/div[1]/ytcp-video-visibility-select/div[3]/ytcp-visibility-scheduler/div[1]/ytcp-datetime-picker/div/div[1]/ytcp-text-dropdown-trigger/ytcp-dropdown-trigger/div"
-
+SCHEDULE_TIME = "//html/body/ytcp-uploads-dialog/tp-yt-paper-dialog/div/ytcp-animatable[1]/ytcp-uploads-review/div[2]/div[1]/ytcp-video-visibility-select/div[3]/ytcp-visibility-scheduler/div[1]/ytcp-datetime-picker/div/div[2]/form/ytcp-form-input-container/div[1]/div/tp-yt-paper-input/tp-yt-paper-input-container/div[2]/div/iron-input/input"
 RADIO_CONTAINER = "//*[@id='radioContainer']"
 INPUT_FILE_VIDEO = "//input[@type='file']"
 VIDEO_URL_ELEMENT = "//a[@class='style-scope ytcp-video-info']"

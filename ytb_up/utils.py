@@ -20,20 +20,22 @@ def close_browser(self):
     self.browser.close()
     self._playwright.stop()
 
-async def changeHomePageLangIfNeeded(localPage):
-    await localPage.goto(YoutubeHomePageURL)
+async def changeHomePageLangIfNeeded(self,localPage):
+    await localPage.goto(YoutubeHomePageURL,timeout=self.timeout)
     try:
-        await localPage.locator(avatarButtonSelector).wait_for()
+        await localPage.get_by_label("Account menu").wait_for()
+        await localPage.get_by_label("Account menu").click()   
+
     except Exception:
         print('Avatar/Profile picture button not found : ' )
-
-    await localPage.click(avatarButtonSelector)   
+        await localPage.locator(avatarButtonSelector).click()
 
     try:
         await localPage.locator(langMenuItemSelector).wait_for()
     except:
         print('Language menu item selector/button(">") not found : ')
-    
+        await localPage.locator(langMenuItemSelector).click()
+
     selectedLang = await localPage.evaluate('(langMenuItemSelector) => document.querySelector(langMenuItemSelector).innerText',langMenuItemSelector)
 
     if (not selectedLang):
@@ -41,17 +43,16 @@ async def changeHomePageLangIfNeeded(localPage):
 
     if ('English' in selectedLang):
         print("there is no need to change youtube homepage language")
-        await localPage.goto(YOUTUBE_STUDIO_URL)
 
         return
     await localPage.click(langMenuItemSelector)
 
-    englishItemXPath = "//*[normalize-space(text())='English (UK)']"
+    englishItemXPath = "//*[normalize-space(text())='English']"
 
     try:
         await localPage.locator(englishItemXPath).wait_for()
     except:
-        print('English(UK) item selector not found : ')
+        print('English item selector not found : ')
     # await localPage.wait_for_timeout(3000)
 
     await localPage.evaluate("(englishItemXPath: any) => {let element: HTMLElement = document?.evaluate(englishItemXPath,document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue as HTMLElement;element.click()}", englishItemXPath)
@@ -60,29 +61,24 @@ async def changeHomePageLangIfNeeded(localPage):
 
 
     return 
-async def set_channel_language_english(page):
-    # why does not work again
-    await page.goto(YoutubeHomePageURL)
+async def set_channel_language_english(self,page):
+    await page.goto(YoutubeHomePageURL,timeout=self.timeout)
     try:
         print('Click your profile icon .')
         await page.locator(avatarButtonSelector).click()
         print(' Click Language or Location icon')
         await page.locator(langMenuItemSelector).click()
-        selector_en_path = "ytd-compact-link-renderer.style-scope:nth-child(13) > a:nth-child(1) > tp-yt-paper-item:nth-child(1) > div:nth-child(2) > yt-formatted-string:nth-child(1)"
         print('choose the language or location you like to use.')
-        selector_en=page.locator(selector_en_path)
-        await selector_en.click()
-        # page.click(selector_en)
+        await page.locator(selector_en_path).click()
+        # await selector_en.click()
 
-        # print(page.text_content('//*[@id="label"]'))
-        # if page.text_content(selector_en)=="English (US)":
-        #     return True
-        # else:
-        #     return False
-        return True
+        if "English" in await page.locator(selector_en_path).text_content():
+            return True
+        else:
+            return False
     except TimeoutError:
         return False
-# fix google account verify
+# fix google account verifys
 
 
 async def verify(self, page):
@@ -110,21 +106,20 @@ async def verify(self, page):
 
 
 async def wait_for_processing(page, process):
-    page = page
     if process == True:
         # Wait for processing to complete
-        progress_label = await page.wait_for_selector(
+        progress_label =  page.locator(
             "span.progress-label")
         pattern = re.compile(
             r"(finished processing)|(processing hd.*)|(check.*)")
-        current_progress = await progress_label.get_attribute("textContent")
+        current_progress = await progress_label.text_content()
         last_progress = None
         while not pattern.match(current_progress.lower()):
             if last_progress != current_progress:
                 logging.info(f'Current progress: {current_progress}')
             last_progress = current_progress
             sleep(5)
-            current_progress = await progress_label.get_attribute("textContent")
+            current_progress = await progress_label.text_content()
     else:
         while True:
 
@@ -137,9 +132,11 @@ async def wait_for_processing(page, process):
             # if re.match(r"\D \.\.\. \D", innerhtml) or re.match(r"^[^\.]+$", innerhtml):
             #     break
             upload_progress=' '.join(upload_progress)
+            print('video status',upload_progress.lower())
+
             if not '%' in upload_progress.lower():
                 break
-            elif 'complete' in upload_progress.lower():
+            elif 'checks complete. no issues found' in upload_progress.lower():
                 break
 async def setscheduletime_douyin(page, publish_date: datetime):
     hour_to_post, date_to_post, publish_date_hour=hour_and_date_douyin(
@@ -167,18 +164,16 @@ async def setscheduletime_douyin(page, publish_date: datetime):
 
 
     sleep(1)
-async def setscheduletime(page, publish_date: datetime):
-    hour_to_post, date_to_post, publish_date_hour=hour_and_date(
-        publish_date)
-    date_to_post=publish_date.strftime("%b %d, %Y")
-    hour_xpath=get_hour_xpath(hour_to_post)
+async def setscheduletime(page,date_to_publish,hour_to_publish):
+
+    # hour_xpath=get_hour_xpath(hour_to_publish)
     # Clicking in schedule video
     print('choose  schedule publish')
     await page.locator(SCHEDULE_BUTTON).click()
     # Writing date
     print('click date')
     await page.locator('#datepicker-trigger > ytcp-dropdown-trigger:nth-child(1) > div:nth-child(2) > div:nth-child(4)').click()
-
+# #datepicker-trigger > ytcp-dropdown-trigger:nth-child(1) > div:nth-child(2) > div:nth-child(4) > span:nth-child(2)
     # page.locator(
         # '//html/body/ytcp-uploads-dialog/tp-yt-paper-dialog/div/ytcp-animatable[1]/ytcp-uploads-review/div[2]/div[1]/ytcp-video-visibility-select/div[2]/ytcp-visibility-scheduler/div[1]/ytcp-datetime-picker/div/ytcp-text-dropdown-trigger[1]/ytcp-dropdown-trigger/div/div[3]').click()
     sleep(1)
@@ -187,24 +182,41 @@ async def setscheduletime(page, publish_date: datetime):
     # page.locator(
         # '//html/body/ytcp-date-picker/tp-yt-paper-dialog/div/form/tp-yt-paper-input/tp-yt-paper-input-container/div[2]/div/iron-input/input').click()
     await page.keyboard.press("Control+KeyA")
-    await page.keyboard.type(date_to_post)
+    print('before convert',date_to_publish)
+    date_to_publish=date_to_publish.strftime("%b %d, %Y")
+    print('after convert',date_to_publish)
+
+    await page.keyboard.type(date_to_publish)
     await page.keyboard.press("Enter")
 
     sleep(1)
-    print('click hour')
-# #input-1
-    try:
-        await page.locator(
-            '#input-1').click()
-        sleep(1)
-        await page.locator(hour_xpath).click()
-    except:
-        # input_hour=page.wait_for_selector(
-            # 'input.tp-yt-paper-input').click()
-        print('no hour input found')
+    print('start to Open time_picker',hour_to_publish)
+   # Open time_picker
+    # await page.locator("input.tp-yt-paper-input").fill(hour_to_publish)
+
+    await page.locator(
+        # "#time-of-day-trigger > ytcp-dropdown-trigger:nth-child(1) > div:nth-child(2)"
+        #input-1 > input:nth-child(1)
+        # '#time-of-day-container'
+        # input.tp-yt-paper-input
+        '#html-body ytcp-uploads-dialog tp-yt-paper-dialog#dialog.style-scope.ytcp-uploads-dialog div.dialog-content.style-scope.ytcp-uploads-dialog ytcp-animatable#scrollable-content.metadata-fade-in-section.style-scope.ytcp-uploads-dialog ytcp-uploads-review.style-scope.ytcp-uploads-dialog div.left-col.style-scope.ytcp-uploads-review div#visibility-container.style-scope.ytcp-uploads-review ytcp-video-visibility-select.style-scope.ytcp-uploads-review div#second-container.style-scope.ytcp-video-visibility-select ytcp-visibility-scheduler.scheduler.style-scope.ytcp-video-visibility-select div.scheduled-info-container.style-scope.ytcp-visibility-scheduler ytcp-datetime-picker.style-scope.ytcp-visibility-scheduler div.scheduled-info-container.style-scope.ytcp-datetime-picker div.style-scope.ytcp-datetime-picker form#form.style-scope.ytcp-datetime-picker ytcp-form-input-container#time-of-day-container.style-scope.ytcp-datetime-picker div#outer.style-scope.ytcp-form-input-container'
+        # SCHEDULE_TIME
+    ).click()   
+    
+    print('clear existing timesetting')
+    await page.keyboard.press("Backspace")
     await page.keyboard.press("Control+KeyA")
-    await page.keyboard.type(hour_to_post)
-    await page.keyboard.press("Enter")
+    await page.keyboard.press("Delete")
+    await page.keyboard.type(hour_to_publish)
+
+    # time_list=await page.locator(
+    #     "tp-yt-paper-item.tp-yt-paper-item")
+    # Transform time into required format: 8:15 PM
+
+    # time_str=hour_to_publish
+    # print(time_list,'available slot')
+    # time=[time for time in time_list[2:] if time.text == time_str][0]
+    # time.click()
 
     sleep(1)
 
@@ -280,24 +292,6 @@ def _set_time_cssSelector(page, publish_date: datetime):
     time=[time for time in time_list[2:] if time.text == time_str][0]
     time.click()
 
-def _set_basic_settings(page, title: str, description: str, thumbnail_path: str=None):
-
-    title_input=page.wait_for_selector(
-                '//ytcp-mention-textbox[@label="Title"]//div[@id="textbox"]'                )
-
-    # Input meta data (title, description, etc ... )
-    description_input=page.wait_for_selector(
-        '//ytcp-mention-textbox[@label="Description"]//div[@id="textbox"]'
-    )
-    thumbnail_input=page.wait_for_selector(
-        "input#file-loader"
-    )
-
-    title_input.clear()
-    title_input.send_keys(title)
-    description_input.send_keys(description)
-    if thumbnail_path:
-        thumbnail_input.send_keys(thumbnail_path)
 
 def _set_advanced_settings(page, game_title: str, made_for_kids: bool):
     # Open advanced options
@@ -420,118 +414,9 @@ def __is_videos_available(self,page):
     except:
         return False
 
-def __write_in_field(self, field, string, select_all=False):
-    field.click()
-
-    sleep(USER_WAITING_TIME)
-    if select_all:
-        if self.is_mac:
-            field.send_keys(Keys.COMMAND + 'a')
-        else:
-            field.send_keys(Keys.CONTROL + 'a')
-        sleep(USER_WAITING_TIME)
-    field.send_keys(string)
-
-#     def __set_scheduler(self, publish_date):
-#         # Set upload time
-#         action=ActionChains(self.page)
-#         schedule_radio_button=page.wait_for_selector("schedule-radio-button")
-
-#         action.move_to_element(schedule_radio_button)
-#         action.click(schedule_radio_button).perform()
-#         self.log.debug('Set delevery to {}'.format("schedule"))
-#         sleep(.33)
-
-#         # Set close action
-#         action_close=ActionChains(self.page)
-#         action_close.send_keys(Keys.ESCAPE)
-
-#         # date picker
-#         action_datepicker=ActionChains(self.page)
-#         datepicker_trigger=page.wait_for_selector("datepicker-trigger")
-
-#         action_datepicker.move_to_element(datepicker_trigger)
-#         action_datepicker.click(datepicker_trigger).perform()
-#         sleep(.33)
-
-#         date_string=publish_date.strftime("%d.%m.%Y")
-#         date_input=page.wait_for_selector(
-#             '//ytcp-date-picker/tp-yt-paper-dialog//iron-input/input')
-#         # date_input.clear()
-#         # # Transform date into required format: Mar 19, 2021
-#         # date_input.send_keys(publish_date.strftime("%b %d, %Y"))
-#         # date_input.send_keys(Keys.RETURN)
-
-#         self.__write_in_field(date_input, date_string, True)
-#         self.log.debug('Set schedule date to {}'.format(date_string))
-
-#         action_close.perform()
-#         sleep(.33)
-
-#         # time picker
-#         action_timepicker=ActionChains(self.page)
-#         time_of_day_trigger=page.wait_for_selector("time-of-day-trigger")
-
-#         action_timepicker.move_to_element(time_of_day_trigger)
-#         action_timepicker.click(time_of_day_trigger).perform()
-#         sleep(.33)
-
-#         time_dto=(publish_date - timedelta(
-#             minutes=publish_date.minute % 15,
-#             seconds=publish_date.second,
-#             microseconds=publish_date.microsecond))
-#         time_string=time_dto.strftime("%H:%M")
-
-#         time_container=page.wait_for_selector(
-#             '//ytcp-time-of-day-picker//*[@id="dialog"]')
-#         time_item=page.wait_for_selector(
-#             '//ytcp-time-of-day-picker//tp-yt-paper-item[text() = "{}"]'.format(time_string))
-
-#         self.log.debug('Set schedule date to {}'.format(time_string))
-#        page.execute_script(
-#             "arguments[0].scrollTop = arguments[1].offsetTop; ", time_container, time_item)
-
-#         time_item.click()
-
-#         action_close.perform()
-#         sleep(.33)
-
-#     def __remove_unwatched_videos(self):
-#         DELETE_WAIT_TIME=60 * 2
-
-#         # check if videos deletion process has finished
-#         # if not visible throw error, and proceed to delete more videos
-#         try:
-#            page.wait_for_selector(
-#                 "//div[@id='header']/div/span[2]")
-#             # wait for the videos to be deleted and try delete videos after
-#             sleep(DELETE_WAIT_TIME)
-#             return self.__remove_unwatched_videos()
-#         except:
-#             pass
-
-#         if self.__is_videos_available():
-#             return True
-
-#        page.wait_for_selector("checkbox-container").click()
-#         sleep(USER_WAITING_TIME)
-#        page.wait_for_selector(".ytcp-bulk-actions .toolbar .ytcp-select .ytcp-text-dropdown-trigger .ytcp-dropdown-trigger .right-container .ytcp-dropdown-trigger").click()
-#         sleep(USER_WAITING_TIME)
-#        page.wait_for_selector(
-#             "#select-menu-for-additional-action-options #dialog #paper-list #text-item-1").click()
-#         sleep(USER_WAITING_TIME)
-#        page.wait_for_selector(
-#             "#dialog-content-confirm-checkboxes #confirm-checkbox #checkbox-container").click()
-#         sleep(USER_WAITING_TIME)
-#        page.wait_for_selector(
-#             ".ytcp-confirmation-dialog #dialog-buttons #confirm-button").click()
-#         # wait 5 minutes for the videos to be deleted
-#         sleep(DELETE_WAIT_TIME)
-
-#         return self.__remove_unwatched_videos()
 
 
-def waitfordone(page):
+def waitforUplodingdone(page):
 
     # wait until video uploads
     # uploading progress text contains ": " - Timp ramas/Remaining time: 3 minutes.

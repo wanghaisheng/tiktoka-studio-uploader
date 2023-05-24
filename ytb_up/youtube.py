@@ -9,7 +9,7 @@ from time import sleep
 from datetime import datetime, date,timedelta
 import logging
 from playwright.async_api import async_playwright
-
+import random
 
 
 class YoutubeUpload:
@@ -17,14 +17,19 @@ class YoutubeUpload:
         self,
         root_profile_directory: str,
         proxy_option: str = "",
-        timeout: int = 3,
+        timeout: int = 200 * 1000,
         watcheveryuploadstep: bool = True,
         debug: bool = True,
         username:str ="",
         password:str ="",
+        recoveryemail:str="",
+        browserType:str="firefox",
+        # 'chromium', 'firefox', or 'webkit'
         CHANNEL_COOKIES: str = "",
-        ytb_cookies:str="",
-        tiktok_cookies:str="",
+        closewhen100percentupload:bool =True,
+        skipProcessingWait:bool=True,
+        skipCheckingWait:bool=True,
+
         recordvideo:bool=False
 
     ) -> None:
@@ -36,12 +41,11 @@ class YoutubeUpload:
         self.root_profile_directory=root_profile_directory
         self.proxy_option=proxy_option
         self.watcheveryuploadstep=watcheveryuploadstep
-        self.ytb_cookies=ytb_cookies
-        self.tiktok_cookies=tiktok_cookies
         self._playwright=''
-        self.browser=None
+        self.browserType=browserType
         self.context=''
         self.page=''
+        self.closewhen100percentupload=closewhen100percentupload
         self.recordvideo=recordvideo
         # self.setup()
 
@@ -53,7 +57,7 @@ class YoutubeUpload:
 
     async def click_next(self, page) -> None:
         await page.locator(NEXT_BUTTON).click()
-        sleep(self.timeout)
+        sleep(random(5*1000,self.timeout))
 
     async def not_uploaded(self, page) -> bool:
         s=await page.locator(STATUS_CONTAINER).text_content()
@@ -65,16 +69,58 @@ class YoutubeUpload:
         title: str = "",
         description: str = "",
         thumbnail: str = "",
-        publishpolicy: str = 0,
-        # mode a:release_offset exist,publish_data exist will take date value as a starting date to schedule videos
-        # mode b:release_offset not exist, publishdate exist , schedule to this specific date
-        # mode c:release_offset not exist, publishdate not exist,daily count to increment schedule from tomorrow
-        # mode d: offset exist, publish date not exist, daily count to increment with specific offset schedule from tomorrow
-        release_offset: str = '0-1',
-        publish_date: datetime = datetime(
-            date.today().year,  date.today().month,  date.today().day, 10, 15),
+        publishpolicy: int = 0,
+        date_to_publish: datetime = datetime(
+            date.today().year,  date.today().month,  date.today().day),
+        hour_to_publish: str="10:15",
+        playlist:str="",
+        isAgeRestriction:bool=False,
+        isNotForKid:bool=True,
+        isPaidpromotion:bool=True,
+        isAutomaticchapters:bool=True,
+        Language:int=0,
+        # input language str and get index in the availableLanguages list
+        CaptionsCertification:int=0,
+
+# 0-        None
+# 1-This content has never aired on television in the U.S.
+# 2-This content has only aired on television in the U.S. without captions
+# 3-This content has not aired on U.S. television with captions since September 30, 2012.
+# 4-This content does not fall within a category of online programming that requires captions under FCC regulations (47 C.F.R. § 79).
+# 5-The FCC and/or U.S. Congress has granted an exemption from captioning requirements for this content.
+
+        # parse from video metadata  using ffmpeg
+        VideoRecordingdate:str='',
+        VideoRecordinglocation:str='',
+        LicenceType:str='Standard YouTube License',
+        ShortsremixingType:int=0,
+        # 0-  Allow video and audio remixing
+        # 1-    Allow only audio remixing
+        # 2-   Don’t allow remixing 
+        Category:str=0,
+        # 0-Autos & Vehicles
+        # 1-Comedy
+        # 2-Education
+        # 3-Entertainment
+        # 4-Film & Animation
+        # 5-Gaming
+        # 6-Howto & Style
+        # 7-Music
+        # 8-News & Politics
+        # 9-Nonprofits & Activism
+        # 10-People & Blogs
+        # 11-Pets & Animals
+        # 12-Science & Technology
+        # 13-Sports
+        # 14-Travel & Events
+        CommentsRatingsPolicy:int =0,
+            # 0-Allow all comments
+            # 1-Hold potentially inappropriate comments for review
+            # 2-Increase strictness
+            # 3-Hold all comments for review
+            # 4-Disable comments 
+        CopyrightCheckswait:bool=True,
         tags: list = [],
-        closewhen100percentupload:bool =True
     ) -> Tuple[bool, Optional[str]]:
         """Uploads a video to YouTube.
         Returns if the video was uploaded and the video id.
@@ -94,19 +140,19 @@ class YoutubeUpload:
             browserLaunchOptionDict = {
                 "headless": headless,
                 # "executable_path": executable_path,
-                "timeout": 300000
+                "timeout": self.timeout
             }
 
             if not self.root_profile_directory:
 
-                self.browser = await self._start_browser("firefox", **browserLaunchOptionDict)
+                self.browser = await self._start_browser(self.browserType, **browserLaunchOptionDict)
                 if self.recordvideo:
                     self.context = await self.browser.new_context(record_video_dir=os.getcwd()+os.sep+"screen-recording")
                 else:
                     self.context = await self.browser.new_context()
             else:
                 self.context = await self._start_persistent_browser(
-                    "firefox", user_data_dir=self.root_profile_directory, **browserLaunchOptionDict
+                    self.browserType, user_data_dir=self.root_profile_directory, **browserLaunchOptionDict
                 )
 
         else:
@@ -119,25 +165,24 @@ class YoutubeUpload:
                 },
 
                 # timeout <float> Maximum time in milliseconds to wait for the browser instance to start. Defaults to 30000 (30 seconds). Pass 0 to disable timeout.#
-                "timeout": 300000
+                "timeout": self.timeout
             }
 
 
             if not self.root_profile_directory:
 
-                self.browser = await self._start_browser("firefox", **browserLaunchOptionDict)
+                self.browser = await self._start_browser(self.browserType, **browserLaunchOptionDict)
                 if self.recordvideo:
                     self.context = await self.browser.new_context(record_video_dir=os.getcwd()+os.sep+"screen-recording")
                 else:
                     self.context = await self.browser.new_context()
             else:
                 self.context = await self._start_persistent_browser(
-                    "firefox", user_data_dir=self.root_profile_directory, **browserLaunchOptionDict
+                    self.browserType, user_data_dir=self.root_profile_directory, **browserLaunchOptionDict
                 )
 
         self.log.debug("Firefox is now running")
         page = await self.context.new_page()
-        print('============tags',tags)
         if not videopath:
             raise FileNotFoundError(f'Could not find file with path: "{videopath}"')
 
@@ -156,14 +201,14 @@ class YoutubeUpload:
                 )
             )            
             # login_using_cookie_file(self,self.CHANNEL_COOKIES,page)         
-            await page.goto(YOUTUBE_URL,timeout=300000)
+            await page.goto(YoutubeHomePageURL,timeout= self.timeout)
 
-            await page.reload()
+            # await page.reload()
         else:
             self.log.info('Please sign in and then press enter')
             # input()
 
-            await page.goto(YOUTUBE_URL,timeout=300000)
+            await page.goto(YoutubeHomePageURL,timeout=self.timeout)
             # Interact with login form
             await self.context.clear_cookies()
             # page.click('text=Login')
@@ -190,7 +235,7 @@ class YoutubeUpload:
             )            
 
             print('success load cookie files')
-            await page.goto(YOUTUBE_URL,timeout=30000)
+            await page.goto(YoutubeHomePageURL,timeout=self.timeout)
             print('start to check login status')
 
             islogin = confirm_logged_in(page)
@@ -198,18 +243,19 @@ class YoutubeUpload:
             # https://github.com/xtekky/google-login-bypass/blob/main/login.py
 
 
-        print('check whether page in english') 
-        await changeHomePageLangIfNeeded(page)
+        print('check whether  home page is English') 
+        await changeHomePageLangIfNeeded(self,page)
         print('go to youtube studio home page') 
-        print('Start check youtube studio home page display language') 
+        await page.goto(YOUTUBE_STUDIO_URL,timeout=self.timeout)
+
+        print('double check youtube studio home page display language') 
 
         if not await page.locator('.page-title').text_content()=='Channel content':
-            print('start change locale to english again')
-            await set_channel_language_english(page)
+            print('It seems studio home page is not English,start change locale to english again')
+            await set_channel_language_english(self,page)
             print('finish change locale to english')
-        print('skip change locale to english') 
 
-        await page.goto(YOUTUBE_UPLOAD_URL)            
+        await page.goto(YOUTUBE_UPLOAD_URL,timeout=self.timeout) 
         self.log.debug("Found YouTube upload Dialog Modal")
 
 
@@ -229,15 +275,14 @@ class YoutubeUpload:
                 await page.set_input_files(INPUT_FILE_VIDEO, videopath.encode('utf-8'))
             self.log.debug(f'Trying to upload "{videopath.encode("utf-8")}" to YouTube...')
 
-        sleep(self.timeout)
     #     <h1 slot="primary-header" id="dialog-title" class="style-scope ytcp-confirmation-dialog">
     #   Verify it's you
     # </h1>
         try:
             self.log.debug(f'Trying to detect verify...')
            
-            hint=await page.locator('#dialog-title').text_content()
-            if "Verify it's you" in hint:
+            verifyvisible =await page.get_by_text("Verify it's you").is_visible()
+            if  verifyvisible :
 
     # fix google account verify
                 print('verify its you')
@@ -290,6 +335,11 @@ class YoutubeUpload:
             self.log.debug(f'Finishing detect daily upload limit...')
 
 
+       # random case of you are currently sign out ,please sigin
+       # to be fixed     
+
+        # detect video id during uploading done in the title description page
+        #.row
 
         self.log.debug(f'Trying to set "{title}" as title...')
 
@@ -300,16 +350,16 @@ class YoutubeUpload:
 
                 # TITLE
         print('click title field to input')
-        titlecontainer= page.locator(TITLE_CONTAINER)
+        # titlecontainer= page.locator(TITLE_CONTAINER)
+        await page.get_by_label("Add a title that describes your video (type @ to mention a channel)").fill(title)
+        # await titlecontainer.click()
+        # print('clear existing title')
+        # await page.keyboard.press("Backspace")
+        # await page.keyboard.press("Control+KeyA")
+        # await page.keyboard.press("Delete")
+        # print('filling new  title')
 
-        await titlecontainer.click()
-        print('clear existing title')
-        await page.keyboard.press("Backspace")
-        await page.keyboard.press("Control+KeyA")
-        await page.keyboard.press("Delete")
-        print('filling new  title')
-
-        await page.keyboard.type(title)
+        # await page.keyboard.type(title)
 
         self.log.debug(f'Trying to set "{title}" as description...')
 
@@ -322,14 +372,17 @@ class YoutubeUpload:
 
             self.log.debug(f'Trying to set "{description}" as description...')
             print('click description field to input')
-            await page.locator(DESCRIPTION_CONTAINER).click()
-            print('clear existing description')
-            await page.keyboard.press("Backspace")
-            await page.keyboard.press("Control+KeyA")
-            await page.keyboard.press("Delete")
+            await page.get_by_label("Tell viewers about your video (type @ to mention a channel)").click()
+            # await page.locator(DESCRIPTION_CONTAINER)
+
+            # print('clear existing description')
+            # await page.keyboard.press("Backspace")
+            # await page.keyboard.press("Control+KeyA")
+            # await page.keyboard.press("Delete")
             print('filling new  description')
 
-            await page.keyboard.type(description)
+            # await page.keyboard.type(description)
+            await page.get_by_label("Tell viewers about your video (type @ to mention a channel)").fill(description)
 
 
         if thumbnail:
@@ -342,16 +395,16 @@ class YoutubeUpload:
                     print('thumbnail found', thumbnail)
                     await page.locator(INPUT_FILE_THUMBNAIL).set_input_files(
                         thumbnail.encode('utf-8'))
-            sleep(self.timeout)
         try:
             self.log.debug('Trying to set video to "Not made for kids"...')
             
             kids_section=page.locator(NOT_MADE_FOR_KIDS_LABEL)
             await page.locator(NOT_MADE_FOR_KIDS_RADIO_LABEL).click()
-            sleep(self.timeout)
             print('not made for kids task done')
         except:
             print('failed to set not made for kids')
+        print('click show more button')
+        await page.locator(MORE_OPTIONS_CONTAINER).click()            
         if tags is None or tags =="" or len(tags)==0:
             pass
         else:
@@ -365,29 +418,37 @@ class YoutubeUpload:
             if len(tags) > TAGS_COUNTER:
                 print(f"Tags were not set due to exceeding the maximum allowed characters ({len(tags)}/{TAGS_COUNTER})")
                 tags=tags[:TAGS_COUNTER]
-            print('click show more button')
-            sleep(self.timeout)
-            await page.locator(MORE_OPTIONS_CONTAINER).click()
 
+
+         # show more to set Paid promotion,Automatic chapters,Featured places,Language and captions certification,
+        #  Recording date and location,License, Shorts remixing ,Comments and ratings,Category
             self.log.debug(f'Trying to set "{tags}" as tags...')
             await page.locator(TAGS_CONTAINER).locator(TEXT_INPUT).click()
+            
+            await page.get_by_label("Tags").click()
+
             print('clear existing tags')
             await page.keyboard.press("Backspace")
             await page.keyboard.press("Control+KeyA")
             await page.keyboard.press("Delete")
+            await page.get_by_label("Tags").fill(tags)
             print('filling new  tags')
-            await page.keyboard.type(tags)
 
 # Language and captions certification
 # Recording date and location
 # Shorts sampling
 # Category
-        if closewhen100percentupload==False:
+# there are 4 steps:uploading,Upload complete ... Processing will begin shortly,处理中，画质最高可为标清 ... 还剩 8 分钟,Checks complete. No issues found.
+# after uploding,there is a video link
+#after check, there is a text shows Checks complete. No issues found. and the progress bar of check is selected
+
+        if self.closewhen100percentupload==False:
+        # if "complete" in page.locator(".progress-label").text_content():
+
             pass
         else:
-            await wait_for_processing(page,process=False)
+            await wait_for_processing(page,process=self.closewhen100percentupload)
             print('uploading progress check task done')
-        # if "complete" in page.locator(".progress-label").text_content():
 
         # sometimes you have 4 tabs instead of 3
         # this handles both cases
@@ -397,6 +458,9 @@ class YoutubeUpload:
                 print('next next!')
             except:
                 pass
+
+        # if there is issue in Copyright check, mandate publishpolicy to 0
+
         if not int(publishpolicy) in [0, 1, 2]:
             publishpolicy=0
         if int(publishpolicy) == 0:
@@ -410,46 +474,31 @@ class YoutubeUpload:
             public_main_button=page.locator(PUBLIC_BUTTON)
             await page.locator(PUBLIC_RADIO_LABEL).click()
         else:
-        # mode a:release_offset exist,publish_data exist will take date value as a starting date to schedule videos
-        # mode b:release_offset not exist, publishdate exist , schedule to this specific date
-        # mode c:release_offset not exist, publishdate not exist,daily count to increment schedule from tomorrow
-        # mode d: offset exist, publish date not exist, daily count to increment with specific offset schedule from tomorrow            
-            print('date',type(publish_date),publish_date)
-            if type(publish_date)==str:
-                publish_date=datetime.fromisoformat(publish_date)
-            if release_offset and not release_offset == "0-1":
-                    print('mode a sta',release_offset)
-                    if not int(release_offset.split('-')[0]) == 0:
-                        offset = timedelta(months=int(release_offset.split(
-                            '-')[0]), days=int(release_offset.split('-')[-1]))
-                    else:
-                        offset = timedelta(days=1)
-                    if publish_date is None:
-                        publish_date =datetime(
-                            date.today().year,  date.today().month,  date.today().day, 10, 15)
-                    else:
-                        publish_date += offset
-                
+
+            if date_to_publish is None:
+                date_to_publish =datetime(
+                    date.today().year,  date.today().month,  date.today().day)
             else:
-                if publish_date is None:
-                    publish_date =datetime(
-                        date.today().year,  date.today().month,  date.today().day, 10, 15)
-                    offset = timedelta(days=1)  
-                else:
-                    publish_date = publish_date
-                # dailycount=4
+                date_to_publish = date_to_publish
 
-                # release_offset=str(int(start_index/30))+'-'+str(int(start_index)/int(setting['dailycount']))
-                
+            if hour_to_publish and hour_to_publish in availableScheduleTimes:
+                hour_to_publish=datetime.strptime(hour_to_publish, "%H:%M")
+                hour_to_publish=hour_to_publish.strftime("%I:%M %p")     
+            else:
+
+                self.log.debug(
+                f"your specified schedule time is not supported by youtube yet{hour_to_publish}")                
+                hour_to_publish="10:15"
+                hour_to_publish=hour_to_publish.strftime("%I:%M %p")     
+
             self.log.debug(
-                f"Trying to set video schedule time...{publish_date}")
+                f"Trying to set video schedule time...{date_to_publish}...{hour_to_publish}")
 
-            await setscheduletime(page,publish_date)
-            # set_time_cssSelector(page,publish_date)
+            await setscheduletime(page,date_to_publish,hour_to_publish)
         print('publish setting task done')
         video_id=await self.get_video_id(page)
         # option 1 to check final upload status
-        if closewhen100percentupload==True:
+        if self.closewhen100percentupload==True:
 
             print('start to check whether upload is finished')
             while await self.not_uploaded(page):
@@ -474,6 +523,11 @@ class YoutubeUpload:
 
         sleep(5)
         logging.info("Upload is complete")
+
+        # upload multi-language subtitles and title description
+        # https://studio.youtube.com/video/_aaNTRwoJco/translations
+        YoutubeSubtitleURL='https://studio.youtube.com/video/'+video_id+'/translations'
+
         await self.close()
         # page.locator("#close-icon-button > tp-yt-iron-icon:nth-child(1)").click()
         # print(page.expect_popup().locator("#html-body > ytcp-uploads-still-processing-dialog:nth-child(39)"))
