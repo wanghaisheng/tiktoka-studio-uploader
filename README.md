@@ -1,7 +1,7 @@
 <!-- MANPAGE: BEGIN EXCLUDED SECTION -->
 <div align="center">
 
-[![YTB-UP](https://raw.githubusercontent.com/wanghaisheng/youtube-auto-upload/master/assets/images.png)](#readme)
+[![Tiktoka Studio Uploader](https://raw.githubusercontent.com/wanghaisheng/youtube-auto-upload/master/assets/images.png)](#readme)
 
 [![Release version](https://img.shields.io/github/v/release/wanghaisheng/youtube-auto-upload?color=brightgreen&label=Download&style=for-the-badge)](#release-files "Release")
 [![PyPi](https://img.shields.io/badge/-PyPi-blue.svg?logo=pypi&labelColor=555555&style=for-the-badge)](https://pypi.org/project/ytb-up "PyPi")
@@ -261,7 +261,11 @@ We'd love to hear your feedback on our new feature! 😊
 
 
 
-## 6 feed me hamburger
+## supported sites
+
+https://github.com/wanghaisheng/youtube-auto-upload/blob/playwright/supportedsites.md
+
+you can submit an issue too
 
 
 ## Support
@@ -269,5 +273,4 @@ We'd love to hear your feedback on our new feature! 😊
 Join  forum  for debugging your issues with me
 
 
-![](  | width=100)
 <img src="https://raw.githubusercontent.com/wanghaisheng/youtube-auto-upload/playwright/assets/feishu-chatgroup.jpg" alt="" data-canonical-src="https://github.com/wanghaisheng/youtube-auto-upload/blob/playwright/assets/feishu-chatgroup.jpg" width="250" height="250" />
