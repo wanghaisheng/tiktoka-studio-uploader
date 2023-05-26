@@ -252,4 +252,4 @@ check **files_in_folder_youtube.py** to monitor videos in specific folder
 Join  forum  for debugging your issues with me
 
 
-
+![](https://github.com/wanghaisheng/youtube-auto-upload/blob/playwright/assets/feishu-chatgroup.jpg =250x250)
