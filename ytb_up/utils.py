@@ -20,23 +20,85 @@ def close_browser(self):
     self.browser.close()
     self._playwright.stop()
 
+async def VerifyDialog(self,page):
+    try:
+        self.log.debug(f'Trying to detect verify...')
+        
+        # verifyvisible =await self.page.get_by_text("Verify it's you").is_visible()
+        verifyvisible =await page.locator("#confirmation-dialog").is_visible()
+        verifyvisible1 =await page.locator("ytcp-dialog.ytcp-confirmation-dialog > tp-yt-paper-dialog:nth-child(1) > div:nth-child(1)").is_visible()
+        verifyvisible =await page.locator("#dialog-title").is_visible()
+        print('--222222-\n',verifyvisible1,verifyvisible)
+        if  verifyvisible :
+
+# fix google account verify
+            self.log.debug('verify its you')
+            # await page.click('text=Login')
+            # time.sleep(60)
+            # await page.locator('#confirm-button > div:nth-child(2)').click()
+            await page.goto('https://accounts.google.com/signin/v2/identifier?service=youtube&uilel=3&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Ddesktop%26next%3Dhttps%253A%252F%252Fstudio.youtube.com%252Freauth%26feature%3Dreauth%26authuser%3D3%26pageid%3D106691143538188646876%26skip_identity_prompt%3Dtrue&hl=en&authuser=3&rart=ANgoxcd6AUvx_ynaUmq5M6nROFwTagKglTZqT8c97xb1AEzoDasGeJ14cNlvYfH1_mJsl7us_sFLNGJskNrJyjMaIE2KklrO7Q&flowName=GlifWebSignIn&flowEntry=ServiceLogin')
+            page.locator('#identifierId')
+            self.log.debug('input username or email')
+
+            # <div class="rFrNMe N3Hzgf jjwyfe QBQrY zKHdkd sdJrJc Tyc9J" jscontroller="pxq3x" jsaction="clickonly:KjsqPd; focus:Jt1EX; blur:fpfTEe; input:Lg5SV" jsshadow="" jsname="Vsb5Ub"><div class="aCsJod oJeWuf"><div class="aXBtI Wic03c"><div class="Xb9hP"><input type="email" class="whsOnd zHQkBf" jsname="YPqjbf" autocomplete="username" spellcheck="false" tabindex="0" aria-label="Email or phone" name="identifier" autocapitalize="none" id="identifierId" dir="ltr" data-initial-dir="ltr" data-initial-value=""><div jsname="YRMmle" class="AxOyFc snByac" aria-hidden="true">Email or phone</div></div><div class="i9lrp mIZh1c"></div><div jsname="XmnwAc" class="OabDMe cXrdqd Y2Zypf"></div></div></div><div class="LXRPh"><div jsname="ty6ygf" class="ovnfwe Is7Fhb"></div><div jsname="B34EJ" class="dEOOab RxsGPe" aria-atomic="true" aria-live="assertive"></div></div></div>
+
+            await page.fill('input[name="identifier"]', self.username)
+
+            await page.locator('.VfPpkd-LgbsSe-OWXEXe-k8QpJ > span:nth-child(4)').click()
+            time.sleep(10)
+
+            await page.fill('input[name="password"]', self.password)
+            time.sleep(10)
+
+            await page.locator('.VfPpkd-LgbsSe-OWXEXe-k8QpJ > span:nth-child(4)').click()
+            # await page.click('text=Submit')
+
+            Stephint=await page.locator('.bCAAsb > form:nth-child(1) > span:nth-child(1) > section:nth-child(1) > header:nth-child(1) > div:nth-child(1)').text_content()
+            self.log.debug(Stephint)
+            if "2-Step Verification" in Stephint:            
+# <div class="L9iFZc" role="presentation" jsname="NjaE2c"><h2 class="kV95Wc TrZEUc"><span jsslot="" jsname="Ud7fr">2-Step Verification</span></h2><div class="yMb59d" jsname="HSrbLb" aria-hidden="true"></div></div>            
+            # <span jsslot="" jsname="Ud7fr">2-Step Verification</span>
+                self.log.debug('you need google auth and sms very code')
+                time.sleep(60)
+            # await page.locator('#confirm-button > div:nth-child(2)').click()
+
+    except:
+        self.log.debug('there is no verification at all')
+    self.log.debug(f'Finishing detect verification...')
+
 async def changeHomePageLangIfNeeded(self,localPage):
     await localPage.goto(YoutubeHomePageURL,timeout=self.timeout)
     try:
-        await localPage.get_by_label("Account menu").wait_for()
-        await localPage.get_by_label("Account menu").click()   
+        if (await localPage.get_by_label("Account").is_visible()):
+            await localPage.get_by_label("Account").click()   
+
+        else:
+
+            if (await localPage.locator(avatarButtonSelector).is_visible()):
+                await localPage.locator(avatarButtonSelector).click()   
 
     except Exception:
         print('Avatar/Profile picture button not found : ' )
-        await localPage.locator(avatarButtonSelector).click()
+        # print('detect avartar',await localPage.locator(avatarButtonSelector).is_visible())
 
+        # await localPage.locator(avatarButtonSelector).click()
+    truelangMenuItemSelector=''
     try:
-        await localPage.locator(langMenuItemSelector).wait_for()
+        if( await localPage.locator(langMenuItemSelector).is_visible()):
+
+            await localPage.locator(langMenuItemSelector).click()
+            truelangMenuItemSelector =langMenuItemSelector
+        else:
+            langMenuItemSelector2='yt-multi-page-menu-section-renderer.style-scope:nth-child(3) > div:nth-child(2) > ytd-compact-link-renderer:nth-child(2)'
+            if(await localPage.locator(langMenuItemSelector2).is_visible()):
+                await localPage.locator(langMenuItemSelector2).click()
+                truelangMenuItemSelector =langMenuItemSelector2
+
     except:
         print('Language menu item selector/button(">") not found : ')
-        await localPage.locator(langMenuItemSelector).click()
 
-    selectedLang = await localPage.evaluate('(langMenuItemSelector) => document.querySelector(langMenuItemSelector).innerText',langMenuItemSelector)
+    selectedLang = await localPage.evaluate(f"document.querySelector({truelangMenuItemSelector}).innerText")
+    print(f'home page language setting is {selectedLang}')
 
     if (not selectedLang):
         print('Failed to find selected language : Empty text')
@@ -61,23 +123,49 @@ async def changeHomePageLangIfNeeded(self,localPage):
 
 
     return 
-async def set_channel_language_english(self,page):
-    await page.goto(YoutubeHomePageURL,timeout=self.timeout)
+async def set_channel_language_english(self,localPage):
+    await localPage.goto(YoutubeHomePageURL,timeout=self.timeout)
     try:
-        print('Click your profile icon .')
-        await page.locator(avatarButtonSelector).click()
-        print(' Click Language or Location icon')
-        await page.locator(langMenuItemSelector).click()
-        print('choose the language or location you like to use.')
-        await page.locator(selector_en_path).click()
-        # await selector_en.click()
+        print('detect your account profile icon .')
 
-        if "English" in await page.locator(selector_en_path).text_content():
-            return True
+        if (await localPage.get_by_label("Account").is_visible()):
+            await localPage.get_by_label("Account").click()   
+
         else:
-            return False
-    except TimeoutError:
-        return False
+
+            if (await localPage.locator(avatarButtonSelector).is_visible()):
+                await localPage.locator(avatarButtonSelector).click()   
+
+    except Exception:
+        print('Avatar/Profile picture button not found : ' )
+    truelangMenuItemSelector=''
+
+    try:
+        print('detect language setting .')
+
+        if( await localPage.locator(langMenuItemSelector).is_visible()):
+
+            await localPage.locator(langMenuItemSelector).click()
+            truelangMenuItemSelector =langMenuItemSelector
+        else:
+            langMenuItemSelector2='yt-multi-page-menu-section-renderer.style-scope:nth-child(3) > div:nth-child(2) > ytd-compact-link-renderer:nth-child(2)'
+            if(await localPage.locator(langMenuItemSelector2).is_visible()):
+                await localPage.locator(langMenuItemSelector2).click()
+                truelangMenuItemSelector =langMenuItemSelector2
+
+    except:
+        print('Language menu item selector/button(">") not found : ')
+
+
+
+        if not "English" in await localPage.locator(truelangMenuItemSelector).text_content():
+            
+
+            print('choose the language or location you like to use.')
+            if (await localPage.locator(selector_en_path)):
+                await localPage.locator(selector_en_path).click()        
+        else:
+            print("your youtube homepage language setting is already in English")
 # fix google account verifys
 
 
@@ -106,20 +194,47 @@ async def verify(self, page):
 
 
 async def wait_for_processing(page, process):
-    if process == True:
+    if process:
         # Wait for processing to complete
         progress_label =  page.locator(
             "span.progress-label")
-        pattern = re.compile(
+        aftercheckpattern = re.compile(
             r"(finished processing)|(processing hd.*)|(check.*)")
-        current_progress = await progress_label.text_content()
+        afterprocessingpattern = re.compile(
+            r"(finished processing)|(processing hd.*)")
+        afteruploadpattern = re.compile(
+            r"(finished uploading)|(uploading 99.*)")     
+        if process==2:
+            pattern=aftercheckpattern
+        elif process==1:
+            pattern=afterprocessingpattern
+        elif process==0:
+            pattern=afteruploadpattern
+          
+        current_progress = await progress_label.all_text_contents()
+        current_progress=''.join(current_progress)
+        print('===============\n',type(current_progress))
         last_progress = None
+        print(f'current_progress is : {current_progress}\n{not pattern.match(current_progress.lower())}')
         while not pattern.match(current_progress.lower()):
             if last_progress != current_progress:
                 logging.info(f'Current progress: {current_progress}')
             last_progress = current_progress
             sleep(5)
-            current_progress = await progress_label.text_content()
+            current_progress = await progress_label.all_text_contents()
+            current_progress=''.join(current_progress)
+
+            print(f'current_progress is : {current_progress}\n{not pattern.match(current_progress.lower())}')
+
+            if "Processing 99" in current_progress:
+                print("Finished Processing!")
+                sleep(10)
+                break
+            elif "Upload complete" in current_progress:
+                print("Finished Processing!")
+                sleep(10)
+                break
+        print('==========',last_progress)
     else:
         while True:
 
@@ -169,7 +284,14 @@ async def setscheduletime(page,date_to_publish,hour_to_publish):
     # hour_xpath=get_hour_xpath(hour_to_publish)
     # Clicking in schedule video
     print('choose  schedule publish')
-    await page.locator(SCHEDULE_BUTTON).click()
+    try:
+        if(await page.locator(SCHEDULE_BUTTON).is_visible()):
+            await page.locator(SCHEDULE_BUTTON).click()
+    except:
+        if(await page.get_by_text("Schedule").is_visible()):
+            await page.get_by_text("Schedule").click()
+        else:
+            print('we could not find the schedule button')
     # Writing date
     print('click date')
     await page.locator('#datepicker-trigger > ytcp-dropdown-trigger:nth-child(1) > div:nth-child(2) > div:nth-child(4)').click()
@@ -470,4 +592,3 @@ def uploadTikTok(username, tiktok, deletionStatus, file):
             if file is not None:
                 file.write(str(tiktok))
                 file.write('\n')
-

@@ -15,3 +15,5 @@ screen-recording/*
 *.html
 onefile-*.py
 batch_files_*.py
+*.json
+debug.sh

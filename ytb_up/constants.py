@@ -41,7 +41,7 @@ DOUYIN_UP2='.semi-switch-native-control'
 
 WEIXIN_URL="https://channels.weixin.qq.com/post/create"
 YOUTUBE_URL = "https://www.youtube.com/?persist_gl=1&gl=US&persist_hl=1&hl=en"
-YOUTUBE_STUDIO_URL = "https://studio.youtube.com"
+YOUTUBE_STUDIO_URL = "https://studio.youtube.com/?persist_gl=1&gl=US&persist_hl=1&hl=en"
 YOUTUBE_UPLOAD_URL = "https://www.youtube.com/upload?persist_gl=1&gl=US&persist_hl=1&hl=en"
 USER_WAITING_TIME = 1
 
@@ -75,7 +75,7 @@ TEXT_INPUT = "#text-input"
 NOT_MADE_FOR_KIDS_RADIO_LABEL = "tp-yt-paper-radio-button.ytkc-made-for-kids-select:nth-child(2) > div:nth-child(2) > ytcp-ve:nth-child(1)"
 DONE_BUTTON = "//*[@id='done-button']"
 NEXT_BUTTON = "//*[@id='next-button']"
-PUBLIC_RADIO_LABEL ="tp-yt-paper-radio-button.style-scope:nth-child(19)"
+PUBLIC_RADIO_LABEL ="//*[@id='radioContainer']"
 PRIVATE_RADIO_LABEL ="#private-radio-button > div:nth-child(1)"
 
 

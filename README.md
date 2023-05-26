@@ -126,31 +126,67 @@ AS a code dummy, I do accept any advice because my only purpose is to get things
 
 
 ## USAGE
-if there's anything you don't understand, just google it first, for example firefox profile
+if there's anything you don't understand, submit an issue or cantact me
 
-1. Download the lastest Firefox, open a new tab and insert:    
+### for those beginner
+
+checkout the GUI version.
+
+### for those not that tech savy
+
+1. install python on your computer. if you do not know how ,check here
 ```
-about:profiles
+https://docs.python.org/3.9/using/index.html
 ```
-一般来说 一个youtube帐号要新建一个profile
-文件夹可以选在assets下
 
-2.install the Firefox addon, **Cookie-Editor**，mannually login into your Youtube channel，click the profile icon, choose English language, export and save as cookie.json 
+3. just  download zip from here
+ 
+```
+https://github.com/wanghaisheng/youtube-auto-upload/archive/refs/heads/playwright.zip
+```
+
+4. unzip this into anywhere you like，open terminal:
+
+```
+pip install -r requirements.txt
+
+python setup.py install
+```
+
+4. get cookies for your youtube channel without any efforts,for those proxy setting, adjust the code as you wish.If your gmail account have many youtube accounts, after login in, you need switch to the channel you want video uploading to. then you can close the openning browser.
 
 
+```
+python firstStart.py
+```
 
-3. if you want to modify source code, use as a library for your project, pls do    
+5. run upload demo
+
+```
+python onefile-example_youtube.py
+```
+
+### for those tech guy
+
+1. we recommend you setup 2FA for youtube channel 
+
+2. install python on your computer. if you do not know how ,check here
+```
+https://docs.python.org/3.9/using/index.html
+```
+
+3. download code     
 ```
 
 git clone https://github.com/wanghaisheng/youtube-auto-upload
 
 pip install -r requirements.txt
 
-python onefile-example.py 
-
-all codes under **ytb_up**, twist them as you wish
+python setup.py install
 
 ```
+all codes under **ytb_up**, twist them as you wish
+
 
 4. There is a selenium and playwright version, choose the one you like
 switch branches to find it
@@ -160,14 +196,13 @@ switch branches to find it
 pip install ytb-up
 ```
 
-6. to get started edit onefile-example.py and enter in your CHANNEL_COOKIES path, videopath etc. Then run the file.
 
-# features YOU MAY NEED
+## features YOU MAY NEED
 
-# 1. proxy support
+### 1. proxy support
 auto detect whether need a proxy 
 
-# 2. cookie support
+### 2. cookie support
 for those with multiple channels under the one Google account
 
 
@@ -179,37 +214,42 @@ manually change all occurances of no_restriction in your cookies.json file to
 >        "sameSite": "None",
 
 
-# 3. schedule time publish
+###  3. schedule time publish
 
 you can explictly specify a date and time for each video or you can set publish policy and daily public count, for example, daily count is 4, you got 5 videos, then first 4 will be published 1 day after the upload date, the other 1 will be 2 days after the upload date
 
-# 4. fix Google account verify
+### 4. fix Google account verify
 
 if auto verify is not working, you need to manually input verification code into your browser
 
 
-# 5. batch support
+### 5. bulk videos and batch videos support
 
 check **files_in_excel_youtube.py** to load video meta from a excel template
 
 check **files_in_folder_youtube.py** to monitor videos in specific folder
 
 
-THANKS TO
-1. https://github.com/ContentAutomation/YouTubeUploader
-2. https://github.com/offish/opplast
-3. other I CAN NOT REMEMBER
+## THANKS TO
+
+* 1. https://github.com/ContentAutomation/YouTubeUploader    
+
+* 2. https://github.com/offish/opplast
+
+* 3. https://github.com/fawazahmed0/youtube-uploader
+
+* 4. https://github.com/linouk23/youtube_uploader_selenium
+
+* other I CAN NOT REMEMBER
 
 
 
-# 6 feed me hamburger
+## 6 feed me hamburger
 
 
-# 7. Join Online video chat and easily share your desktop for debugging your issues with me
+## Support
 
-https://vdo.ninja/?room=Youtube_Auto_Upload&broadcast
+Join  forum  for debugging your issues with me
 
-
-https://api.ossinsight.io/share/6c3c07e5-1957-4ecb-b0eb-30799badfd1b
 
 
