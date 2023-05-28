@@ -97,16 +97,15 @@ def getCookie(browserType:str="firefox",proxyserver:str='',channelname:str='yout
     
     if browserType in ['firefox','webkit','']:
         if proxyserver:
-            command="playwright codegen -b "+browserType+ " --proxy-server "+proxyserver+" --lang 'en-GB' --save-storage="+channelname+"-cookie.json https://www.youtube.com/upload?persist_gl=1"
+            command="playwright codegen -b "+browserType+ " --device 'iPhone 12' --proxy-server "+proxyserver+" --lang 'en-GB' --save-storage="+channelname+"-cookie.json https://www.youtube.com/upload?persist_gl=1"
         else:
-            command="playwright codegen -b "+browserType+" --lang 'en-GB' --save-storage="+channelname+"-cookie.json https://www.youtube.com/upload?persist_gl=1"       
+            command="playwright codegen -b "+browserType+"  --device 'iPhone 12' --lang 'en-GB' --save-storage="+channelname+"-cookie.json https://www.youtube.com/upload?persist_gl=1"       
         result = subprocess.run(
             command,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             shell=True
         )
-
 
         
 
