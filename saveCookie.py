@@ -93,19 +93,20 @@ def runBrowser():
             f"\n[INSTALL_PYDEPS] Attempt '{step_name}' -> Run '{' '.join(step_arglist)}'\n"
         )
         attempt(step_arglist, max_attempts=3, name=step_name)
-def getCookie(browserType:str="firefox",proxyserver:str='',channelname:str='youtube-channel'):
+def getCookie(browserType:str="firefox",proxyserver:str='',channelname:str='youtube-channel',url:str="www.youtube.com"):
     
     if browserType in ['firefox','webkit','']:
         if proxyserver:
-            command="playwright codegen -b "+browserType+ " --device 'iPhone 12' --proxy-server "+proxyserver+" --lang 'en-GB' --save-storage="+channelname+"-cookie.json https://www.youtube.com/upload?persist_gl=1"
+            command="playwright codegen -b "+browserType+ " --device 'iPhone 12' --proxy-server "+proxyserver+" --lang 'en-GB' --save-storage="+channelname+"-cookie.json "+url
         else:
-            command="playwright codegen -b "+browserType+"  --device 'iPhone 12' --lang 'en-GB' --save-storage="+channelname+"-cookie.json https://www.youtube.com/upload?persist_gl=1"       
+            command="playwright codegen -b "+browserType+"  --device 'iPhone 12' --lang 'en-GB' --save-storage="+channelname+"-cookie.json "+url       
         result = subprocess.run(
             command,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             shell=True
         )
+
 
         
 
@@ -133,5 +134,15 @@ if __name__ == "__main__":
         runBrowser()
     else:
         print('Tiktoka Studio requirements-browser have intalled')        
-    # getCookie()
-    getCookie(browserType='firefox',proxyserver='socks5://127.0.0.1:1080',channelname='fastlane')
+    sites=[
+        'https://www.youtube.com/upload?persist_gl=1',
+        'https://www.tiktok.com',
+        'https://www.douyin.com'
+    ]
+    # channelname is your account name or something else
+    # for youtube
+    getCookie(browserType='firefox',proxyserver='socks5://127.0.0.1:1080',channelname='',url=sites[0])
+    #for tiktok
+    # getCookie(browserType='firefox',proxyserver='socks5://127.0.0.1:1080',channelname='',url=sites[1])
+    #for douyin
+    # getCookie(browserType='firefox',proxyserver='socks5://127.0.0.1:1080',channelname='',url=sites[2])
