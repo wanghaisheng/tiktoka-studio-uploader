@@ -26,9 +26,8 @@ async def VerifyDialog(self,page):
         
         # verifyvisible =await self.page.get_by_text("Verify it's you").is_visible()
         verifyvisible =await page.locator("#confirmation-dialog").is_visible()
-        verifyvisible1 =await page.locator("ytcp-dialog.ytcp-confirmation-dialog > tp-yt-paper-dialog:nth-child(1) > div:nth-child(1)").is_visible()
-        verifyvisible =await page.locator("#dialog-title").is_visible()
-        print('--222222-\n',verifyvisible1,verifyvisible)
+        # verifyvisible1 =await page.locator("ytcp-dialog.ytcp-confirmation-dialog > tp-yt-paper-dialog:nth-child(1) > div:nth-child(1)").is_visible()
+        # verifyvisible =await page.locator("#dialog-title").is_visible()
         if  verifyvisible :
 
 # fix google account verify
@@ -124,7 +123,11 @@ async def changeHomePageLangIfNeeded(self,localPage):
 
     return 
 async def set_channel_language_english(self,localPage):
-    await localPage.goto(YoutubeHomePageURL,timeout=self.timeout)
+    try:
+        await localPage.goto(YoutubeHomePageURL,timeout=self.timeout)
+    except:
+        self.log.debug('failed to youtube studio home page due to network issue,pls check your speed') 
+
     try:
         print('detect your account profile icon .')
 
@@ -198,42 +201,49 @@ async def wait_for_processing(page, process):
         # Wait for processing to complete
         progress_label =  page.locator(
             "span.progress-label")
-        aftercheckpattern = re.compile(
-            r"(finished processing)|(processing hd.*)|(check.*)")
+        pattern = re.compile(
+            r"(finished processing)|(processing up to.*)|(check.*)")
         afterprocessingpattern = re.compile(
             r"(finished processing)|(processing hd.*)")
         afteruploadpattern = re.compile(
             r"(finished uploading)|(uploading 99.*)")     
-        if process==2:
-            pattern=aftercheckpattern
-        elif process==1:
-            pattern=afterprocessingpattern
-        elif process==0:
-            pattern=afteruploadpattern
+        # if process==2:
+        #     pattern=aftercheckpattern
+        # elif process==1:
+        #     pattern=afterprocessingpattern
+        # elif process==0:
+        #     pattern=afteruploadpattern
           
         current_progress = await progress_label.all_text_contents()
         current_progress=''.join(current_progress)
-        print('===============\n',type(current_progress))
         last_progress = None
         print(f'current_progress is : {current_progress}\n{not pattern.match(current_progress.lower())}')
-        while not pattern.match(current_progress.lower()):
+        while  not pattern.match(current_progress.lower()):
             if last_progress != current_progress:
                 logging.info(f'Current progress: {current_progress}')
             last_progress = current_progress
             sleep(5)
             current_progress = await progress_label.all_text_contents()
-            current_progress=''.join(current_progress)
+            current_progress=''.join(current_progress).lower()
 
-            print(f'current_progress is : {current_progress}\n{not pattern.match(current_progress.lower())}')
+            if process==2:
+                if "Checks complete. No issues found" in current_progress:
+                    print(f'current_progress is : {current_progress}\n{not pattern.match(current_progress.lower())}')
 
-            if "Processing 99" in current_progress:
-                print("Finished Processing!")
-                sleep(10)
-                break
-            elif "Upload complete" in current_progress:
-                print("Finished Processing!")
-                sleep(10)
-                break
+                    print("Finished Copyright checks!")
+                    break
+            elif process==1:
+                if "finished processing" in current_progress:
+                    print(f'current_progress is : {current_progress}\n{not pattern.match(current_progress.lower())}')
+
+                    print("Finished Processing!")
+                    break
+            elif process==0:
+                if "Upload complete" in current_progress:
+                    print(f'current_progress is : {current_progress}\n{not pattern.match(current_progress.lower())}')
+
+                    print("Finished Uploading!")
+                    break
         print('==========',last_progress)
     else:
         while True:
@@ -330,7 +340,6 @@ async def setscheduletime(page,date_to_publish,hour_to_publish):
     await page.keyboard.press("Control+KeyA")
     await page.keyboard.press("Delete")
     await page.keyboard.type(hour_to_publish)
-
     # time_list=await page.locator(
     #     "tp-yt-paper-item.tp-yt-paper-item")
     # Transform time into required format: 8:15 PM
