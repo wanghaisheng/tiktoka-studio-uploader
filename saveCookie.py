@@ -6,48 +6,57 @@ import time
 
 
 def checkPLInstalled():
+    print("start to check Tiktoka Studio requirements whether playwright intalled")
 
-    print('start to check Tiktoka Studio requirements whether playwright intalled')
-    
     try:
         from playwright.sync_api import Page, expect, sync_playwright
+
         return True
     except ImportError as error:
-        print(error,':( not found')
+        print(error, ":( not found")
         return False
+
+
 def checkBrowserInstalled():
-    
     try:
-        print('start to check Tiktoka Studio requirements whether playwright browser intalled')
-        
-        from playwright.sync_api import sync_playwright    
+        print(
+            "start to check Tiktoka Studio requirements whether playwright browser intalled"
+        )
+
+        from playwright.sync_api import sync_playwright
+
         with sync_playwright() as p:
-            print('start to check Tiktoka Studio requirements whether chromium intalled')
-        
+            print(
+                "start to check Tiktoka Studio requirements whether chromium intalled"
+            )
+
             try:
                 browser = p.chromium.launch()
                 return True
-                    
+
             except:
                 return False
-            print('start to check Tiktoka Studio requirements whether webkit/edge intalled')
-            
+            print(
+                "start to check Tiktoka Studio requirements whether webkit/edge intalled"
+            )
+
             try:
                 browser = p.webkit.launch()
                 return True
-                                    
+
             except:
                 return False
-            print('start to check Tiktoka Studio requirements whether firefox intalled')
-            
+            print("start to check Tiktoka Studio requirements whether firefox intalled")
+
             try:
                 browser = p.firefox.launch()
                 return True
-                                    
+
             except:
-                return False           
+                return False
     except:
         return False
+
 
 def attempt(arg_list, max_attempts=1, name=""):
     retries = 0
@@ -83,6 +92,7 @@ def runPl():
         )
         attempt(step_arglist, max_attempts=3, name=step_name)
 
+
 def runBrowser():
     steps = {
         "step1": """playwright install""".split(" "),
@@ -93,56 +103,78 @@ def runBrowser():
             f"\n[INSTALL_PYDEPS] Attempt '{step_name}' -> Run '{' '.join(step_arglist)}'\n"
         )
         attempt(step_arglist, max_attempts=3, name=step_name)
-def getCookie(browserType:str="firefox",proxyserver:str='',channelname:str='youtube-channel',url:str="www.youtube.com"):
-    
-    if browserType in ['firefox','webkit','']:
+
+
+def getCookie(
+    browserType: str = "firefox",
+    proxyserver: str = "",
+    channelname: str = "youtube-channel",
+    url: str = "www.youtube.com",
+):
+    if browserType in ["firefox", "webkit", ""]:
         if proxyserver:
-            command="playwright codegen -b "+browserType+ " --device 'iPhone 12' --proxy-server "+proxyserver+" --lang 'en-GB' --save-storage="+channelname+"-cookie.json "+url
+            command = (
+                "playwright codegen -b "
+                + browserType
+                # + " --device 'iPhone 12' "
+                + " --proxy-server "
+                + proxyserver
+                + " --lang 'en-GB' --save-storage="
+                + channelname
+                + "-cookie.json "
+                + url
+            )
         else:
-            command="playwright codegen -b "+browserType+"  --device 'iPhone 12' --lang 'en-GB' --save-storage="+channelname+"-cookie.json "+url       
+            command = (
+                "playwright codegen -b "
+                + browserType
+                # + " --device 'iPhone 12' "
+                + " --lang 'en-GB' --save-storage="
+                + channelname
+                + "-cookie.json "
+                + url
+            )
         result = subprocess.run(
-            command,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            shell=True
+            command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
         )
-
-
-        
-
+        print(result)
         if result.returncode:
-            print(f'failed to save cookie file:{result.stderr}')
+            print(f"failed to save cookie file:{result.stderr}")
         else:
-
-            print('just check your cookie file',channelname+'-cookie.json')
+            print("just check your cookie file", channelname + "-cookie.json")
 
 
 if __name__ == "__main__":
-    print('start to check Tiktoka Studio requirements whether  intalled')
-    
-    plinstall=checkPLInstalled()
-    browserinstall=checkBrowserInstalled()
-    if plinstall==False:
-        print('Tiktoka Studio requirements-playwright not intalled')
-        
+    print("start to check Tiktoka Studio requirements whether  intalled")
+
+    plinstall = checkPLInstalled()
+    browserinstall = checkBrowserInstalled()
+    if plinstall == False:
+        print("Tiktoka Studio requirements-playwright not intalled")
+
         runPl()
     else:
-        print('Tiktoka Studio requirements-playwright have intalled')
-    if browserinstall==False:
-        print('Tiktoka Studio requirements-browser not intalled')
-        
+        print("Tiktoka Studio requirements-playwright have intalled")
+    if browserinstall == False:
+        print("Tiktoka Studio requirements-browser not intalled")
+
         runBrowser()
     else:
-        print('Tiktoka Studio requirements-browser have intalled')        
-    sites=[
-        'https://www.youtube.com/upload?persist_gl=1',
-        'https://www.tiktok.com',
-        'https://www.douyin.com'
+        print("Tiktoka Studio requirements-browser have intalled")
+    sites = [
+        "https://www.youtube.com/upload?persist_gl=1",
+        "https://www.tiktok.com",
+        "https://www.douyin.com",
     ]
     # channelname is your account name or something else
     # for youtube
-    getCookie(browserType='firefox',proxyserver='socks5://127.0.0.1:1080',channelname='',url=sites[0])
-    #for tiktok
-    # getCookie(browserType='firefox',proxyserver='socks5://127.0.0.1:1080',channelname='',url=sites[1])
-    #for douyin
+    # getCookie(browserType='firefox',proxyserver='socks5://127.0.0.1:1080',channelname='',url=sites[0])
+    # for tiktok
+    getCookie(
+        browserType="firefox",
+        proxyserver="socks5://127.0.0.1:1080",
+        channelname="",
+        url=sites[1],
+    )
+    # for douyin
     # getCookie(browserType='firefox',proxyserver='socks5://127.0.0.1:1080',channelname='',url=sites[2])

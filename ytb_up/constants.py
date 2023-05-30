@@ -111,7 +111,7 @@ VIDEO_URL_CONTAINER = "//span[@class='video-url-fadeable style-scope ytcp-video-
 TITLE_CONTAINER = "#title-textarea"
 
 DESCRIPTION_CONTAINER = "//*[@id='description-wrapper']"
-MORE_OPTIONS_CONTAINER = "#toggle-button > div:nth-child(2)"
+MORE_OPTIONS_CONTAINER = "#toggle-button"
 TIME_BETWEEN_POSTS = 3600
 # COUNTERS
 TAGS_COUNTER = 500
