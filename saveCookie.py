@@ -116,7 +116,8 @@ def getCookie(
             command = (
                 "playwright codegen -b "
                 + browserType
-                # + " --device 'iPhone 12' "
+                # + ' --device "iPhone 12" '
+                + ' --device "iPad Pro 11 landscape" '
                 + " --proxy-server "
                 + proxyserver
                 + " --lang 'en-GB' --save-storage="
@@ -128,7 +129,7 @@ def getCookie(
             command = (
                 "playwright codegen -b "
                 + browserType
-                # + " --device 'iPhone 12' "
+                + ' --device "iPhone 12" '
                 + " --lang 'en-GB' --save-storage="
                 + channelname
                 + "-cookie.json "
@@ -165,16 +166,17 @@ if __name__ == "__main__":
         "https://www.youtube.com/upload?persist_gl=1",
         "https://www.tiktok.com",
         "https://www.douyin.com",
+        "https://www.tiktok.com/login/phone-or-email/email",
     ]
     # channelname is your account name or something else
     # for youtube
     # getCookie(browserType='firefox',proxyserver='socks5://127.0.0.1:1080',channelname='',url=sites[0])
     # for tiktok
     getCookie(
-        browserType="firefox",
+        browserType="webkit",
         proxyserver="socks5://127.0.0.1:1080",
         channelname="",
-        url=sites[1],
+        url=sites[3],
     )
     # for douyin
     # getCookie(browserType='firefox',proxyserver='socks5://127.0.0.1:1080',channelname='',url=sites[2])
