@@ -2,14 +2,21 @@ import json
 from .constants import *
 from .logging import Log
 from .exceptions import *
-from .utils import *
+from .youtubeHelper import *
 import os
 from .login import *
 from time import sleep
 from datetime import datetime, date, timedelta
 import logging
-from playwright.async_api import async_playwright, expect
+from playwright.async_api import async_playwright, Response, expect
 import random
+from .utils.webdriver.setupPL import *
+from .utils.webdriver import (
+    PlaywrightAsyncDriver,
+    InterceptResponse,
+    InterceptRequest,
+)
+from .utils.webdriver import webdriver_pool_pl, WebDriverPoolPlayWright
 
 
 class YoutubeUpload:
@@ -40,7 +47,7 @@ class YoutubeUpload:
         self.root_profile_directory = root_profile_directory
         self.proxy_option = proxy_option
         self.watcheveryuploadstep = watcheveryuploadstep
-        self._playwright = ""
+        self._browser = ""
         self.browserType = browserType
         self.context = ""
         self.page = ""
@@ -184,71 +191,76 @@ class YoutubeUpload:
         else:
             print(f"CommentsRatingsPolicy:{CommentsRatingsPolicy}")
 
-        self._playwright = await self._start_playwright()
-        #     browser = p.chromium.launch()
-
         # proxy_option = "socks5://127.0.0.1:1080"
 
         headless = True
         if self.watcheveryuploadstep:
             headless = False
         self.log.debug(f"whether run in view mode:{headless}")
+
+        print("start to check Tiktoka Studio requirements whether  intalled")
+
+        plinstall = checkPLInstalled()
+        browserinstall = checkBrowserInstalled()
+        if plinstall == False:
+            print("Tiktoka Studio requirements-playwright not intalled")
+
+            runPl()
+        else:
+            print("Tiktoka Studio requirements-playwright have intalled")
+        if browserinstall == False:
+            print("Tiktoka Studio requirements-browser not intalled")
+
+            runBrowser()
+        else:
+            print("Tiktoka Studio requirements-browser have intalled")
+
         if self.proxy_option == "":
             self.log.debug(f"start web page without proxy:{self.proxy_option}")
-
-            browserLaunchOptionDict = {
-                "headless": headless,
-                # "executable_path": executable_path,
-                "timeout": self.timeout,
-            }
-
-            if not self.root_profile_directory:
-                self.browser = await self._start_browser(
-                    self.browserType, **browserLaunchOptionDict
-                )
-                if self.recordvideo:
-                    self.context = await self.browser.new_context(
-                        record_video_dir=os.getcwd() + os.sep + "screen-recording"
-                    )
-                else:
-                    self.context = await self.browser.new_context()
-            else:
-                self.context = await self._start_persistent_browser(
-                    self.browserType,
-                    user_data_dir=self.root_profile_directory,
-                    **browserLaunchOptionDict,
-                )
+            # PLAYWRIGHT=dict(
+            #     user_agent=None,  # 字符串 或 无参函数，返回值为user_agent
+            #     proxy=None,  # xxx.xxx.xxx.xxx:xxxx 或 无参函数，返回值为代理地址
+            #     headless=False,  # 是否为无头浏览器
+            #     driver_type="chromium",  # chromium、firefox、webkit
+            #     timeout=30,  # 请求超时时间
+            #     window_size=(1024, 800),  # 窗口大小
+            #     executable_path=None,  # 浏览器路径，默认为默认路径
+            #     download_path=None,  # 下载文件的路径
+            #     render_time=0,  # 渲染时长，即打开网页等待指定时间后再获取源码
+            #     wait_until="networkidle",  # 等待页面加载完成的事件,可选值："commit", "domcontentloaded", "load", "networkidle"
+            #     use_stealth_js=False,  # 使用stealth.min.js隐藏浏览器特征
+            #     # page_on_event_callback=dict(response=on_response),  # 监听response事件
+            #     # page.on() 事件的回调 如 page_on_event_callback={"dialog": lambda dialog: dialog.accept()}
+            #     storage_state_path=None,  # 保存浏览器状态的路径
+            #     url_regexes=["wallpaper/list"],  # 拦截接口，支持正则，数组类型
+            #     save_all=True,  # 是否保存所有拦截的接口
+            # )
+            with PlaywrightAsyncDriver(
+                proxy=None,
+                driver_type="firefox",
+                timeout=30,
+                use_stealth_js=True,
+            ) as browser:
+                self._browser = browser.browser
+                self.context = browser.context
+                self.page = browser.page
+            self.log.debug(f"Firefox is now running without proxy:{self.proxy_option}")
 
         else:
-            self.log.debug("start web page with proxy")
+            with PlaywrightAsyncDriver(
+                proxy=self.proxy_option,
+                driver_type="firefox",
+                timeout=30,
+                use_stealth_js=True,
+            ) as browser:
+                await browser._setup()
+                print(browser, "===============")
 
-            browserLaunchOptionDict = {
-                "headless": headless,
-                "proxy": {
-                    "server": self.proxy_option,
-                },
-                # timeout <float> Maximum time in milliseconds to wait for the browser instance to start. Defaults to 30000 (30 seconds). Pass 0 to disable timeout.#
-                "timeout": self.timeout,
-            }
+                self._browser = browser.browser
+                self.context = browser.context
+                self.page = browser.page
 
-            if not self.root_profile_directory:
-                self.browser = await self._start_browser(
-                    self.browserType, **browserLaunchOptionDict
-                )
-                if self.recordvideo:
-                    self.context = await self.browser.new_context(
-                        record_video_dir=os.getcwd() + os.sep + "screen-recording"
-                    )
-                else:
-                    self.context = await self.browser.new_context()
-            else:
-                self.context = await self._start_persistent_browser(
-                    self.browserType,
-                    user_data_dir=self.root_profile_directory,
-                    **browserLaunchOptionDict,
-                )
-
-        self.log.debug("Firefox is now running")
+            self.log.debug(f"Firefox is now running with proxy:{self.proxy_option}")
         if not videopath:
             raise FileNotFoundError(f'Could not find file with path: "{videopath}"')
 
@@ -892,7 +904,7 @@ class YoutubeUpload:
             "https://studio.youtube.com/video/" + video_id + "/translations"
         )
 
-        await self.close()
+        await self._browser.quit()
         # page.locator("#close-icon-button > tp-yt-iron-icon:nth-child(1)").click()
         # self.log.debug(page.expect_popup().locator("#html-body > ytcp-uploads-still-processing-dialog:nth-child(39)"))
         # page.wait_for_selector("ytcp-dialog.ytcp-uploads-still-processing-dialog > tp-yt-paper-dialog:nth-child(1)")
@@ -912,59 +924,59 @@ class YoutubeUpload:
 
         return video_id
 
-    # @staticmethod
-    async def _start_playwright(self):
-        #  sync_playwright().start()
-        return await async_playwright().start()
+    # # @staticmethod
+    # async def _start_playwright(self):
+    #     #  sync_playwright().start()
+    #     return await async_playwright().start()
 
-    async def _start_browser(self, browsertype: str, **kwargs):
-        if browsertype == "chromium":
-            return await self._playwright.chromium.launch(**kwargs)
+    # async def _start_browser(self, browsertype: str, **kwargs):
+    #     if browsertype == "chromium":
+    #         return await self._playwright.chromium.launch(**kwargs)
 
-        if browsertype == "firefox":
-            return await self._playwright.firefox.launch(**kwargs)
-            # if self.recordvideo:
-            #     return await self._playwright.firefox.launch(record_video_dir=os.path.abspath('')+os.sep+"screen-recording", **kwargs)
-            # else:
-            #     return await self._playwright.firefox.launch( **kwargs)
+    #     if browsertype == "firefox":
+    #         return await self._playwright.firefox.launch(**kwargs)
+    #         # if self.recordvideo:
+    #         #     return await self._playwright.firefox.launch(record_video_dir=os.path.abspath('')+os.sep+"screen-recording", **kwargs)
+    #         # else:
+    #         #     return await self._playwright.firefox.launch( **kwargs)
 
-        if browsertype == "webkit":
-            return await self._playwright.webkit.launch(**kwargs)
+    #     if browsertype == "webkit":
+    #         return await self._playwright.webkit.launch(**kwargs)
 
-        raise RuntimeError(
-            "You have to select either 'chromium', 'firefox', or 'webkit' as browser."
-        )
+    #     raise RuntimeError(
+    #         "You have to select either 'chromium', 'firefox', or 'webkit' as browser."
+    #     )
 
-    async def _start_persistent_browser(
-        self, browser: str, user_data_dir: Optional[Union[str, Path]], **kwargs
-    ):
-        if browser == "chromium":
-            return await self._playwright.chromium.launch_persistent_context(
-                user_data_dir, **kwargs
-            )
-        if browser == "firefox":
-            self.browser = await self._playwright.firefox.launch(**kwargs)
+    # async def _start_persistent_browser(
+    #     self, browser: str, user_data_dir: Optional[Union[str, Path]], **kwargs
+    # ):
+    #     if browser == "chromium":
+    #         return await self._playwright.chromium.launch_persistent_context(
+    #             user_data_dir, **kwargs
+    #         )
+    #     if browser == "firefox":
+    #         self.browser = await self._playwright.firefox.launch(**kwargs)
 
-            if self.recordvideo:
-                return await self._playwright.firefox.launch_persistent_context(
-                    user_data_dir,
-                    record_video_dir=os.path.abspath("") + os.sep + "screen-recording",
-                    **kwargs,
-                )
-            else:
-                return await self._playwright.firefox.launch_persistent_context(
-                    user_data_dir, **kwargs
-                )
+    #         if self.recordvideo:
+    #             return await self._playwright.firefox.launch_persistent_context(
+    #                 user_data_dir,
+    #                 record_video_dir=os.path.abspath("") + os.sep + "screen-recording",
+    #                 **kwargs,
+    #             )
+    #         else:
+    #             return await self._playwright.firefox.launch_persistent_context(
+    #                 user_data_dir, **kwargs
+    #             )
 
-        if browser == "webkit":
-            return await self._playwright.webkit.launch_persistent_context(
-                user_data_dir, **kwargs
-            )
+    #     if browser == "webkit":
+    #         return await self._playwright.webkit.launch_persistent_context(
+    #             user_data_dir, **kwargs
+    #         )
 
-        raise RuntimeError(
-            "You have to select either 'chromium', 'firefox' or 'webkit' as browser."
-        )
+    #     raise RuntimeError(
+    #         "You have to select either 'chromium', 'firefox' or 'webkit' as browser."
+    #     )
 
-    async def close(self):
-        await self.browser.close()
-        await self._playwright.stop()
+    # async def close(self):
+    #     await self.browser.close()
+    #     await self._playwright.stop()
