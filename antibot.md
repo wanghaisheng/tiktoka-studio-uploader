@@ -27,7 +27,10 @@ https://github.com/QIN2DIM/undetected-playwright/tree/main
 https://github.com/AtuboDad/playwright_stealth/issues
 https://github.com/Vinyzu/Botright
 
-https://github.com/vvanglro/cf-clearance/tree/main
+## other fake method
+
+> 这个用的和 stealth js 不是一套 js，需要根据 bot 检验网站看看区别在哪里，
+> https://github.com/vvanglro/cf-clearance/tree/main
 
 ## manually
 
