@@ -1,32 +1,42 @@
 import json
-from tkinter import EXCEPTION
-from xmlrpc.client import boolean
 from .constants import *
 from .logging import Log
 from .exceptions import *
-from .utils import *
+from .youtubeHelper import *
 import os
 from .login import *
 from time import sleep
 from datetime import datetime, date, timedelta
 import logging
-from playwright.async_api import async_playwright
+import random
+from .utils.webdriver import (
+    PlaywrightAsyncDriver,
+    InterceptResponse,
+    InterceptRequest,
+)
+from playwright.async_api import Page, expect, Playwright, Browser, BrowserContext
+from cf_clearance import async_cf_retry, async_stealth
 
 
-class DouyinUpload:
+class TiktokUpload:
     def __init__(
         self,
         root_profile_directory: str,
         proxy_option: str = "",
-        timeout: int = 3,
-        watcheveryuploadstep: bool = True,
+        timeout: int = 200 * 1000,
+        headless: bool = True,
         debug: bool = True,
         username: str = "",
         password: str = "",
+        recoveryemail: str = "",
+        browserType: Literal["chromium", "firefox", "webkit"] = "firefox",
+        login_method: Literal["mailpassword", "phone", "qrcode"] = "mailpassword",
+        # 'chromium', 'firefox', or 'webkit'
         CHANNEL_COOKIES: str = "",
-        login_method: str = "phone",
-        ytb_cookies: str = "",
-        tiktok_cookies: str = "",
+        closewhen100percent: int = 2,
+        # 0-uploading done
+        # 1-Processing done
+        # 2-Checking done
         recordvideo: bool = False,
     ) -> None:
         self.timeout = timeout
@@ -36,16 +46,37 @@ class DouyinUpload:
         self.CHANNEL_COOKIES = CHANNEL_COOKIES
         self.root_profile_directory = root_profile_directory
         self.proxy_option = proxy_option
-        self.watcheveryuploadstep = watcheveryuploadstep
-        self.ytb_cookies = ytb_cookies
-        self.tiktok_cookies = tiktok_cookies
-        self._playwright = ""
-        self.browser = ""
-        self.login_method = "qrcode"
-        self.context = ""
-        self.page = ""
+        self.headless = headless
+        self.browserType = browserType
+        self.login_method = login_method
+        self.pl: Playwright = None
+        self.browser: Browser = None
+        self.context: BrowserContext = None
+        self.page: Page = None
+        self.closewhen100percent = closewhen100percent
         self.recordvideo = recordvideo
-        # self.setup()
+
+    def send(self, element, text: str) -> None:
+        element.clear()
+        sleep(self.timeout)
+        element.send_keys(text)
+        sleep(self.timeout)
+
+    async def click_next(self, page) -> None:
+        await page.locator(NEXT_BUTTON).click()
+        sleep(random(5 * 1000, self.timeout))
+
+    async def not_uploaded(self, page) -> bool:
+        s = await page.locator(STATUS_CONTAINER).text_content()
+        return s.find(UPLOADED) != -1
+
+    async def not_processed(self, page) -> bool:
+        s = await page.locator(STATUS_CONTAINER).text_content()
+        return s.find(PROCESSED) != -1
+
+    async def not_copyrightchecked(self, page) -> bool:
+        s = await page.locator(STATUS_CONTAINER).text_content()
+        return s.find(CHECKED) != -1
 
     async def upload(
         self,
@@ -53,94 +84,179 @@ class DouyinUpload:
         title: str = "",
         description: str = "",
         thumbnail: str = "",
-        publishpolicy: str = 0,
-        # mode a:release_offset exist,publish_data exist will take date value as a starting date to schedule videos
-        # mode b:release_offset not exist, publishdate exist , schedule to this specific date
-        # mode c:release_offset not exist, publishdate not exist,daily count to increment schedule from tomorrow
-        # mode d: offset exist, publish date not exist, daily count to increment with specific offset schedule from tomorrow
-        release_offset: str = "0-1",
-        publish_date: datetime = datetime(
-            date.today().year, date.today().month, date.today().day, 10, 15
+        publishpolicy: Optional[int] = 0,
+        date_to_publish: Optional[datetime] = datetime(
+            date.today().year, date.today().month, date.today().day
         ),
-        tags: list = [],
-        location: str = "",
+        hour_to_publish: Optional[str] = "10:15",
+        playlist: Optional[str] = None,
         miniprogram: str = "",
         hottopic: str = "",
         heji: str = "",
         up2toutiao: bool = False,
         allow2save: bool = True,
         allow2see: str = "公开",
-        closewhen100percentupload: bool = True,
+        VideoLanguage: Optional[str] = None,
+        # input language str and get index in the availableLanguages list
+        CaptionsCertification: Optional[int] = 0,
+        # parse from video metadata  using ffmpeg
+        location: Optional[str] = None,
+        VideoRecordinglocation: Optional[str] = None,
+        LicenceType: Optional[int] = 0,
+        isAllowEmbedding: Optional[bool] = True,
+        isPublishToSubscriptionsFeedNotify: Optional[bool] = True,
+        ShortsremixingType: Optional[int] = 0,
+        Category: Optional[str] = None,
+        CommentsRatingsPolicy: Optional[int] = 1,
+        isShowHowManyLikes: Optional[bool] = True,
+        tags: list = [],
     ) -> Tuple[bool, Optional[str]]:
-        """Uploads a video to douyin.
+        """Uploads a video to YouTube.
         Returns if the video was uploaded and the video id.
         """
-        self._playwright = await self._start_playwright()
-        #     browser = p.chromium.launch()
+        print(f"default closewhen100percent:{self.closewhen100percent}")
+        video_id = None
+        if hour_to_publish and hour_to_publish not in availableScheduleTimes:
+            self.log.debug(
+                f"you give a invalid hour_to_publish:{self.hour_to_publish}, ,try to choose one of them{availableScheduleTimes},we change it to  default 10:15"
+            )
+            hour_to_publish = "10:15"
+        if (
+            self.closewhen100percent
+            and self.closewhen100percent not in closewhen100percentOptions
+        ):
+            self.log.debug(
+                f"you give a invalid closewhen100percent:{self.closewhen100percent}, ,try to choose one of them{closewhen100percentOptions},we change it to  default 2"
+            )
+            self.closewhen100percent = 2
+
+        if publishpolicy and publishpolicy not in PublishpolicyOptions:
+            self.log.debug(
+                f"you give a invalid publishpolicy:{publishpolicy} ,try to choose one of them{PublishpolicyOptions},we change it to  default 0"
+            )
+            publishpolicy = 0
+        else:
+            print(f"publishpolicy:{publishpolicy}")
+        if VideoLanguage is not None:
+            if VideoLanguage and VideoLanguage not in VideoLanguageOptions:
+                self.log.debug(
+                    f"you give a invalid VideoLanguage:{VideoLanguage} ,try to choose one of them{VideoLanguageOptions},we change it to  default None"
+                )
+                VideoLanguage = None
+            else:
+                print(f"VideoLanguage:{VideoLanguage}")
+
+        if (
+            CaptionsCertification
+            and CaptionsCertification not in CaptionsCertificationOptions
+        ):
+            self.log.debug(
+                f"you give a invalid publishpolicy:{CaptionsCertification} ,try to choose one of them{CaptionsCertificationOptions},we change it to  default 0"
+            )
+            CaptionsCertification = 0
+        else:
+            print(f"CaptionsCertification:{CaptionsCertification}")
+
+        if LicenceType and LicenceType not in LicenceTypeOptions:
+            self.log.debug(
+                f"you give a invalid LicenceType:{LicenceType} ,try to choose one of them{LicenceTypeOptions},we change it to  default 0"
+            )
+            LicenceType = 0
+        else:
+            print(f"LicenceType:{LicenceType}")
+
+        if ShortsremixingType and ShortsremixingType not in ShortsremixingTypeOptions:
+            self.log.debug(
+                f"you give a invalid ShortsremixingType:{ShortsremixingType} ,try to choose one of them{ShortsremixingTypeOptions},we change it to  default 0"
+            )
+            ShortsremixingType = 0
+        else:
+            print(f"ShortsremixingType:{ShortsremixingType}")
+
+        if Category is not None:
+            if Category and Category not in CategoryOptions:
+                self.log.debug(
+                    f"you give a invalid Category:{Category} ,try to choose one of them{CategoryOptions},we change it to  default None"
+                )
+                Category = None
+            else:
+                print(f"Category:{Category}")
+        if (
+            CommentsRatingsPolicy
+            and CommentsRatingsPolicy not in CommentsRatingsPolicyOptions
+        ):
+            self.log.debug(
+                f"you give a invalid CommentsRatingsPolicy:{CommentsRatingsPolicy} ,try to choose one of them{CommentsRatingsPolicyOptions},we change it to  default 1"
+            )
+            CommentsRatingsPolicy = 1
+        else:
+            print(f"CommentsRatingsPolicy:{CommentsRatingsPolicy}")
 
         # proxy_option = "socks5://127.0.0.1:1080"
+
         headless = True
-        if self.watcheveryuploadstep:
+        if self.headless:
             headless = False
-        print("whether run in view mode", headless)
+        else:
+            headless = True
+        self.log.debug(f"whether run in view mode:{headless}")
+
         if self.proxy_option == "":
-            print("start web page without proxy")
+            self.log.debug(f"start web page without proxy:{self.proxy_option}")
 
-            browserLaunchOptionDict = {
-                "headless": headless,
-                # "executable_path": executable_path,
-                "timeout": 30000,
-            }
+            with PlaywrightAsyncDriver(
+                proxy=None,
+                driver_type=self.browserType,
+                headless=headless,
+                timeout=30,
+                use_stealth_js=True,
+            ) as pl:
+                await pl._setup()
+                self.pl = pl
 
-            if not self.root_profile_directory:
-                self.browser = await self._start_browser(
-                    "firefox", **browserLaunchOptionDict
-                )
-                if self.recordvideo:
-                    self.context = await self.browser.new_context(
-                        record_video_dir=os.getcwd() + os.sep + "screen-recording"
-                    )
-                else:
-                    self.context = await self.browser.new_context()
-            else:
-                self.context = await self._start_persistent_browser(
-                    "firefox",
-                    user_data_dir=self.root_profile_directory,
-                    **browserLaunchOptionDict,
-                )
+                self._browser = pl.browser
+                self.context = pl.context
+                self.page = pl.page
+            self.log.debug(
+                f"{self.browserType} is now running without proxy:{self.proxy_option}"
+            )
 
         else:
-            print("start web page with proxy")
+            with PlaywrightAsyncDriver(
+                proxy=self.proxy_option,
+                driver_type=self.browserType,
+                timeout=30,
+                headless=headless,
+                use_stealth_js=True,
+            ) as pl:
+                await pl._setup()
+                self.pl = pl
 
-            browserLaunchOptionDict = {
-                "headless": headless,
-                "proxy": {
-                    "server": self.proxy_option,
-                },
-                # timeout <float> Maximum time in milliseconds to wait for the browser instance to start. Defaults to 30000 (30 seconds). Pass 0 to disable timeout.#
-                "timeout": 30000,
-            }
+                self._browser = pl.browser
+                self.context = pl.context
+                self.page = pl.page
 
-            if not self.root_profile_directory:
-                self.browser = await self._start_browser(
-                    "firefox", **browserLaunchOptionDict
-                )
-                if self.recordvideo:
-                    self.context = await self.browser.new_context(
-                        record_video_dir=os.getcwd() + os.sep + "screen-recording"
-                    )
-                else:
-                    self.context = await self.browser.new_context()
-            else:
-                self.context = await self._start_persistent_browser(
-                    "firefox",
-                    user_data_dir=self.root_profile_directory,
-                    **browserLaunchOptionDict,
-                )
+            self.log.debug(
+                f"{self.browserType} is now running with proxy:{self.proxy_option}"
+            )
 
-        self.log.debug("Firefox is now running")
+            # check fakebrowser to bypass captcha and security violations
+        await botcheck(pl)
+
+        await self.page.evaluate(
+            "document.body.appendChild(Object.assign(document.createElement('script'), {src: 'https://gitcdn.xyz/repo/berstend/puppeteer-extra/stealth-js/stealth.min.js'}))"
+        )
+        await async_stealth(self.page, pure=True)
+        # store the stealth state to reload next time
+        # await botcheck(pl)
+        await self.page.context.storage_state(
+            path="tiktok-stealth-"
+            + datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+            + ".json"
+        )
+
         await self.context.grant_permissions(["geolocation"])
-        page = await self.context.new_page()
+        page = self.page
         print("============tags", tags)
         if not videopath:
             raise FileNotFoundError(f'Could not find file with path: "{videopath}"')
@@ -152,39 +268,52 @@ class DouyinUpload:
             cookies = await format_cookie_file(self.CHANNEL_COOKIES)
             await self.context.add_cookies(cookies)
 
-            await page.goto(DOUYIN_URL, timeout=300000)
+            await page.goto(TIKTOK_URL, timeout=300000)
 
             await page.reload()
         else:
             self.log.debug("Please sign in and then press enter")
             # input()
-
-            await page.goto(DOUYIN_URL, timeout=300000)
+            await page.goto(TIKTOK_URL, timeout=300000)
             # Interact with login form
 
-            await self.context.clear_cookies()
-            await page.locator(".login").click()
-            await page.locator(".semi-button-content").click()
-            if self.login_method == "phone-verify":
-                await page.locator("div.semi-tabs-tab:nth-child(2)").click()
-                await page.locator(".toggle").click()
-                time.sleep(30)
-
-            elif self.login_method == "password":
-                print("not recommend")
-                time.sleep(10)
-                await page.fill(".semi-input-wrapper__with-prefix", self.username)
-                await page.fill(
-                    "div.semi-form-field:nth-child(2)>div>div>input", self.password
+            # await self.context.clear_cookies()
+            # await page.locator(".login").click()
+            # await page.locator(".semi-button-content").click()
+            if self.username and self.password:
+                self.log.debug(
+                    "there is no cookie file,but you give account/pass,try to login automatically"
                 )
-                await page.locaotr(".agreement >img").click()
-            elif self.login_method == "qrcode":
-                print("pls open douyin to scan this qrcode")
-                time.sleep(30)
+                await tiktok_login(self, self.username, self.password)
+            else:
+                self.log.debug(
+                    "there is no cookie file ,no  account/pass,we need you manually aiding to login in"
+                )
+                if self.login_method == "phone-verify":
+                    await page.locator("div.semi-tabs-tab:nth-child(2)").click()
+                    await page.locator(".toggle").click()
+                    time.sleep(60)
+
+                elif self.login_method == "mailpassword":
+                    print("not recommend")
+                    time.sleep(60)
+                    # await page.fill(".semi-input-wrapper__with-prefix", self.username)
+                    # await page.fill(
+                    #     "div.semi-form-field:nth-child(2)>div>div>input", self.password
+                    # )
+                    # await page.locaotr(".agreement >img").click()
+                    await tiktok_login(self, self.username, self.password)
+
+                elif self.login_method == "qrcode":
+                    print("pls open douyin to scan this qrcode")
+                    time.sleep(60)
 
             # page.click('text=Submit')
             sleep(USER_WAITING_TIME)
-            storage = await self.context.storage_state(path=self.CHANNEL_COOKIES)
+            storage = await self.context.storage_state(path=self.username + ".json")
+            self.log.debug(
+                f'we save cookies for next time reload:{self.username + ".json"}'
+            )
         await self.context.grant_permissions(["geolocation"])
 
         try:
@@ -211,7 +340,7 @@ class DouyinUpload:
             await self.context.add_cookies(cookies)
 
             print("success load cookie files")
-            await page.goto(DOUYIN_URL, timeout=300000)
+            await page.goto(TIKTOK_URL, timeout=300000)
             print("start to check login status")
 
             islogin = confirm_logged_in_douyin(page)

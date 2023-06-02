@@ -7,7 +7,7 @@ from playwright.async_api import *
 from .constants import *
 from pathlib import Path
 import os
-from typing import Tuple, Optional, Union
+from typing import Tuple, Optional, Union, Literal
 
 
 def get_path(file_path: str) -> str:

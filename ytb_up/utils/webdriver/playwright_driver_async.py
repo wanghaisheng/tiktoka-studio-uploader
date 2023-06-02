@@ -107,8 +107,10 @@ class PlaywrightAsyncDriver(WebDriver):
             if self._isRecodingVideo:
                 self.context = await self.browser.new_context(
                     user_agent=user_agent,
-                    screen=view_size,
+                    no_viewport=True,
+                    # Sets a consistent viewport for each page. Defaults to an 1280x720 viewport. no_viewport disables the fixed viewport.
                     viewport=view_size,
+                    screen=view_size,
                     proxy=proxy,
                     storage_state=self.storage_state_path,
                     record_video_dir=os.getcwd() + os.sep + "screen-recording",
@@ -116,8 +118,10 @@ class PlaywrightAsyncDriver(WebDriver):
             else:
                 self.context = await self.browser.new_context(
                     user_agent=user_agent,
-                    screen=view_size,
+                    no_viewport=True,
+                    # Sets a consistent viewport for each page. Defaults to an 1280x720 viewport. no_viewport disables the fixed viewport.
                     viewport=view_size,
+                    screen=view_size,
                     proxy=proxy,
                     storage_state=self.storage_state_path,
                 )

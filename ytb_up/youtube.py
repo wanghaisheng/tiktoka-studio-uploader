@@ -16,6 +16,7 @@ from .utils.webdriver import (
 )
 from playwright.async_api import Page, expect
 from cf_clearance import async_cf_retry, async_stealth
+from playwright.async_api import Playwright, Browser, BrowserContext
 
 
 class YoutubeUpload:
@@ -24,15 +25,15 @@ class YoutubeUpload:
         root_profile_directory: str,
         proxy_option: str = "",
         timeout: int = 200 * 1000,
-        watcheveryuploadstep: bool = True,
+        headless: bool = True,
         debug: bool = True,
         username: str = "",
         password: str = "",
         recoveryemail: str = "",
-        browserType: str = "firefox",
+        browserType: Literal["chromium", "firefox", "webkit"] = "firefox",
         # 'chromium', 'firefox', or 'webkit'
         CHANNEL_COOKIES: str = "",
-        closewhen100percent: int = 2,
+        closewhen100percent: Literal[0, 1, 2] = 2,
         # 0-uploading done
         # 1-Processing done
         # 2-Checking done
@@ -45,15 +46,14 @@ class YoutubeUpload:
         self.CHANNEL_COOKIES = CHANNEL_COOKIES
         self.root_profile_directory = root_profile_directory
         self.proxy_option = proxy_option
-        self.watcheveryuploadstep = watcheveryuploadstep
-        self._browser = ""
+        self.headless = headless
         self.browserType = browserType
-        self.context = ""
-        self.page = ""
-
+        self.pl: Playwright = None
+        self.browser: Browser = None
+        self.context: BrowserContext = None
+        self.page: Page = None
         self.closewhen100percent = closewhen100percent
         self.recordvideo = recordvideo
-        self.pl = ""
 
     def send(self, element, text: str) -> None:
         element.clear()
@@ -193,7 +193,7 @@ class YoutubeUpload:
         # proxy_option = "socks5://127.0.0.1:1080"
 
         headless = True
-        if self.watcheveryuploadstep:
+        if self.headless:
             headless = False
         self.log.debug(f"whether run in view mode:{headless}")
 
@@ -244,7 +244,9 @@ class YoutubeUpload:
         # store the stealth state to reload next time
         # await botcheck(pl)
         await self.page.context.storage_state(
-            path="stealth-" + datetime.now().strftime("%Y-%m-%d-%H:%M:%S") + ".json"
+            path="youtube-stealth-"
+            + datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+            + ".json"
         )
         if not videopath:
             raise FileNotFoundError(f'Could not find file with path: "{videopath}"')

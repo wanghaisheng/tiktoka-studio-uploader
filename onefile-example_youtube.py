@@ -134,7 +134,7 @@ upload = YoutubeUpload(
     # use r"" for paths, this will not give formatting errors e.g. "\n"
     root_profile_directory="",
     proxy_option=proxy_option,
-    watcheveryuploadstep=True,
+    headless=False,
     # if you want to silent background running, set watcheveryuploadstep false
     CHANNEL_COOKIES=CHANNEL_COOKIES,
     username=username,
