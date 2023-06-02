@@ -152,6 +152,7 @@ class PlaywrightAsyncDriver(WebDriver):
                 os.path.dirname(__file__), "../js/" + local_filename
             )
 
+            print("using stealth")
             with requests.get(url, stream=True) as r:
                 r.raise_for_status()
                 with open(latest_path, "wb") as f:
@@ -169,9 +170,11 @@ class PlaywrightAsyncDriver(WebDriver):
                 comp = filecmp.cmp(latest_path, path, shallow=False)
                 if comp:
                     os.remove(latest_path)
+                    print("stealth is latest ")
                 else:
                     os.remove(path)
                     os.rename(latest_path, path)
+                    print("stealth is  upgraded just now ")
 
             await self.context.add_init_script(path=path)
 
@@ -256,7 +259,7 @@ class PlaywrightAsyncDriver(WebDriver):
 
         """
         if isinstance(val, list):
-            self.page.context.add_cookies(val)
+            await self.page.context.add_cookies(val)
         else:
             cookies = []
             for key, value in val.items():

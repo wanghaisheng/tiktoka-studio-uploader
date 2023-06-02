@@ -8,15 +8,14 @@ from .login import *
 from time import sleep
 from datetime import datetime, date, timedelta
 import logging
-from playwright.async_api import async_playwright, Response, expect
 import random
-from .utils.webdriver.setupPL import *
 from .utils.webdriver import (
     PlaywrightAsyncDriver,
     InterceptResponse,
     InterceptRequest,
 )
-from .utils.webdriver import webdriver_pool_pl, WebDriverPoolPlayWright
+from playwright.async_api import Page, expect
+from cf_clearance import async_cf_retry, async_stealth
 
 
 class YoutubeUpload:
@@ -54,7 +53,7 @@ class YoutubeUpload:
 
         self.closewhen100percent = closewhen100percent
         self.recordvideo = recordvideo
-        # self.setup()
+        self.pl = ""
 
     def send(self, element, text: str) -> None:
         element.clear()
@@ -198,69 +197,57 @@ class YoutubeUpload:
             headless = False
         self.log.debug(f"whether run in view mode:{headless}")
 
-        print("start to check Tiktoka Studio requirements whether  intalled")
-
-        plinstall = checkPLInstalled()
-        browserinstall = checkBrowserInstalled()
-        if plinstall == False:
-            print("Tiktoka Studio requirements-playwright not intalled")
-
-            runPl()
-        else:
-            print("Tiktoka Studio requirements-playwright have intalled")
-        if browserinstall == False:
-            print("Tiktoka Studio requirements-browser not intalled")
-
-            runBrowser()
-        else:
-            print("Tiktoka Studio requirements-browser have intalled")
-
         if self.proxy_option == "":
             self.log.debug(f"start web page without proxy:{self.proxy_option}")
-            # PLAYWRIGHT=dict(
-            #     user_agent=None,  # 字符串 或 无参函数，返回值为user_agent
-            #     proxy=None,  # xxx.xxx.xxx.xxx:xxxx 或 无参函数，返回值为代理地址
-            #     headless=False,  # 是否为无头浏览器
-            #     driver_type="chromium",  # chromium、firefox、webkit
-            #     timeout=30,  # 请求超时时间
-            #     window_size=(1024, 800),  # 窗口大小
-            #     executable_path=None,  # 浏览器路径，默认为默认路径
-            #     download_path=None,  # 下载文件的路径
-            #     render_time=0,  # 渲染时长，即打开网页等待指定时间后再获取源码
-            #     wait_until="networkidle",  # 等待页面加载完成的事件,可选值："commit", "domcontentloaded", "load", "networkidle"
-            #     use_stealth_js=False,  # 使用stealth.min.js隐藏浏览器特征
-            #     # page_on_event_callback=dict(response=on_response),  # 监听response事件
-            #     # page.on() 事件的回调 如 page_on_event_callback={"dialog": lambda dialog: dialog.accept()}
-            #     storage_state_path=None,  # 保存浏览器状态的路径
-            #     url_regexes=["wallpaper/list"],  # 拦截接口，支持正则，数组类型
-            #     save_all=True,  # 是否保存所有拦截的接口
-            # )
+
             with PlaywrightAsyncDriver(
                 proxy=None,
-                driver_type="firefox",
+                driver_type=self.browserType,
                 timeout=30,
                 use_stealth_js=True,
-            ) as browser:
-                self._browser = browser.browser
-                self.context = browser.context
-                self.page = browser.page
-            self.log.debug(f"Firefox is now running without proxy:{self.proxy_option}")
+            ) as pl:
+                await pl._setup()
+                # print(pl, "===============")
+                self.pl = pl
+
+                self._browser = pl.browser
+                self.context = pl.context
+                self.page = pl.page
+            self.log.debug(
+                f"{self.browserType} is now running without proxy:{self.proxy_option}"
+            )
 
         else:
             with PlaywrightAsyncDriver(
                 proxy=self.proxy_option,
-                driver_type="firefox",
+                driver_type=self.browserType,
                 timeout=30,
                 use_stealth_js=True,
-            ) as browser:
-                await browser._setup()
-                print(browser, "===============")
+            ) as pl:
+                await pl._setup()
+                print(pl, "===============")
+                self.pl = pl
 
-                self._browser = browser.browser
-                self.context = browser.context
-                self.page = browser.page
+                self._browser = pl.browser
+                self.context = pl.context
+                self.page = pl.page
 
-            self.log.debug(f"Firefox is now running with proxy:{self.proxy_option}")
+            self.log.debug(
+                f"{self.browserType} is now running with proxy:{self.proxy_option}"
+            )
+
+            # check fakebrowser to bypass captcha and security violations
+        await botcheck(pl)
+
+        await self.page.evaluate(
+            "document.body.appendChild(Object.assign(document.createElement('script'), {src: 'https://gitcdn.xyz/repo/berstend/puppeteer-extra/stealth-js/stealth.min.js'}))"
+        )
+        await async_stealth(self.page, pure=True)
+        # store the stealth state to reload next time
+        # await botcheck(pl)
+        await self.page.context.storage_state(
+            path="stealth-" + datetime.now().strftime("%Y-%m-%d-%H:%M:%S") + ".json"
+        )
         if not videopath:
             raise FileNotFoundError(f'Could not find file with path: "{videopath}"')
 
@@ -279,7 +266,7 @@ class YoutubeUpload:
                     json.load(open(self.CHANNEL_COOKIES, "r"))["cookies"]
                 )
 
-                self.page = await self.context.new_page()
+                # self.page = await self.context.new_page()
 
         except:
             print("your should provide a valid cookie file")
@@ -329,8 +316,12 @@ class YoutubeUpload:
             await page.goto(YOUTUBE_UPLOAD_URL, timeout=self.timeout)
         except:
             self.log.debug(
-                f"failed to youtube studio upload page{YOUTUBE_UPLOAD_URL} due to network issue,pls check your speed"
+                f"failed to load youtube studio upload page:{YOUTUBE_UPLOAD_URL} due to network issue,pls check your speed"
             )
+
+        await expect(
+            page.get_by_role("button", name="Details", exact=True)
+        ).to_be_visible()
 
         self.log.debug("Found YouTube upload Dialog Modal")
 
@@ -401,6 +392,8 @@ class YoutubeUpload:
             await page.keyboard.press("Control+KeyA")
             await page.keyboard.press("Delete")
             await page.keyboard.type(title)
+            # 很可能就是这个没有确认输入，导致悬浮窗口，无法获取提交按钮
+            await page.keyboard.press("Enter")
             self.log.debug("filling new  title")
         except:
             self.log.debug("failed to set title")
@@ -428,6 +421,8 @@ class YoutubeUpload:
             await page.keyboard.press("Control+KeyA")
             await page.keyboard.press("Delete")
             await page.keyboard.type(description)
+            await page.keyboard.press("Enter")
+
             self.log.debug("filling new  description")
         except:
             self.log.debug("failed to set description")
@@ -852,28 +847,22 @@ class YoutubeUpload:
         # await page.click('#save-button')
         # done-button > div:nth-child(2)
         self.log.debug("trying to click done button")
-        await page.pause()
 
-        await expect(page.get_by_role("button", name="Schedule")).to_be_visible()
-        done_button = page.get_by_role("button", name="Schedule")
-        await page.get_by_role("button", name="Schedule").click()
+        # await expect(page.get_by_role("button", name="Schedule")).to_be_visible()
+        # done_button = page.get_by_role("button", name="Schedule")
+        # await page.get_by_role("button", name="Schedule").click()
 
-        await expect(page.locator(DONE_BUTTON)).to_be_visible()
-        done_button = page.locator(DONE_BUTTON)
-        print(done_button)
+        # await expect(page.locator(DONE_BUTTON_CSS_SELECTOR)).to_be_visible()
+        # done_button = page.locator(DONE_BUTTON_CSS_SELECTOR)
+        # print(done_button)
 
-        if await done_button.get_attribute("aria-disabled") == "true":
-            error_message = await page.locator(ERROR_CONTAINER).text_content()
-            return False, error_message
+        # if await done_button.get_attribute("aria-disabled") == "true":
+        #     error_message = await page.locator(ERROR_CONTAINER).text_content()
+        #     return False, error_message
 
-        await done_button.click()
-        if (
-            await page.get_by_role("button", name="Schedule").get_attribute(
-                "aria-disabled"
-            )
-            == "false"
-        ):
-            await page.get_by_role("button", name="Schedule").click()
+        # await done_button.click()
+        # if await done_button.get_attribute("aria-disabled") == "false":
+        #     await done_button.click()
 
         try:
             # done-button
@@ -904,7 +893,7 @@ class YoutubeUpload:
             "https://studio.youtube.com/video/" + video_id + "/translations"
         )
 
-        await self._browser.quit()
+        await self.pl.quit()
         # page.locator("#close-icon-button > tp-yt-iron-icon:nth-child(1)").click()
         # self.log.debug(page.expect_popup().locator("#html-body > ytcp-uploads-still-processing-dialog:nth-child(39)"))
         # page.wait_for_selector("ytcp-dialog.ytcp-uploads-still-processing-dialog > tp-yt-paper-dialog:nth-child(1)")
@@ -923,60 +912,3 @@ class YoutubeUpload:
             raise VideoIDError("Could not get video ID")
 
         return video_id
-
-    # # @staticmethod
-    # async def _start_playwright(self):
-    #     #  sync_playwright().start()
-    #     return await async_playwright().start()
-
-    # async def _start_browser(self, browsertype: str, **kwargs):
-    #     if browsertype == "chromium":
-    #         return await self._playwright.chromium.launch(**kwargs)
-
-    #     if browsertype == "firefox":
-    #         return await self._playwright.firefox.launch(**kwargs)
-    #         # if self.recordvideo:
-    #         #     return await self._playwright.firefox.launch(record_video_dir=os.path.abspath('')+os.sep+"screen-recording", **kwargs)
-    #         # else:
-    #         #     return await self._playwright.firefox.launch( **kwargs)
-
-    #     if browsertype == "webkit":
-    #         return await self._playwright.webkit.launch(**kwargs)
-
-    #     raise RuntimeError(
-    #         "You have to select either 'chromium', 'firefox', or 'webkit' as browser."
-    #     )
-
-    # async def _start_persistent_browser(
-    #     self, browser: str, user_data_dir: Optional[Union[str, Path]], **kwargs
-    # ):
-    #     if browser == "chromium":
-    #         return await self._playwright.chromium.launch_persistent_context(
-    #             user_data_dir, **kwargs
-    #         )
-    #     if browser == "firefox":
-    #         self.browser = await self._playwright.firefox.launch(**kwargs)
-
-    #         if self.recordvideo:
-    #             return await self._playwright.firefox.launch_persistent_context(
-    #                 user_data_dir,
-    #                 record_video_dir=os.path.abspath("") + os.sep + "screen-recording",
-    #                 **kwargs,
-    #             )
-    #         else:
-    #             return await self._playwright.firefox.launch_persistent_context(
-    #                 user_data_dir, **kwargs
-    #             )
-
-    #     if browser == "webkit":
-    #         return await self._playwright.webkit.launch_persistent_context(
-    #             user_data_dir, **kwargs
-    #         )
-
-    #     raise RuntimeError(
-    #         "You have to select either 'chromium', 'firefox' or 'webkit' as browser."
-    #     )
-
-    # async def close(self):
-    #     await self.browser.close()
-    #     await self._playwright.stop()

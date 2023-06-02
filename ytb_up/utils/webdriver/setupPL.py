@@ -22,38 +22,34 @@ def checkBrowserInstalled():
         print(
             "start to check Tiktoka Studio requirements whether playwright browser intalled"
         )
-
         from playwright.sync_api import sync_playwright
 
+        print("import pl library")
+
         with sync_playwright() as p:
-            print(
-                "start to check Tiktoka Studio requirements whether chromium intalled"
-            )
+            print("initial pl library")
 
             try:
-                browser = p.chromium.launch()
+                print(
+                    "start to check Tiktoka Studio requirements whether chromium intalled"
+                )
+                chromium_browser = p.chromium.launch()
+                print(
+                    "start to check Tiktoka Studio requirements whether webkit/edge intalled"
+                )
+                webkit_browser = p.webkit.launch()
+
+                print(
+                    "start to check Tiktoka Studio requirements whether firefox intalled"
+                )
+
+                firefox_browser = p.firefox.launch()
+
                 return True
 
             except:
                 return False
-            print(
-                "start to check Tiktoka Studio requirements whether webkit/edge intalled"
-            )
 
-            try:
-                browser = p.webkit.launch()
-                return True
-
-            except:
-                return False
-            print("start to check Tiktoka Studio requirements whether firefox intalled")
-
-            try:
-                browser = p.firefox.launch()
-                return True
-
-            except:
-                return False
     except:
         return False
 
@@ -103,3 +99,24 @@ def runBrowser():
             f"\n[INSTALL_PYDEPS] Attempt '{step_name}' -> Run '{' '.join(step_arglist)}'\n"
         )
         attempt(step_arglist, max_attempts=3, name=step_name)
+
+
+def checkRequirments():
+    print("start to check Tiktoka Studio requirements whether  intalled")
+
+    plinstall = checkPLInstalled()
+    browserinstall = checkBrowserInstalled()
+    if plinstall == False:
+        print("Tiktoka Studio requirements-playwright not intalled")
+
+        runPl()
+    else:
+        print("Tiktoka Studio requirements-playwright have intalled")
+    if browserinstall == False:
+        print("Tiktoka Studio requirements-browser not intalled")
+
+        runBrowser()
+        print("Tiktoka Studio requirements-auto browser intalled")
+
+    else:
+        print("Tiktoka Studio requirements-browser have intalled")

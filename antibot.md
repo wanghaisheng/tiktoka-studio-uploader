@@ -1,3 +1,6 @@
+google detect security issue
+tiktok has rotation capcha
+
 # bypass slide from fakeuser browser as plan A
 
 so capcha wont appear

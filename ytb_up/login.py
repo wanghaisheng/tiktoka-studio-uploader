@@ -4,7 +4,7 @@ import os
 from .constants import *
 from time import sleep
 import random
-from datetime import datetime, date, timedelta
+from datetime import datetime, date, timedelta, time
 
 """ Login module """
 
@@ -135,6 +135,8 @@ async def passwordlogin(self, page):
         )
     except:
         self.log.debug("could not find email or phone input textbox")
+    #     page.get_by_text("We noticed unusual activity in your Google Account. To keep your account safe, y").click()
+
     await page.get_by_role("button", name="Next").click()
     try:
         await page.locator("#headingText").get_by_text("2-Step Verification").click()
@@ -188,31 +190,226 @@ def kill_orphan_chrome(self):
             break
 
 
-def botcheck(self, account, password):
-    self.kill_orphan_chrome()
-    url = "https://bot.sannysoft.com/"
+async def botcheck(self):
+    # self.kill_orphan_chrome()
     url = "https://abrahamjuliot.github.io/creepjs/"
     url = "http://f.vision/"
     url = "https://coveryourtracks.eff.org"
+    url = "https://bot.sannysoft.com/"
+
     # https://github.com/darbra/sperm/blob/e13bfe2134865f291531b4f8101cda6e62488b2b/md/simpread-Canvas%20%E6%8C%87%E7%BA%B9%E9%9A%90%E8%97%8F%E5%AE%9E%E6%88%98.md?plain=1#L121
     chrome = None
     wait = None
     for i in range(3):
         port = f"{random.randint(6, 8)}{random.randint(1, 9)}{random.randint(1, 9)}{random.randint(1, 9)}"
-        print(f"第 {i + 1} 次初始化chrome, 端口为:{port} ")
+        print(f"第 {i + 1} 次初始化浏览器, 端口为:{port} ")
         try:
-            self.init_broswer(url=url, port=port)
+            await self.page.goto(url)
             # input('test:: ')
-            if "sannysoft" in self.broswer.current_url:
+            if "sannysoft" in self.page.url:
                 print(
-                    "chrome 正常状态...",
-                    datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "浏览器 正常状态...",
+                    datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 )
                 break
             else:
                 continue
         except Exception as e:
-            print(f"初始化chrome异常: {e}")
+            print(f"初始化浏览器异常: {e}")
             if self.broswer:
                 self.broswer.quit()
             continue
+
+
+def tiktok_login(self, account, password):
+    self.kill_orphan_chrome()
+    botcheck()
+    # 判断是否出现登录标签
+    # 如果出现则直接保存图片扫码登录, 否则点击登录, 再保存图片扫码登录
+    # sleep(random.uniform(0.2, 0.5))
+    if self.broswer:
+        index = 0
+        while True:
+            index += 1
+            with open("stealth.min.js", mode="r") as f:
+                js = f.read()
+            # 关键代码
+            self.broswer.execute_cdp_cmd(
+                cmd_args={"source": js},
+                cmd="Page.addScriptToEvaluateOnNewDocument",
+            )
+            self.broswer.get("https://www.tiktok.com/login/phone-or-email/email")
+            sleep(random.uniform(2, 3))
+            current_url = self.broswer.current_url
+            if index > 3:
+                print(f"三次登录失败!!!")
+                error_name = f"{int(time.time() * 1000)}_login_error.png"
+                self.broswer.save_screenshot(self.error_path + error_name)
+                self.broswer.quit()
+                return "三次登录失败!!!"
+            elif "login" in current_url:
+                self.broswer.find_element(
+                    by="xpath", value='//input[@name="username"]'
+                ).send_keys(str(account))
+                print("输入用户名", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+                sleep(3)
+                # for j in password:
+                self.broswer.find_element(
+                    by="xpath", value='//input[@autocomplete="new-password"]'
+                ).send_keys(str(password))
+                sleep(1)
+                print("输入密码", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+                # input(';;;;:')
+                self.broswer.find_element(
+                    by="xpath", value='//input[@autocomplete="new-password"]'
+                ).submit()
+                sleep(random.uniform(5, 6))
+                continue
+            else:
+                if self.broswer:
+                    try:
+                        self.broswer.quit()
+                    except:
+                        pass
+                return "登录成功!"
+    else:
+        print(f"初始化chrome失败! ", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+        if self.broswer:
+            try:
+                self.broswer.quit()
+            except:
+                pass
+        return "初始化chrome失败! "
+
+
+def youtube_login(self, account, password):
+    # self.kill_orphan_chrome()
+    # url = 'https://accounts.google.com/ServiceLogin?service=youtube&uilel=3&passive=true&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Ddesktop%26hl%3Dzh-CN%26next%3Dhttps%253A%252F%252Fwww.youtube.com%252F&hl=zh-CN&ec=65620'
+    url = "https://accounts.google.com/ServiceLogin"
+    botcheck()
+    if self.broswer:
+        for i in range(10):
+            # input('test:::: ')
+            sleep(random.uniform(1, 2))
+            current_url = self.broswer.current_url
+            if i > 6:
+                print(
+                    f"6次未找到input 密码框,重新初始化chrome ",
+                    datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                )
+                break
+            elif "signin/identifier" in current_url:
+                self.broswer.find_element(
+                    by="xpath", value='//input[@type="email"]'
+                ).click()
+                sleep(1)
+                # self.broswer.find_element(by='xpath', value='//input[@type="email"]').send_keys(account)
+                for one in account:
+                    self.broswer.find_element(
+                        by="xpath", value='//input[@type="email"]'
+                    ).send_keys(one)
+                    sleep(random.uniform(0.1, 0.4))
+                print(
+                    f"输入账号: {account}! ",
+                    datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                )
+                sleep(random.uniform(1, 2))
+                self.broswer.find_element(
+                    by="xpath", value='//*[@id="identifierNext"]/div/button'
+                ).click()
+                sleep(2)
+                continue
+            elif "challenge/pwd" in current_url:
+                if self.is_element_exist_wait(self.wait, '//*[@id="selectionc1"]'):
+                    self.broswer.find_element(
+                        by="xpath", value='//input[@type="password"]'
+                    ).send_keys(password)
+                    print(
+                        f"输入密码: {password}! ",
+                        datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    )
+                    sleep(0.5)
+                    self.broswer.find_element(
+                        by="xpath", value='//*[@id="passwordNext"]//button'
+                    ).click()
+                    print(
+                        f"点击完成! ", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    )
+                    sleep(2)
+                    self.broswer.get("https://studio.youtube.com/channel/")
+                    sleep(random.uniform(1, 2))
+                    break
+                else:
+                    print(
+                        f"第{i + 1}次未找到input 密码框! ",
+                        datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    )
+                    sleep(1)
+                    continue
+            elif "signin/rejected" in current_url:
+                print(
+                    f"被检测, 重新初始化chrome... ",
+                    datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                )
+                self.broswer.quit()
+                sleep(1)
+                for i in range(3):
+                    port = f"{random.randint(6, 9)}{random.randint(1, 9)}{random.randint(1, 9)}{random.randint(1, 9)}"
+                    print(f"第 {i + 1} 次初始化chrome, 端口为:{port} ")
+                    try:
+                        chrome, wait = self.init_broswer_popen(url=url, port=port)
+                        if "accounts" in chrome.current_url:
+                            print(
+                                "chrome 正常状态...",
+                                datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                            )
+                            break
+                        else:
+                            if chrome:
+                                chrome.quit()
+                            continue
+                    except Exception as e:
+                        print(f"初始化chrome异常: {e}")
+                        if chrome:
+                            chrome.quit()
+                        continue
+                # sleep(random.uniform(1, 2))
+                continue
+            else:
+                print(
+                    f"第{i+1}次未找到input 密码框! ",
+                    datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                )
+                continue
+        current_url = self.broswer.current_url
+        print(f"current_url: {current_url}")
+        if "/studio.youtube.com/" in current_url:
+            print(
+                f"youtube 登录成功!!!",
+                datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            )
+            if self.broswer:
+                try:
+                    self.broswer.quit()
+                except:
+                    pass
+            return True
+        else:
+            print(
+                f"youtube 登录失败!!!",
+                datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            )
+            if self.broswer:
+                try:
+                    self.broswer.quit()
+                except:
+                    pass
+            return None
+    else:
+        print(f"初始化chrome失败! ", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+        if self.broswer:
+            try:
+                self.broswer.quit()
+            except:
+                pass
+        return None
