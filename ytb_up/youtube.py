@@ -207,7 +207,6 @@ class YoutubeUpload:
                 use_stealth_js=True,
             ) as pl:
                 await pl._setup()
-                # print(pl, "===============")
                 self.pl = pl
 
                 self._browser = pl.browser
@@ -225,7 +224,6 @@ class YoutubeUpload:
                 use_stealth_js=True,
             ) as pl:
                 await pl._setup()
-                print(pl, "===============")
                 self.pl = pl
 
                 self._browser = pl.browser
