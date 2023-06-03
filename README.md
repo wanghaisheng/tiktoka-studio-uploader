@@ -77,7 +77,7 @@ If given user's account have only onedefault video channel. Many users (myself i
 
 
 ```
-python firstStart.py
+python saveCookie.py
 ```
 
 5. run upload demo
