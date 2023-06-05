@@ -1,10 +1,11 @@
 import json
 from typing import Dict, List
 import os
-from tsup.constants import *
+from tsup.utils.constants import *
 from time import sleep
 import random
 from datetime import datetime, date, timedelta, time
+from playwright.async_api import Page, expect
 
 """ Login module """
 
@@ -44,12 +45,14 @@ async def format_cookie_file(cookie_file: str):
     return domain_cookies[cookie["domain"]]
 
 
-def confirm_logged_in(self) -> bool:
+async def confirm_logged_in(self) -> bool:
     """Confirm that the user is logged in. The browser needs to be navigated to a YouTube page."""
     try:
-        self.page.locator(
-            "yt-img-shadow.ytd-topbar-menu-button-renderer > img:nth-child(1)"
-        )
+        await expect(
+            self.page.locator(
+                "yt-img-shadow.ytd-topbar-menu-button-renderer > img:nth-child(1)"
+            )
+        ).to_be_visible()
 
         # WebDriverWait(page, 10).until(EC.element_to_be_clickable("avatar-btn")))
         return True

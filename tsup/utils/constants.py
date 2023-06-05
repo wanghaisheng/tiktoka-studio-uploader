@@ -1,6 +1,10 @@
 # URLS
 invalidCharacters = ["<", ">"]
-closewhen100percentOptions = [0, 1, 2]
+closewhen100percentOptions = [
+    "go next after uploading success",
+    "go next after processing success",
+    "go next after copyright check success",
+]
 # 0 go next after uploading success,
 # 1 go next after processing success,
 # 2 go next after copyright check success,

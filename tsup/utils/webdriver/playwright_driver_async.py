@@ -31,6 +31,9 @@ from tsup.utils.webdriver.webdirver import *
 import filecmp
 import requests
 
+from typing import Optional, AsyncIterator
+from contextlib import asynccontextmanager
+
 
 class PlaywrightAsyncDriver(WebDriver):
     def __init__(
@@ -74,8 +77,6 @@ class PlaywrightAsyncDriver(WebDriver):
             self._cache_data = defaultdict(list)
         else:
             self._cache_data = {}
-
-        # await self._setup()
 
     async def _setup(self):
         # 处理参数
@@ -179,28 +180,49 @@ class PlaywrightAsyncDriver(WebDriver):
                     os.remove(path)
                     os.rename(latest_path, path)
                     print("stealth is  upgraded just now ")
+            # print("stealth js path:", path)
+            # self.page = await self.context.new_page()
+
+            # await self.page.goto("https://www.google.com")
 
             await self.context.add_init_script(path=path)
 
         self.page = await self.context.new_page()
-        self.page.set_default_timeout(self._timeout * 1000)
+        # await self.page.goto("https://www.baidu.com")
 
-        if self._page_on_event_callback:
-            for event, callback in self._page_on_event_callback.items():
-                self.page.on(event, callback)
+        # self.page.set_default_timeout(self._timeout * 1000)
 
-        if self._url_regexes:
-            self.page.on("response", self.on_response)
+        # if self._page_on_event_callback:
+        #     for event, callback in self._page_on_event_callback.items():
+        #         self.page.on(event, callback)
+
+        # if self._url_regexes:
+        #     self.page.on("response", self.on_response)
+        return self
 
     async def __aenter__(self):
+        print("async Enter!", self)
+        # try:
+        #     yield await self.page
+        # finally:
+        #     await self.page.close()
+        # # print("async _setup!")
+
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         if exc_val:
             log.error(exc_val)
-
+        print("async Exit!", exc_type, exc_val, exc_tb)
         await self.quit()
         return True
+
+    @classmethod
+    async def create(self, **kwargs):
+        self = PlaywrightAsyncDriver(**kwargs)
+        await self._setup()
+
+        return self
 
     def format_context_proxy(self, proxy) -> ProxySettings:
         """
@@ -235,10 +257,14 @@ class PlaywrightAsyncDriver(WebDriver):
             await self.context.storage_state(path=self.storage_state_path)
 
     async def quit(self):
-        await self.page.close()
-        await self.context.close()
-        await self.browser.close()
-        await self.driver.stop()
+        if self.page:
+            await self.page.close()
+        if self.context:
+            await self.context.close()
+        if self.browser:
+            await self.browser.close()
+        if self.driver:
+            await self.driver.stop()
 
     @property
     def domain(self):
@@ -275,86 +301,3 @@ class PlaywrightAsyncDriver(WebDriver):
     @property
     async def user_agent(self):
         return await self.page.evaluate("() => navigator.userAgent")
-
-    def on_response(self, response: Response):
-        for regex in self._url_regexes:
-            if re.search(regex, response.request.url):
-                intercept_request = InterceptRequest(
-                    url=response.request.url,
-                    headers=response.request.headers,
-                    data=response.request.post_data,
-                )
-
-                intercept_response = InterceptResponse(
-                    request=intercept_request,
-                    url=response.url,
-                    headers=response.headers,
-                    content=response.body(),
-                    status_code=response.status,
-                )
-                if self._save_all:
-                    self._cache_data[regex].append(intercept_response)
-                else:
-                    self._cache_data[regex] = intercept_response
-
-    def get_response(self, url_regex) -> InterceptResponse:
-        if self._save_all:
-            response_list = self._cache_data.get(url_regex)
-            if response_list:
-                return response_list[-1]
-        return self._cache_data.get(url_regex)
-
-    def get_all_response(self, url_regex) -> List[InterceptResponse]:
-        """
-        获取所有匹配的响应, 仅在save_all=True时有效
-        Args:
-            url_regex:
-
-        Returns:
-
-        """
-        response_list = self._cache_data.get(url_regex, [])
-        if not isinstance(response_list, list):
-            return [response_list]
-        return response_list
-
-    def get_text(self, url_regex):
-        return (
-            self.get_response(url_regex).content.decode()
-            if self.get_response(url_regex)
-            else None
-        )
-
-    def get_all_text(self, url_regex):
-        """
-        获取所有匹配的响应文本, 仅在save_all=True时有效
-        Args:
-            url_regex:
-
-        Returns:
-
-        """
-        return [
-            response.content.decode() for response in self.get_all_response(url_regex)
-        ]
-
-    def get_json(self, url_regex):
-        return (
-            json.loads(self.get_text(url_regex))
-            if self.get_response(url_regex)
-            else None
-        )
-
-    def get_all_json(self, url_regex):
-        """
-        获取所有匹配的响应json, 仅在save_all=True时有效
-        Args:
-            url_regex:
-
-        Returns:
-
-        """
-        return [json.loads(text) for text in self.get_all_text(url_regex)]
-
-    def clear_cache(self):
-        self._cache_data = defaultdict(list)
