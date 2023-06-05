@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-'''
-Created on 2019/11/5 4:41 PM
+"""
+Created on 2023/6/05 12:09 AM
 ---------
 @summary:
 ---------
-@author: Boris
-@email: boris_liu@foxmail.com
-'''
+@author: wanghaisheng
+@email: admin@tiktokastudio.com
+"""

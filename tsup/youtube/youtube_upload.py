@@ -1,10 +1,10 @@
 import json
-from tsup.constants import *
-from tsup.logging import Log
-from tsup.exceptions import *
-from tsup.youtubeHelper import *
+from tsup.utils.constants import *
+from tsup.utils.logging import Log
+from tsup.utils.exceptions import *
+from tsup.youtube.youtubeHelper import *
 import os
-from tsup.login import *
+from tsup.utils.login import *
 from time import sleep
 from datetime import datetime, date, timedelta
 import logging

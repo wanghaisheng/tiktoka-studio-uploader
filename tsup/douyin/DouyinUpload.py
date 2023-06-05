@@ -2,7 +2,7 @@ import json
 from tsup.constants import *
 from tsup.logging import Log
 from tsup.exceptions import *
-from tsup.youtubeHelper import *
+from tsup.youtube.youtubeHelper import *
 import os
 from tsup.login import *
 from time import sleep

@@ -4,7 +4,7 @@ import logging
 from time import sleep
 from datetime import datetime
 from playwright.async_api import *
-from tsup.constants import *
+from tsup.utils.constants import *
 from pathlib import Path
 import os
 from typing import Tuple, Optional, Union, Literal
