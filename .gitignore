@@ -12,3 +12,4 @@ screen-recording/*
 /tsup/__pycache__/*
 /cookies/*
 /tests/*
+/datas/*

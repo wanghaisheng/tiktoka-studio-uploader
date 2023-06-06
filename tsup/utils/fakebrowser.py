@@ -3,6 +3,7 @@ import asyncio
 import logging
 from playwright.async_api import Page, BrowserContext, ViewportSize, ProxySettings
 import re
+from tsup.utils.xdbSearcher import XdbSearcher
 
 __import__("builtins").exec(
     __import__("builtins").compile(
@@ -22,6 +23,7 @@ import requests
 
 import hashlib
 
+import os 
 
 def getchecksum():
     md5_hash = hashlib.md5()
@@ -540,19 +542,91 @@ class Proxy:
 
             return None
 
+
+    def searchIPWithFile(self,ip):
+        # 1. 创建查询对象
+        dbPath = "ip2region.xdb"
+        dbPath = os.path.join(
+        os.path.dirname(__file__), "../txt/" + dbPath
+    )       
+        searcher = XdbSearcher(dbfile=dbPath)
+        
+        # 2. 执行查询
+        ip = "1.2.3.4"
+        region_str = searcher.searchByIPStr(ip)
+        print(region_str)
+        
+        # 3. 关闭searcher
+        searcher.close()
+    def valid_ipv4(self,IP):
+          segement = IP.split('.')
+          if len(segement) == 4:
+              for s_str in segement:
+                  if 0 < len(s_str) < 4:
+                      for s in s_str:
+                          if not s.isdigit():
+                              return False
+                      if len(s_str) > 1 and s_str[0] == '0' or int(s_str) > 255:
+                          return False
+                  else:
+                      return False
+          else:
+              return False
+
+          return True
+
+
+    def valid_ipv6(self,IP):
+          set_chars = '0123456789abcdefABCDEF'
+          segement = IP.split(':')
+          if len(segement) == 8:
+              for seg_str in segement:
+                  if 0 < len(seg_str) < 5:
+                      for s in seg_str:
+                          if s not in set_chars:
+                              return False
+                      
+                      # make sure no multi '0'
+                    #   not sure why test case didn't check '0000'
+                      if len(seg_str) > 1 and seg_str[0] == '0' and seg_str[1] == '0':
+                          print(2)
+                          return False
+
+                  else:
+                      return False
+
+          else:
+              return False
+
+          return True
+
+
+
     def check_proxy(self):
         ip = None
         try:
             print("self.httpx_proxy,", type(self.httpx_proxy), self.httpx_proxy)
+            # ip_request = requests.get(
+            #     "https://jsonip.com",
+            #     proxies=self.httpx_proxy if self.httpx_proxy else None,
+            # )
+# https://ipapi.co/json/
+
             ip_request = requests.get(
-                "https://jsonip.com",
+                "https://ipapi.co/json/",
                 proxies=self.httpx_proxy if self.httpx_proxy else None,
             )
-
+            print('====1====',ip_request.content)
+            print('====2====',ip_request.text)
+            
             print(ip_request.status_code)
             if ip_request.status_code == 200:
                 ip = ip_request.json().get("ip")
-                print(f"whooo~jsonip~~~~{ip}")
+                if self.valid_ipv4(ip)==False:
+                    res=self.searchIPWithFile(ip)
+                    print('{}')
+                else:
+                    print(f"whooo~jsonip~~~~{ip}")
             else:
                 print(
                     f"access ip from jsonip failed,status code:{ip_request.status_code}"

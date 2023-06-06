@@ -10,6 +10,7 @@ from tsup.utils.webdriver.playwright_driver_async_stealth import (
 )
 import asyncio
 import os
+from tsup.botright.botright import Botright 
 
 
 class Botcheck:
@@ -300,6 +301,7 @@ class Botcheck:
         except Exception as err:
             raise err
 
+    
 
 async def main():
     # browser = await async_playwright.chromium.launch()
@@ -307,18 +309,33 @@ async def main():
     # page = await context.newPage()
     proxy_option = "socks5://127.0.0.1:1080"
 
-    pl = await PlaywrightAsyncDriverStealth.create(
-        proxy=proxy_option,
-        driver_type="chromium",
-        timeout=300,
-        headless=False,
-    )
+    # pl = await PlaywrightAsyncDriverStealth.create(
+    #     proxy=proxy_option,
+    #     driver_type="firefox",
+    #     timeout=300,
+    #     headless=False,
+    # )
+    
+    # botcheck = Botcheck(pl.page)
+    
 
-    botcheck = Botcheck(pl.page)
+
+    botright_client = await Botright(headless=False)
+    browser = await botright_client.new_browser(proxy=proxy_option)
+    page = await browser.new_page()
+    botcheck = Botcheck(page)
+
+    # Continue by using the Page
+
+    await botright_client.close()
 
     # await pl.page.context.storage_state(path="1.json")
     # await async_stealth(self.page, pure=True)
-
+    # undetected_driver
+    # www.nowsecure.nl
+    # https://bot.incolumitas.com/#botChallenge
+    
+    
     # await botcheck.isolatedWorld()
     # await botcheck.behaviorMonitor()
     # await botcheck.f5networkloginForm()

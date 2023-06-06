@@ -121,8 +121,8 @@ def draw_text_on_image(row, output_folder):
         )
 
     # Split the result image into 16 zones
-    zones_horizontal = 4
-    zones_vertical = 4
+    zones_horizontal = 10
+    zones_vertical = 10
 
     # Calculate the zone width and height
     zone_width = result_image_width // zones_horizontal

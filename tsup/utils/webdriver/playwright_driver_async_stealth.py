@@ -13,6 +13,7 @@ import os
 import re
 from collections import defaultdict
 from typing import Union, List
+import playwright_stealth
 
 try:
     from typing import Literal  # python >= 3.8
@@ -109,6 +110,12 @@ class PlaywrightAsyncDriverStealth(WebDriver):
             proxy=proxy,
             executable_path=self._executable_path,
             downloads_path=self._download_path,
+            firefox_user_prefs={
+                "media.peerconnection.enabled": False,
+                "media.navigator.enabled": False,
+                "privacy.resistFingerprinting": False,
+            } if self._driver_type=='firefox' 
+            else None,
         )
         # Initializing Faker, ComputerInfo, PersonInfo and ProxyInfo
 
@@ -128,7 +135,7 @@ class PlaywrightAsyncDriverStealth(WebDriver):
         print(f"self.proxy.timezone:{self.proxy.username}")
         print(f"self.proxy.timezone:{self.proxy.password}")
 
-        browser = await self.browser.new_context(
+        self.context = await self.browser.new_context(
             locale=self.faker.locale,  # self.faker.locale
             geolocation={
                 "longitude": self.proxy.longitude,
@@ -155,13 +162,15 @@ class PlaywrightAsyncDriverStealth(WebDriver):
             else None,
         )
         # Grant Permissions to Discord to use Geolocation
-        await browser.grant_permissions(["geolocation"], origin=self.url)
+        await self.context.grant_permissions(["geolocation"], origin=self.url)
         # Create new Page and do something idk why i did that lol
-        page = await browser.new_page()
-        await page.emulate_media(
-            color_scheme="dark", media="screen", reduced_motion="reduce"
-        )
+        # await page.emulate_media(
+        #     color_scheme="dark", media="screen", reduced_motion="reduce"
+        # )
+        self.page = await self.context.new_page()
+
         # Stealthen the page with custom Stealth Config
+        
         config = playwright_stealth.StealthConfig()
         (
             config.navigator_languages,
@@ -177,10 +186,10 @@ class PlaywrightAsyncDriverStealth(WebDriver):
             "Win32",
         )
         config.languages = ("en-US", "en", self.faker.locale, self.faker.language_code)
-        await playwright_stealth.stealth_async(page, config)
+
+        await playwright_stealth.stealth_async(self.page, config)
         self.page.set_default_timeout(self._timeout * 1000)
 
-        self.browser, self.page = browser, page
 
         return self
 

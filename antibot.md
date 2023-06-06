@@ -62,6 +62,40 @@ https://github.com/berstend/puppeteer-extra/issues/254
     BrowserLeaks https://browserleaks.com/webgl
     PixelScan https://pixelscan.net
 
+### Fingerprint test pages
+
+These websites may be useful to test fingerprinting techniques against a web scraping software
+
+| Test page | Notes | 
+| - | - |
+| https://bot.incolumitas.com/ | Very helpful and useful collection of tests |
+| https://plaperdr.github.io/morellian-canvas/Prototype/webpage/picassauth.html | canvas fingerprinting on steroids |
+| https://pixelscan.net/ | Not 100% realiable as it often displays "inconsistent" to Chrome after a new update, but worth checking as the author adds new interesting detection features every now and then |
+| https://browserleaks.com/ | Doesn't need introduction 😉 |
+| https://f.vision/ | Good quality test page from some 🇷🇺 guys |
+| https://www.ipqualityscore.com/ip-reputation-check | Commercial service with free reputation check against popular blacklists |
+| https://antcpt.com/eng/information/demo-form/recaptcha-3-test-score.html | ReCaptcha score as well as some interesting notes on how to optimize captcha solving costs |
+| https://ja3er.com/ | SSL/TLS fingerprint |
+| https://fingerprintjs.com/demo/ | Good for basic tests - from people who believe and claim can create unique fingerprints "99.5%" of the time |
+| https://coveryourtracks.eff.org/ | - |
+| https://www.deviceinfo.me/ | - |
+| https://amiunique.org/ | - |
+| http://uniquemachine.org/ | - |
+| http://dnscookie.com/ | - |
+| https://whatleaks.com/ | - |
+| https://antcpt.com/eng/information/demo-form/recaptcha-3-test-score.html | Check your reCaptcha score |
+| https://antoinevastel.com/bots/ | - |
+| https://antoinevastel.com/bots/datadome | - |
+| https://iphey.com/ | - |
+| https://bot.sannysoft.com/ | - |
+| https://webbrowsertools.com/canvas-fingerprint/ | - |
+| https://webbrowsertools.com/webgl-fingerprint/ | - |
+| https://fingerprint.com/products/bot-detection/ | - |
+| https://abrahamjuliot.github.io/creepjs/ | Really creepy, the strongest of all |
+
+
+
+
 Any others people know of would be awesome!
 Submitted
 
@@ -94,4 +128,100 @@ And also thanks for providing these great services and REST APIs for free.
 | [http://ip-api.com/] [ipapi]           | IPv4, IPv6     | free for non-commercial use    |
 | [http://ipinfodb.com/] [IPInfoDB]      | IPv4, IPv6     | free for registered user       |
 
+
+
+macbook 使用clash代理
+
+1.
 https://api64.ipify.org/
+
+无代理
+2409:8a70:106f:9ed0:4827:42c3:ebe1:f01f
+
+
+有代理
+38.26.191.97
+
+2.https://jsonip.com/
+
+无代理
+
+{"ip":"2409:8a70:106f:9ed0:4827:42c3:ebe1:f01f","country":"CN","geo-ip":"https://getjsonip.com/#plus","API Help":"https://getjsonip.com/#docs"}
+
+有代理
+
+无法打开
+
+3.https://ipinfo.io/json
+
+无代理：
+
+{
+  "ip": "111.18.43.23",
+  "city": "Zhanjiang",
+  "region": "Guangdong",
+  "country": "CN",
+  "loc": "21.2339,110.3875",
+  "org": "AS9808 China Mobile Communications Group Co., Ltd.",
+  "timezone": "Asia/Shanghai",
+  "readme": "https://ipinfo.io/missingauth"
+}
+
+有代理
+
+{
+  "ip": "38.26.191.97",
+  "city": "Hayward",
+  "region": "California",
+  "country": "US",
+  "loc": "37.6688,-122.0808",
+  "org": "AS54600 PEG TECH INC",
+  "postal": "94541",
+  "timezone": "America/Los_Angeles",
+  "readme": "https://ipinfo.io/missingauth"
+}
+
+4.https://ipapi.co/json/
+
+无代理
+
+{
+    "ip": "111.18.43.23",
+    "network": "111.18.32.0/20",
+    "version": "IPv4",
+    "city": "Xi'an",
+    "region": "Shaanxi",
+    "region_code": "SN",
+    "country": "CN",
+    "country_name": "China",
+    "country_code": "CN",
+    "country_code_iso3": "CHN",
+    "country_capital": "Beijing",
+    "country_tld": ".cn",
+    "continent_code": "AS",
+    "in_eu": false,
+    "postal": null,
+    "latitude": 34.2635,
+    "longitude": 108.9246,
+    "timezone": "Asia/Shanghai",
+    "utc_offset": "+0800",
+    "country_calling_code": "+86",
+    "currency": "CNY",
+    "currency_name": "Yuan Renminbi",
+    "languages": "zh-CN,yue,wuu,dta,ug,za",
+    "country_area": 9596960.0,
+    "country_population": 1411778724,
+    "asn": "AS9808",
+    "org": "China Mobile Communications Group Co., Ltd."
+}
+
+使用代理，chrome打不开
+
+
+
+
+
+
+# proxy detect
+
+https://bot.incolumitas.com/proxy_detect.html
