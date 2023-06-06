@@ -11,9 +11,4 @@ example.py
 screen-recording/*
 /tsup/__pycache__/*
 /cookies/*
-*.xlsx
-*.html
-onefile-*.py
-batch_files_*.py
-*.json
-debug.sh
+/tests/*

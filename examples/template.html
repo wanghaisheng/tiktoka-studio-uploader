@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Image Annotation</title>
+    <style>
+      #canvas-container {
+        position: relative;
+      }
+      #canvas {
+        border: 1px solid #000;
+      }
+      .grid-line {
+        position: absolute;
+        background-color: rgba(0, 0, 0, 0.3);
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <input type="file" id="file-input" accept="image/*" />
+      <button id="start-button">Start Drawing</button>
+      <button id="save-button">Save Bounding Box</button>
+    </div>
+    <div id="canvas-container">
+      <canvas id="canvas" width="1480" height="920"></canvas>
+      <div id="grid-lines"></div>
+    </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+        let isDrawing = false;
+        let startX = 0;
+        let startY = 0;
+        let endX = 0;
+        let endY = 0;
+        let boundingBox = [];
+        let fontSize = 16;
+        let imageLoaded = false;
+        let image;
+
+        const startButton = document.getElementById("start-button");
+        const saveButton = document.getElementById("save-button");
+        const fileInput = document.getElementById("file-input");
+        const gridLinesContainer = document.getElementById("grid-lines");
+
+        startButton.addEventListener("click", () => {
+          isDrawing = true;
+          startButton.disabled = true;
+        });
+
+        saveButton.addEventListener("click", () => {
+          // Save the bounding box coordinates, font size, and additional details
+          const data = {
+            boundingBox: boundingBox.map((box) => ({
+              x: box.x,
+              y: box.y,
+              width: box.width,
+              height: box.height,
+              topLeft: `(${box.x}, ${box.y})`,
+              topRight: `(${box.x + box.width}, ${box.y})`,
+              bottomLeft: `(${box.x}, ${box.y + box.height})`,
+              bottomRight: `(${box.x + box.width}, ${box.y + box.height})`,
+            })),
+            fontSize,
+          };
+          const jsonData = JSON.stringify(data);
+          const blob = new Blob([jsonData], {
+            type: "text/plain;charset=utf-8",
+          });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = "bounding_box_data.txt";
+          link.click();
+
+          isDrawing = false;
+          startButton.disabled = false;
+        });
+
+        fileInput.addEventListener("change", () => {
+          const file = fileInput.files[0];
+          const reader = new FileReader();
+
+          reader.onload = function (event) {
+            image = new Image();
+            image.onload = function () {
+              // Resize the image to fit the canvas
+              const aspectRatio = image.width / image.height;
+              const canvasWidth = canvas.width;
+              const canvasHeight = canvasWidth / aspectRatio;
+              if (canvasHeight > canvas.height) {
+                canvas.height = canvas.height;
+                canvas.width = canvas.height * aspectRatio;
+              } else {
+                canvas.width = canvasWidth;
+                canvas.height = canvasHeight;
+              }
+
+              // Draw the image
+              ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+              // Draw gridlines
+              drawGridlines();
+
+              imageLoaded = true;
+            };
+            image.src = event.target.result;
+          };
+
+          reader.readAsDataURL(file);
+        });
+
+        canvas.addEventListener("mousedown", startDrawing);
+        canvas.addEventListener("mouseup", stopDrawing);
+        canvas.addEventListener("mousemove", drawRectangle);
+
+        function startDrawing(event) {
+          if (isDrawing && imageLoaded) {
+            startX = event.offsetX;
+            startY = event.offsetY;
+            endX = startX;
+            endY = startY;
+          }
+        }
+
+        function stopDrawing() {
+          if (isDrawing && imageLoaded) {
+            boundingBox.push({
+              x: Math.min(startX, endX),
+              y: Math.min(startY, endY),
+              width: Math.abs(endX - startX),
+              height: Math.abs(endY - startY),
+            });
+            renderBoundingBox();
+          }
+        }
+
+        function drawRectangle(event) {
+          if (isDrawing && imageLoaded) {
+            endX = event.offsetX;
+            endY = event.offsetY;
+            renderBoundingBox();
+          }
+        }
+
+        function renderBoundingBox() {
+          // Clear the canvas
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+          // Draw the image
+          ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+          // Draw the bounding boxes
+          ctx.beginPath();
+          ctx.strokeStyle = "red";
+          ctx.lineWidth = 2;
+          for (const box of boundingBox) {
+            const { x, y, width, height } = box;
+            ctx.rect(x, y, width, height);
+            ctx.stroke();
+
+            // Display corner coordinates
+            const topLeft = `(${x}, ${y})`;
+            const topRight = `(${x + width}, ${y})`;
+            const bottomLeft = `(${x}, ${y + height})`;
+            const bottomRight = `(${x + width}, ${y + height})`;
+
+            ctx.font = "12px Arial";
+            ctx.fillStyle = "white";
+            ctx.fillText(topLeft, x, y - 5);
+            ctx.fillText(topRight, x + width - 40, y - 5);
+            ctx.fillText(bottomLeft, x, y + height + 15);
+            ctx.fillText(bottomRight, x + width - 40, y + height + 15);
+
+            // Determine font size from rectangle height
+            const rectangleHeight = height;
+            fontSize = Math.floor(rectangleHeight / 5); // Adjust the divisor to suit your needs
+          }
+
+          // Draw the font size
+          ctx.font = `${fontSize}px Arial`;
+          ctx.fillStyle = "white";
+          ctx.fillText(`Font Size: ${fontSize}`, 10, 20);
+        }
+
+        function drawGridlines() {
+          const gridSize = 8;
+          const gridColor = "rgba(0, 0, 0, 0.3)";
+          const cellWidth = canvas.width / gridSize;
+          const cellHeight = canvas.height / gridSize;
+
+          for (let i = 1; i < gridSize; i++) {
+            // Vertical gridlines
+            const x = i * cellWidth;
+            const verticalLine = document.createElement("div");
+            verticalLine.className = "grid-line";
+            verticalLine.style.width = "1px";
+            verticalLine.style.height = `${canvas.height}px`;
+            verticalLine.style.left = `${x}px`;
+            verticalLine.style.top = "0";
+            verticalLine.style.backgroundColor = gridColor;
+            gridLinesContainer.appendChild(verticalLine);
+
+            // Horizontal gridlines
+            const y = i * cellHeight;
+            const horizontalLine = document.createElement("div");
+            horizontalLine.className = "grid-line";
+            horizontalLine.style.width = `${canvas.width}px`;
+            horizontalLine.style.height = "1px";
+            horizontalLine.style.left = "0";
+            horizontalLine.style.top = `${y}px`;
+            horizontalLine.style.backgroundColor = gridColor;
+            gridLinesContainer.appendChild(horizontalLine);
+          }
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,39 @@
+[
+  {
+    "video_id": "video1",
+    "result_image_size": "800x600",
+    "title": "Sample Title",
+    "subtitle": "Sample Subtitle",
+    "extra_text": "Sample Extra Text",
+    "background_image": "bg1.jpg",
+    "title_font_size": 32,
+    "subtitle_font_size": 24,
+    "extra_text_font_size": 16,
+    "title_area_number": 1,
+    "subtitle_area_number": 5,
+    "extra_text_area_number": 9,
+    "title_font": "MSYHMONO.ttf",
+    "subtitle_font": "MSYHMONO.ttf",
+    "extra_text_font": "MSYHMONO.ttf"
+  },
+  {
+    "video_id": "video2",
+    "result_image_size": "1280x720",
+    "title_language":"zh",
+    "subtitle_language":"zh",
+    "extra_text_language":"zh",
+    "title": "在线字体编辑器",
+    "subtitle": "使用Fonteditor在线编辑、转换、预览字体文件",
+    "extra_text": "支持导入的字体格式有 ttf, woff, woff2, svg font, eot, otf等字体格式，支持ttf, woff, woff2等格式字体导出。",
+    "background_image": "bg3.jpg",
+    "title_font_size": 28,
+    "subtitle_font_size": 20,
+    "extra_text_font_size": 14,
+    "title_area_number": 2,
+    "subtitle_area_number": 6,
+    "extra_text_area_number": 10,
+    "title_font": "",
+    "subtitle_font": "",
+    "extra_text_font": "1.ttf"
+  }
+]

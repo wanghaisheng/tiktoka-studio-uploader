@@ -1,0 +1,16 @@
+// src-tauri/tauri.conf.json
+{
+  "build": {
+    "devPath": "http://localhost:4000"
+  },
+  "tauri": {
+    "embeddedServer": {
+      "active": true
+    },
+    "window": {
+      "title": "Image Annotation",
+      "width": 800,
+      "height": 600
+    }
+  }
+}
