@@ -280,16 +280,17 @@ async def tiktok_login(self, account, password):
         return "初始化chrome失败! "
 
 
-def youtube_login(self, account, password):
+async def youtube_login(self, account, password):
     # self.kill_orphan_chrome()
     # url = 'https://accounts.google.com/ServiceLogin?service=youtube&uilel=3&passive=true&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Ddesktop%26hl%3Dzh-CN%26next%3Dhttps%253A%252F%252Fwww.youtube.com%252F&hl=zh-CN&ec=65620'
     url = "https://accounts.google.com/ServiceLogin"
-    botcheck()
-    if self.broswer:
+    print("======", type(self))
+    await botcheck(self)
+    if self.page:
         for i in range(10):
             # input('test:::: ')
             sleep(random.uniform(1, 2))
-            current_url = self.broswer.current_url
+            current_url = self.page.url
             if i > 6:
                 print(
                     f"6次未找到input 密码框,重新初始化chrome ",
@@ -297,31 +298,29 @@ def youtube_login(self, account, password):
                 )
                 break
             elif "signin/identifier" in current_url:
-                self.broswer.locator('//input[@type="email"]').click()
+                self.page.locator('//input[@type="email"]').click()
                 sleep(1)
-                # self.broswer.locator(by='xpath', value='//input[@type="email"]').send_keys(account)
+                # self.page.locator(by='xpath', value='//input[@type="email"]').send_keys(account)
                 for one in account:
-                    self.broswer.locator('//input[@type="email"]').send_keys(one)
+                    self.page.locator('//input[@type="email"]').send_keys(one)
                     sleep(random.uniform(0.1, 0.4))
                 print(
                     f"输入账号: {account}! ",
                     datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 )
                 sleep(random.uniform(1, 2))
-                self.broswer.locator('//*[@id="identifierNext"]/div/button').click()
+                self.page.locator('//*[@id="identifierNext"]/div/button').click()
                 sleep(2)
                 continue
             elif "challenge/pwd" in current_url:
                 if self.is_element_exist_wait(self.wait, '//*[@id="selectionc1"]'):
-                    self.broswer.locator('//input[@type="password"]').send_keys(
-                        password
-                    )
+                    self.page.locator('//input[@type="password"]').send_keys(password)
                     print(
                         f"输入密码: {password}! ",
                         datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                     )
                     sleep(0.5)
-                    self.broswer.locator('//*[@id="passwordNext"]//button').click()
+                    self.page.locator('//*[@id="passwordNext"]//button').click()
                     print(f"点击完成! ", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
                     sleep(2)
                     self.page.goto("https://studio.youtube.com/channel/")
@@ -339,7 +338,7 @@ def youtube_login(self, account, password):
                     f"被检测, 重新初始化chrome... ",
                     datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 )
-                self.broswer.quit()
+                self.page.quit()
                 sleep(1)
                 for i in range(3):
                     port = f"{random.randint(6, 9)}{random.randint(1, 9)}{random.randint(1, 9)}{random.randint(1, 9)}"
@@ -369,16 +368,16 @@ def youtube_login(self, account, password):
                     datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 )
                 continue
-        current_url = self.broswer.current_url
+        current_url = self.page.url
         print(f"current_url: {current_url}")
         if "/studio.youtube.com/" in current_url:
             print(
                 f"youtube 登录成功!!!",
                 datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             )
-            if self.broswer:
+            if self.page:
                 try:
-                    self.broswer.quit()
+                    self.page.close()
                 except:
                     pass
             return True
@@ -387,17 +386,17 @@ def youtube_login(self, account, password):
                 f"youtube 登录失败!!!",
                 datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             )
-            if self.broswer:
+            if self.page:
                 try:
-                    self.broswer.quit()
+                    self.page.close()
                 except:
                     pass
             return None
     else:
         print(f"初始化chrome失败! ", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-        if self.broswer:
+        if self.page:
             try:
-                self.broswer.quit()
+                self.page.close()
             except:
                 pass
         return None

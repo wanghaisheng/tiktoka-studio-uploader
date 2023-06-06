@@ -28,14 +28,13 @@ from playwright.async_api import async_playwright
 from tsup.utils import tools
 from tsup.utils.log import log
 from tsup.utils.webdriver.webdirver import *
+from tsup.utils.fakebrowser import *
+
 import filecmp
 import requests
 
-from typing import Optional, AsyncIterator
-from contextlib import asynccontextmanager
 
-
-class PlaywrightAsyncDriver(WebDriver):
+class PlaywrightAsyncDriverStealth(WebDriver):
     def __init__(
         self,
         *,
@@ -45,7 +44,7 @@ class PlaywrightAsyncDriver(WebDriver):
         driver_type: Literal["chromium", "firefox", "webkit"] = "chromium",
         url_regexes: list = None,
         save_all: bool = False,
-        **kwargs
+        **kwargs,
     ):
         """
 
@@ -57,7 +56,7 @@ class PlaywrightAsyncDriver(WebDriver):
             save_all: 是否保存所有拦截的接口, 默认只保存最后一个
             **kwargs:
         """
-        super(PlaywrightAsyncDriver, self).__init__(**kwargs)
+        super(PlaywrightAsyncDriverStealth, self).__init__(**kwargs)
         self.driver: Playwright = None
         self.browser: Browser = None
         self.context: BrowserContext = None
@@ -70,6 +69,14 @@ class PlaywrightAsyncDriver(WebDriver):
         self._url_regexes = url_regexes
         self._save_all = save_all
         self._timeout = 300
+        self.country = None
+        self.country_code = None
+        self.region = None
+        self.city = None
+        self.zip = None
+        self.latitude = None
+        self.longitude = None
+        self.timezone = None
 
         if self._save_all and self._url_regexes:
             log.warning(
@@ -86,15 +93,14 @@ class PlaywrightAsyncDriver(WebDriver):
             proxy = self.format_context_proxy(proxy)
         else:
             proxy = None
-
-        user_agent = (
-            self._user_agent() if callable(self._user_agent) else self._user_agent
-        )
-
-        view_size = ViewportSize(
-            width=self._window_size[0], height=self._window_size[1]
-        )
-
+        self.logger = logging.getLogger("logger")
+        self.logger.setLevel(logging.DEBUG)
+        self.proxy = Proxy(self._proxy)
+        if not self.proxy.check:
+            self.logger.error(f"Proxy Check Failed: {self.proxy.reason}")
+            return False
+        else:
+            proxy = None
         # 初始化浏览器对象
         self.driver = await async_playwright().start()
         self.browser = await getattr(self.driver, self._driver_type).launch(
@@ -104,123 +110,94 @@ class PlaywrightAsyncDriver(WebDriver):
             executable_path=self._executable_path,
             downloads_path=self._download_path,
         )
+        # Initializing Faker, ComputerInfo, PersonInfo and ProxyInfo
 
-        if self.storage_state_path and os.path.exists(self.storage_state_path):
-            if self._isRecodingVideo:
-                self.context = await self.browser.new_context(
-                    user_agent=user_agent,
-                    no_viewport=True,
-                    # Sets a consistent viewport for each page. Defaults to an 1280x720 viewport. no_viewport disables the fixed viewport.
-                    viewport=view_size,
-                    screen=view_size,
-                    proxy=proxy,
-                    storage_state=self.storage_state_path,
-                    record_video_dir=os.getcwd() + os.sep + "screen-recording",
-                )
-            else:
-                self.context = await self.browser.new_context(
-                    user_agent=user_agent,
-                    no_viewport=True,
-                    # Sets a consistent viewport for each page. Defaults to an 1280x720 viewport. no_viewport disables the fixed viewport.
-                    viewport=view_size,
-                    screen=view_size,
-                    proxy=proxy,
-                    storage_state=self.storage_state_path,
-                )
-        else:
-            if self._isRecodingVideo:
-                self.context = await self.browser.new_context(
-                    user_agent=user_agent,
-                    screen=view_size,
-                    viewport=view_size,
-                    proxy=proxy,
-                    record_video_dir=os.getcwd() + os.sep + "screen-recording",
-                )
-            else:
-                self.context = await self.browser.new_context(
-                    user_agent=user_agent,
-                    screen=view_size,
-                    viewport=view_size,
-                    proxy=proxy,
-                    record_video_dir=os.getcwd() + os.sep + "screen-recording",
-                )
+        self.faker = Faker(self.proxy.httpx_proxy)
 
-        if self._use_stealth_js:
-            # https://gitcdn.xyz/repo/berstend/puppeteer-extra/stealth-js/stealth.min.js
-            # https://raw.githubusercontent.com/requireCool/stealth.min.js/main/stealth.min.js
-            # https://gitee.com/edwin_uestc/stealth.min.js/raw/main/stealth.min.js
-            # https://github.com/requireCool/stealth.min.js
-            url = "https://gitee.com/edwin_uestc/stealth.min.js/raw/main/stealth.min.js"
-            url_ = "https://raw.githubusercontent.com/requireCool/stealth.min.js/main/stealth.min.js"
-            local_filename = "stealth.min-latest.js"
-            # NOTE the stream=True parameter below
-            latest_path = os.path.join(
-                os.path.dirname(__file__), "../js/" + local_filename
-            )
+        await self.faker.computer()
+        # await self.faker.person()
 
-            print("using stealth")
-            with requests.get(url, stream=True) as r:
-                r.raise_for_status()
-                with open(latest_path, "wb") as f:
-                    for chunk in r.iter_content(chunk_size=8192):
-                        # If you have chunk encoded response uncomment if
-                        # and set chunk_size parameter to None.
-                        # if chunk:
-                        f.write(chunk)
-            path = os.path.join(os.path.dirname(__file__), "../js/stealth.min.js")
-            if not os.path.exists(path):
-                os.rename(latest_path, path)
-            else:
-                # Compare the
-                # contents of both files
-                comp = filecmp.cmp(latest_path, path, shallow=False)
-                if comp:
-                    os.remove(latest_path)
-                    print("stealth is latest ")
-                else:
-                    os.remove(path)
-                    os.rename(latest_path, path)
-                    print("stealth is  upgraded just now ")
-            # print("stealth js path:", path)
-            # self.page = await self.context.new_page()
+        await self.faker.locale(self.proxy.country_code)
+        print(f"self locale is:{self.faker.locale}")
+        # Context for more options
+        print(f"self.proxy.longitude:{self.proxy.longitude}")
+        print(f"self.proxy.latitude:{self.proxy.latitude}")
+        print(f"self.proxy.timezone:{self.proxy.timezone}")
+        print(f"self.proxy.useragent:{self.faker.useragent}")
+        print(f"self.proxy.storage_state_path:{self.storage_state_path}")
+        print(f"self.proxy.timezone:{self.proxy.username}")
+        print(f"self.proxy.timezone:{self.proxy.password}")
 
-            # await self.page.goto("https://www.google.com")
-
-            await self.context.add_init_script(path=path)
-
-        self.page = await self.context.new_page()
-        # await self.page.goto("https://www.baidu.com")
-
+        browser = await self.browser.new_context(
+            locale=self.faker.locale,  # self.faker.locale
+            geolocation={
+                "longitude": self.proxy.longitude,
+                "latitude": self.proxy.latitude,
+                "accuracy": 0.7,
+            },
+            timezone_id=self.proxy.timezone,
+            permissions=["geolocation"],
+            # screen={"width": self.faker.avail_width, "height": self.faker.avail_height},
+            user_agent=self.faker.useragent,
+            no_viewport=True,
+            # viewport={"width": self.faker.width, "height": self.faker.height},
+            proxy=proxy,
+            # here proxy format is important
+            storage_state=self.storage_state_path if self._isRecodingVideo else None,
+            record_video_dir=os.getcwd() + os.sep + "screen-recording"
+            if self._isRecodingVideo
+            else None,
+            http_credentials={
+                "username": self.proxy.username,
+                "password": self.proxy.password,
+            }
+            if self.proxy.username
+            else None,
+        )
+        # Grant Permissions to Discord to use Geolocation
+        await browser.grant_permissions(["geolocation"], origin=self.url)
+        # Create new Page and do something idk why i did that lol
+        page = await browser.new_page()
+        await page.emulate_media(
+            color_scheme="dark", media="screen", reduced_motion="reduce"
+        )
+        # Stealthen the page with custom Stealth Config
+        config = playwright_stealth.StealthConfig()
+        (
+            config.navigator_languages,
+            config.permissions,
+            config.navigator_platform,
+            config.navigator_vendor,
+            config.outerdimensions,
+        ) = (False, False, False, False, False)
+        config.vendor, config.renderer, config.nav_user_agent, config.nav_platform = (
+            self.faker.vendor,
+            self.faker.renderer,
+            self.faker.useragent,
+            "Win32",
+        )
+        config.languages = ("en-US", "en", self.faker.locale, self.faker.language_code)
+        await playwright_stealth.stealth_async(page, config)
         self.page.set_default_timeout(self._timeout * 1000)
 
-        # if self._page_on_event_callback:
-        #     for event, callback in self._page_on_event_callback.items():
-        #         self.page.on(event, callback)
+        self.browser, self.page = browser, page
 
-        # if self._url_regexes:
-        #     self.page.on("response", self.on_response)
         return self
 
     async def __aenter__(self):
         print("async Enter!", self)
-        # try:
-        #     yield await self.page
-        # finally:
-        #     await self.page.close()
-        # # print("async _setup!")
 
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         if exc_val:
             log.error(exc_val)
-        print("async Exit!", exc_type, exc_val, exc_tb)
         await self.quit()
         return True
 
     @classmethod
     async def create(self, **kwargs):
-        self = PlaywrightAsyncDriver(**kwargs)
+        self = PlaywrightAsyncDriverStealth(**kwargs)
         await self._setup()
 
         return self

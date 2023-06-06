@@ -1,18 +1,28 @@
-from playwright import async_playwright
-from tsup.utils.webdriver import PlaywrightAsyncDriver
-
-from cf_clearance import async_cf_retry, async_stealth
+from playwright.async_api import (
+    Playwright,
+    Browser,
+    BrowserContext,
+    async_playwright,
+    expect,
+)
+from tsup.utils.webdriver.playwright_driver_async_stealth import (
+    PlaywrightAsyncDriverStealth,
+)
+import asyncio
+import os
 
 
 class Botcheck:
     def __init__(self, page):
         self.page = page
 
-    async def goto(self, url, delay=2000):
+    async def goto(self, url, delay=20000):
         try:
             if url:
-                await self.page.goto(url, waitUntil="networkidle")
-                await self.page.waitForTimeout(delay)
+                # await self.page.goto(url, wait_until="networkidle")
+                await self.page.goto(url)
+
+                self.page.set_default_timeout(delay)
             else:
                 raise ValueError("No url provided")
         except Exception as err:
@@ -24,7 +34,7 @@ class Botcheck:
                 "https://prescience-data.github.io/execution-monitor.html", 200
             )
 
-            await self.page.querySelector("#result")
+            self.page.locator("#result")
 
             await self.page.evaluate(
                 """
@@ -36,10 +46,10 @@ class Botcheck:
             """
             )
 
-            await self.page.waitForTimeout(2000)
+            self.page.set_default_timeout(2000)
 
-            element = await self.page.querySelector("#result")
-            output = await element.getProperty("textContent").jsonValue()
+            element = self.page.locator("#result")
+            output = await element.get_attribute("textContent")
 
             print("IsolatedWorld", output)
             return output
@@ -52,60 +62,100 @@ class Botcheck:
                 "https://prescience-data.github.io/behavior-monitor.html", 200
             )
 
-            resultElement = await self.page.querySelector("#result")
+            resultElement = self.page.locator("#result")
             if not resultElement:
                 raise ValueError("Failed to find #result")
 
             await resultElement.hover()
             await resultElement.click(delay=10)
 
-            await self.page.waitForTimeout(200)
+            self.page.set_default_timeout(200)
 
-            inputElement = await self.page.querySelector("input#test-input")
+            inputElement = self.page.locator("input#test-input")
             if not inputElement:
                 raise ValueError("Failed to find input#test-input")
 
             await inputElement.click()
-            await inputElement.type("Hello world...", delay=3)
+            await inputElement.type("Hello world...", delay=100, timeout=30000)
 
-            await self.page._client.send(
-                "Input.synthesizeScrollGesture",
-                {"x": 0, "y": 0, "xDistance": 0, "yDistance": -100},
-            )
-
-            await self.page.waitFor(2500)
-
-            element = await self.page.querySelector("#result")
-            output = await element.getProperty("textContent").jsonValue()
+            # await self.page.evaluate(
+            #     "Input.synthesizeScrollGesture",
+            #     {"x": 0, "y": 0, "xDistance": 0, "yDistance": -100},
+            # )
+            await self.page.dispatch_event("input#test-input", "scroll")
+            await self.page.wait_for_timeout(2500)
+            await expect(self.page.locator("#result")).to_be_visible()
+            element = self.page.locator("#result")
+            output = await element.get_attribute("textContent")
 
             print("BehaviorMonitor", output)
             return output
         except Exception as err:
             raise err
 
-    async def f5network(self):
+    async def f5networkloginForm(self):
+        access = False
         try:
-            await self.goto("https://ib.bri.co.id/ib-bri", 2000)
-
-            element = await self.page.querySelector("form#loginForm")
-            output = "Passed" if element else "Failed"
+            await self.page.goto("https://ib.bri.co.id/ib-bri", 50000)
+            access = True
+        except Exception as err:
+            output = "Failed"
 
             print("F5 Network", output)
-            return output
-        except Exception as err:
-            raise err
+
+            await self.page.close()
+        if access == True:
+            try:
+                element = await expect(
+                    self.page.locator("form#loginForm")
+                ).to_be_visible(
+                    # timeout=50000
+                )
+
+                output = "Passed" if element else "Failed"
+
+                print("F5 Network", output)
+                return output
+            except:
+                output = "Failed"
+
+                print("F5 Network11", output)
+
+                await self.page.close()
+        else:
+            print("falied F5")
 
     async def pixelscan(self):
+        access = False
         try:
-            await self.goto("https://pixelscan.net", 3000)
+            await self.goto("https://pixelscan.net")
+            access = True
+        except:
+            output = "Failed"
 
-            element = await self.page.querySelector("span.consistency-status-text")
-            output = await element.getProperty("textContent").jsonValue()
+            print("PixelScan", output)
 
-            print("PixelScan", "Browser Fingerprint: " + output)
-            return output
-        except Exception as err:
-            raise err
+            await self.page.close()
+        if access == True:
+            try:
+                element = await expect(
+                    self.page.locator("span.consistency-status-text")
+                ).to_be_visible(
+                    # timeout=50000
+                )
+                element = element.text_content()
+                output = "Passed" if "inconsistent" in element else "Failed"
+
+                print("PixelScan", output)
+                return output
+            except:
+                output = "Failed"
+
+                print("PixelScan", output)
+
+                await self.page.close()
+        else:
+            print("falied F5")
 
     async def sannysoft(self):
         try:
@@ -147,7 +197,7 @@ class Botcheck:
                 15000,
             )
 
-            element = await self.page.querySelector("#score")
+            element = self.page.locator("#score")
             output = await self.page.evaluate(
                 "(element) => element.textContent", element
             )
@@ -162,9 +212,9 @@ class Botcheck:
             await self.goto("http://anonymity.space/hellobot.php", 3000)
 
             await self.page.waitForSelector("#result")
-            element = await self.page.querySelector("#result")
+            element = self.page.locator("#result")
 
-            output = await element.getProperty("textContent").jsonValue()
+            output = await element.get_attribute("textContent")
 
             print("HelloBot", output)
             return output
@@ -176,9 +226,9 @@ class Botcheck:
             await self.goto("https://arh.antoinevastel.com/bots/areyouheadless", 2000)
 
             await self.page.waitForSelector("#res")
-            element = await self.page.querySelector("#res")
+            element = self.page.locator("#res")
 
-            output = await element.getProperty("textContent").jsonValue()
+            output = await element.get_attribute("textContent")
 
             print("AreYouHeadless", output)
             return output
@@ -190,11 +240,11 @@ class Botcheck:
             await self.goto("https://fingerprintjs.com/demo", 5000)
 
             await self.page.waitForSelector("table.table-compact")
-            element = await self.page.querySelector(
+            element = self.page.locator(
                 "table.table-compact > tbody > tr:nth-child(4) > td.miriam"
             )
 
-            text = await element.getProperty("textContent").jsonValue()
+            text = await element.get_attribute("textContent")
             output = "Passed" if text == "NO" else "Failed"
 
             print("FingerprintJS", output)
@@ -206,16 +256,16 @@ class Botcheck:
         try:
             await self.goto("https://datadome.co", 2000)
 
-            button = await self.page.querySelector("#menu-item-18474")
+            button = self.page.locator("#menu-item-18474")
 
             if button:
                 await button.click(delay=10)
-                await self.page.waitForNavigation(waitUntil="networkidle2")
-                await self.page.waitFor(500)
+                await self.page.waitForNavigation(wait_until="networkidle2")
+                await self.page.wait_for_timeout(500)
             else:
                 print("Could not find the button!")
 
-            captcha = await self.page.querySelector(
+            captcha = self.page.locator(
                 'iframe[src^="https://geo.captcha-delivery.com/captcha/"]'
             )
             output = "Failed" if captcha else "Passed"
@@ -229,18 +279,18 @@ class Botcheck:
         try:
             await self.goto("https://www.whiteops.com", 3000)
 
-            button = await self.page.querySelector(
+            button = self.page.locator(
                 'a[href="https://www.whiteops.com/company/about"]'
             )
 
             if button:
                 await button.click(delay=8)
-                await self.page.waitForNavigation(waitUntil="networkidle2")
-                await self.page.waitFor(500)
+                await self.page.waitForNavigation(wait_until="networkidle2")
+                await self.page.wait_for_timeout(500)
             else:
                 print("Could not find the button!")
 
-            test = await self.page.querySelector(
+            test = self.page.locator(
                 'a[href="https://resources.whiteops.com/data-sheets/white-ops-company-overview"]'
             )
             output = "Passed" if test else "Failed"
@@ -257,26 +307,31 @@ async def main():
     # page = await context.newPage()
     proxy_option = "socks5://127.0.0.1:1080"
 
-    pl = await PlaywrightAsyncDriver.create(
+    pl = await PlaywrightAsyncDriverStealth.create(
         proxy=proxy_option,
         driver_type="chromium",
-        timeout=3000,
-        use_stealth_js=True,
+        timeout=300,
+        headless=False,
     )
 
     botcheck = Botcheck(pl.page)
-    await async_stealth(pl.page, pure=True)
 
-    await botcheck.isolatedWorld()
-    await botcheck.behaviorMonitor()
-    await botcheck.f5network()
+    # await pl.page.context.storage_state(path="1.json")
+    # await async_stealth(self.page, pure=True)
+
+    # await botcheck.isolatedWorld()
+    # await botcheck.behaviorMonitor()
+    # await botcheck.f5networkloginForm()
     await botcheck.pixelscan()
-    await botcheck.sannysoft()
-    await botcheck.recaptcha()
-    await botcheck.hellobot()
-    await botcheck.areyouheadless()
-    await botcheck.fingerprintjs()
-    await botcheck.datadome()
-    await botcheck.whiteops()
+    # await botcheck.sannysoft()
+    # await botcheck.recaptcha()
+    # await botcheck.hellobot()
+    # await botcheck.areyouheadless()
+    # await botcheck.fingerprintjs()
+    # await botcheck.datadome()
+    # await botcheck.whiteops()
 
-    await pl.browser.close()
+    # await pl.browser.close()
+
+
+asyncio.run(main())

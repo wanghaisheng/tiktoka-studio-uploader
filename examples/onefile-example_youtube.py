@@ -138,7 +138,7 @@ upload = YoutubeUpload(
     # if you want to silent background running, set watcheveryuploadstep false
     CHANNEL_COOKIES=CHANNEL_COOKIES,
     username=username,
-    browserType="chromium",
+    browserType="firefox",
     closewhen100percent="go next after copyright check success",
     password=password,
     recordvideo=True

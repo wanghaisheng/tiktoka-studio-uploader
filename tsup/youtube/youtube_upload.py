@@ -225,6 +225,7 @@ class YoutubeUpload:
                 driver_type=self.browserType,
                 timeout=3000,
                 use_stealth_js=True,
+                url=YOUTUBE_URL,
             )
             self.pl = pl
             self.page = pl.page
@@ -260,9 +261,12 @@ class YoutubeUpload:
         try:
             self.CHANNEL_COOKIES
             self.log.debug(f"cookies existing:{self.CHANNEL_COOKIES}")
-            
-            if  not self.CHANNEL_COOKIES is None and os.path.exists(self.CHANNEL_COOKIES) and os.path.getsize(self.CHANNEL_COOKIES) > 0:
 
+            if (
+                not self.CHANNEL_COOKIES is None
+                and os.path.exists(self.CHANNEL_COOKIES)
+                and os.path.getsize(self.CHANNEL_COOKIES) > 0
+            ):
                 await self.context.clear_cookies()
 
                 await self.context.add_cookies(
@@ -270,11 +274,15 @@ class YoutubeUpload:
                 )
             else:
                 print("your should provide a valid cookie file")
+                self.log.debug(
+                    "you can mannually sign in to save credentials for later auto login"
+                )
+                await youtube_login(self.pl, self.username, self.password)
 
                 # self.page = await self.context.new_page()
 
         except:
-            await passwordlogin(self)
+            await youtube_login(self.pl, self.username, self.password)
 
             # save cookie to later import
             # login_using_cookie_file(self,self.CHANNEL_COOKIES,page)
