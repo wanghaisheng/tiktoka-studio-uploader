@@ -25,3 +25,4 @@ playwright_stealth #==1.0.5
 requests[socks]
 pycountry
 BeautifulSoup4
+async_class #==0.5.0

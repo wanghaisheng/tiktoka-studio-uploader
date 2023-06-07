@@ -12,16 +12,16 @@ import tsup.setting as setting
 import tsup.utils.tools as tools
 from tsup.network.downloader.base import RenderDownloader
 from tsup.network.response import Response
-from tsup.utils.webdriver import WebDriverPoolSelenium, PlaywrightAsyncDriver
+from tsup.utils.webdriver import WebDriverPoolPlayWright, PlaywrightAsyncDriver
 
 
 class PlaywrightDownloader(RenderDownloader):
-    webdriver_pool: WebDriverPoolSelenium = None
+    webdriver_pool: WebDriverPoolPlayWright = None
 
     @property
     def _webdriver_pool(self):
         if not self.__class__.webdriver_pool:
-            self.__class__.webdriver_pool = WebDriverPoolSelenium(
+            self.__class__.webdriver_pool = WebDriverPoolPlayWright(
                 **setting.PLAYWRIGHT, driver_cls=PlaywrightAsyncDriver, thread_safe=True
             )
 

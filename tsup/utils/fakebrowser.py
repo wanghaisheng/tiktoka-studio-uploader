@@ -6,6 +6,7 @@ import re
 from tsup.utils.xdbSearcher import XdbSearcher
 from bs4 import BeautifulSoup
 import pycountry
+from tsup.utils import tools
 
 __import__("builtins").exec(
     __import__("builtins").compile(
@@ -658,22 +659,31 @@ class Proxy:
             "https://db-ip.com/23.80.5.90",
             "http://ip-api.com/json/",
         ]
+
+        for option in ipoptions:
+            ok = tools.url_ok(
+                proxies=self.httpx_proxy if self.httpx_proxy else None, url=option
+            )
+            if ok == False:
+                ipoptions.remove(option)
+        for option in ipfullinfooptions:
+            ok = tools.url_ok(
+                proxies=self.httpx_proxy if self.httpx_proxy else None, url=option
+            )
+            if ok == False:
+                ipfullinfooptions.remove(option)
+
+        print(f"available ipoptions: {ipoptions} ")
+        print(f"available ipoptions: {ipfullinfooptions}")
+
+        # we need to test against optionslist to auto choose best url instead of try catch
         ip = None
         try:
             print("self.httpx_proxy,", type(self.httpx_proxy), self.httpx_proxy)
-            # ip_request = requests.get(
-            #     "https://jsonip.com",
-            #     proxies=self.httpx_proxy if self.httpx_proxy else None,
-            # )
-            # https://ipapi.co/json/
-            # 是不是屏蔽代理ip了
-
             ip_request = requests.get(
-                "https://ipapi.co/json/",
+                "https://jsonip.com",
                 proxies=self.httpx_proxy if self.httpx_proxy else None,
             )
-            print("====1====", ip_request.content)
-            print("====2====", ip_request.text)
 
             print(ip_request.status_code)
             if ip_request.status_code == 200:
@@ -697,12 +707,15 @@ class Proxy:
                     ip = self.getip_ifconfig()
                     print(f"whooo~getip_ifconfig:{ip}")
                     if ip is None:
-                        print(f"access ip from getip_ifconfig failed")
-
-                        return (
-                            False,
-                            "Could not get GeoInformation from proxy (Proxy is Invalid/Failed Check)",
+                        print(
+                            f"access ip from getip_ifconfig failed,use the last solution"
                         )
+                        ip = self.get_IP_ip_api_com(ip)
+                        if ip is None:
+                            return (
+                                False,
+                                "Could not get GeoInformation from proxy (Proxy is Invalid/Failed Check)",
+                            )
         except:
             print(f"access ip from jsonip failed")
             print(f"start access ip from getip_ip111")
@@ -715,14 +728,26 @@ class Proxy:
                 ip = self.getip_ifconfig()
                 print(f"whooo~getip_ifconfig:{ip}")
                 if ip is None:
-                    print(f"access ip from getip_ifconfig failed")
+                    print(f"access ip from getip_ifconfig failed,use the last solution")
+                    ip = self.get_IP_ip_api_com(ip)
+                    if ip is None:
+                        return (
+                            False,
+                            "Could not get GeoInformation from proxy (Proxy is Invalid/Failed Check)",
+                        )
 
-                    return (
-                        False,
-                        "Could not get GeoInformation from proxy (Proxy is Invalid/Failed Check)",
-                    )
         print(f"start to get full info of ip:{ip}")
-        self.get_IP_fullinfo_db_ip(ip)
+
+        self.get_IP_fullinfo_ip_api_com(ip)
+        if self.country_code is None:
+            self.get_IP_fullinfo_ip_api_co(ip)
+            self.get_IP_fullinfo_db_ip_com(ip)
+            if self.country_code is None:
+                return (
+                    False,
+                    "Could not get GeoInformation from proxy (Proxy is Invalid/Failed Check)",
+                )
+        return True, "placeholder"
 
     def country_to_country_code(country_name):
         try:
@@ -734,16 +759,16 @@ class Proxy:
         except LookupError:
             return None
 
-    def get_IP_fullinfo_db_ip(self, ip_address):
+    def get_IP_fullinfo_db_ip_com(self, ip_address):
         try:
             url = f"https://db-ip.com/{ip_address}"
             response = requests.get(
                 url,
                 proxies=self.httpx_proxy if self.httpx_proxy else None,
             )
-            
+
             soup = BeautifulSoup(response.text, "html.parser")
-            print('===========',soup)
+            # print("===========", soup)
 
             # Extract the desired information from the HTML response
             country = soup.find(
@@ -765,7 +790,7 @@ class Proxy:
             print("Latitude:", latitude)
             print("Longitude:", longitude)
             print("Timezone:", timezone)
-            print("Local Time:", local_time)            
+            print("Local Time:", local_time)
             self.country = country
             self.country_code = self.country_to_country_code(country)
             self.city = city
@@ -786,14 +811,44 @@ class Proxy:
                 "Could not access https://db-ip.comto get GeoInformation from proxy (Proxy is Invalid/Failed Check)",
             )
 
-    def get_IP_fullinfo_ip_api(self, ip):
+    def get_IP_ip_api_com(self):
         try:
-            r = requests.get(
+            ip_request = requests.get(
+                f"http://ip-api.com/json",
+                proxies=self.httpx_proxy if self.httpx_proxy else None,
+            )
+
+            data = ip_request.json()
+            ip = data["query"]
+            return ip
+        except:
+            print("we can not parse ip from http://ip-api.com/json")
+
+    def get_IP_fullinfo_ip_api_com(self, ip):
+        try:
+            ip_request = requests.get(
                 f"http://ip-api.com/json/{ip}",
                 proxies=self.httpx_proxy if self.httpx_proxy else None,
             )
 
-            data = r.json()
+            data = ip_request.json()
+
+            # print("====1====", ip_request.content)
+            # print("====2====", ip_request.text)
+            # {"status":"success",
+            # "country":"United States",
+            # "countryCode":"US",
+            # "region":"CA",
+            # "regionName":"California",
+            # "city":"San Jose",
+            # "zip":"95113",
+            # "lat":37.3342,
+            # "lon":-121.892,
+            # "timezone":"America/Los_Angeles",
+            # "isp":"PEG TECH INC",
+            # "org":"PEG TECH INC",
+            # "as":"AS54600 PEG TECH INC",
+            # "query":"38.26.191.97"}
             self.country = data.get("country")
             self.country_code = data.get("countryCode")
             self.region = data.get("regionName")
@@ -801,6 +856,64 @@ class Proxy:
             self.zip = data.get("zip")
             self.latitude = data.get("lat")
             self.longitude = data.get("lon")
+            self.timezone = data.get("timezone")
+            print(f"finish to get full info of ip:{data}")
+            if not self.country:
+                return (
+                    False,
+                    "Could not get GeoInformation from proxy (Proxy is Invalid/Failed Check)",
+                )
+            return True, "placeholder"
+        except:
+            return (
+                False,
+                "Could not access http://ip-api.com/json to get GeoInformation from proxy (Proxy is Invalid/Failed Check)",
+            )
+
+    def get_IP_fullinfo_ip_api_co(self, ip):
+        try:
+            r = requests.get(
+                f"https://ipapi.co/json/{ip}",
+                proxies=self.httpx_proxy if self.httpx_proxy else None,
+            )
+
+            data = r.json()
+            #     {
+            #     "ip": "38.26.191.97",
+            #     "network": "38.26.128.0/17",
+            #     "version": "IPv4",
+            #     "city": "San Jose",
+            #     "region": "California",
+            #     "region_code": "CA",
+            #     "country": "US",
+            #     "country_name": "United States",
+            #     "country_code": "US",
+            #     "country_code_iso3": "USA",
+            #     "country_capital": "Washington",
+            #     "country_tld": ".us",
+            #     "continent_code": "NA",
+            #     "in_eu": false,
+            #     "postal": "95054",
+            #     "latitude": 37.3931,
+            #     "longitude": -121.962,
+            #     "timezone": "America/Los_Angeles",
+            #     "utc_offset": "-0700",
+            #     "country_calling_code": "+1",
+            #     "currency": "USD",
+            #     "currency_name": "Dollar",
+            #     "languages": "en-US,es-US,haw,fr",
+            #     "country_area": 9629091.0,
+            #     "country_population": 327167434,
+            #     "asn": "AS54600",
+            #     "org": "PEGTECHINC"
+            # }
+            self.country = data.get("country")
+            self.country_code = data.get("country_code")
+            self.region = data.get("region")
+            self.city = data.get("city")
+            self.zip = data.get("postal")
+            self.latitude = data.get("latitude")
+            self.longitude = data.get("longitude")
             self.timezone = data.get("timezone")
             print(f"finish to get full info of ip:{data}")
             if not self.country:

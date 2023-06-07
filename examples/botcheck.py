@@ -10,12 +10,15 @@ from tsup.utils.webdriver.playwright_driver_async_stealth import (
 )
 import asyncio
 import os
-from tsup.botright.botright import Botright 
+from tsup.botright.botright import Botright
 from cf_clearance import async_cf_retry, async_stealth
+from datetime import datetime
+
 
 class Botcheck:
     def __init__(self, page):
         self.page = page
+        self.timestr = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 
     async def goto(self, url, delay=2000000):
         try:
@@ -51,7 +54,11 @@ class Botcheck:
 
             element = self.page.locator("#result")
             output = await element.get_attribute("textContent")
-
+            await self.page.screenshot(
+                path=f"output/IsolatedWorld-{self.timestr}.png", full_page=True
+            )
+            fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
+            print(f"Browser fingerprint fields:{fingerprint}")
             print("IsolatedWorld", output)
             return output
         except Exception as err:
@@ -88,7 +95,11 @@ class Botcheck:
             await expect(self.page.locator("#result")).to_be_visible()
             element = self.page.locator("#result")
             output = await element.get_attribute("textContent")
-
+            await self.page.screenshot(
+                path=f"output/BehaviorMonitor-{self.timestr}.png", full_page=True
+            )
+            fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
+            print(f"Browser fingerprint fields:{fingerprint}")
             print("BehaviorMonitor", output)
             return output
         except Exception as err:
@@ -110,13 +121,17 @@ class Botcheck:
                 element = await expect(
                     self.page.locator("form#loginForm")
                 ).to_be_visible(
-                    timeout=500000
+                    # timeout=500000
                 )
 
                 output = "Passed" if element else "Failed"
+                await self.page.screenshot(
+                    path=f"output/f5-{self.timestr}.png", full_page=True
+                )
 
                 print("F5 Network", output)
                 return output
+
             except:
                 output = "Failed"
 
@@ -125,6 +140,8 @@ class Botcheck:
                 # await self.page.close()
         else:
             print("falied F5")
+        fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
+        print(f"Browser fingerprint fields:{fingerprint}")
 
     async def pixelscan(self):
         access = False
@@ -141,11 +158,12 @@ class Botcheck:
             try:
                 element = await expect(
                     self.page.locator("span.consistency-status-text")
-                ).to_be_visible(
-                    timeout=50000
-                )
+                ).to_be_visible(timeout=50000)
                 element = element.text_content()
                 output = "Passed" if "inconsistent" in element else "Failed"
+                await self.page.screenshot(
+                    path=f"output/PixelScan-{self.timestr}.png", full_page=True
+                )
 
                 print("PixelScan", output)
                 return output
@@ -157,37 +175,20 @@ class Botcheck:
                 # await self.page.close()
         else:
             print("falied F5")
+        fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
+        print(f"Browser fingerprint fields:{fingerprint}")
 
     async def sannysoft(self):
         try:
             await self.goto("https://bot.sannysoft.com", 5000)
 
-            output = await self.page.evaluate(
-                """
-                return new Promise(async (resolve, reject) => {
-                    let results = [];
-                    const tables = document.querySelectorAll("table");
-                    let rows;
-                    let cols;
-                    for (let i = 0; i < 2; i++) {
-                        if (tables[i]) {
-                            rows = tables[i].querySelectorAll("tr");
-                            rows.forEach((row) => {
-                                cols = row.querySelectorAll("td");
-                                results.push({
-                                    name: cols[0] ? cols[0] : null,
-                                    result: cols[1] ? cols[1] : null,
-                                });
-                            });
-                        }
-                    }
-                    resolve(results);
-                });
-            """
+            await self.page.screenshot(
+                path=f"output/Sannysoft-{self.timestr}.png", full_page=True
             )
-
-            print("Sannysoft", output)
-            return output
+            # print("Sannysoft", output)
+            # return output
+            fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
+            print(f"Browser fingerprint fields:{fingerprint}")
         except Exception as err:
             raise err
 
@@ -202,7 +203,11 @@ class Botcheck:
             output = await self.page.evaluate(
                 "(element) => element.textContent", element
             )
-
+            await self.page.screenshot(
+                path=f"output/Recaptcha-{self.timestr}.png", full_page=True
+            )
+            fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
+            print(f"Browser fingerprint fields:{fingerprint}")
             print("Recaptcha Score", output)
             return output
         except Exception as err:
@@ -216,7 +221,11 @@ class Botcheck:
             element = self.page.locator("#result")
 
             output = await element.get_attribute("textContent")
-
+            await self.page.screenshot(
+                path=f"output/HelloBot-{self.timestr}.png", full_page=True
+            )
+            fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
+            print(f"Browser fingerprint fields:{fingerprint}")
             print("HelloBot", output)
             return output
         except Exception as err:
@@ -230,7 +239,11 @@ class Botcheck:
             element = self.page.locator("#res")
 
             output = await element.get_attribute("textContent")
-
+            await self.page.screenshot(
+                path=f"output/AreYouHeadless-{self.timestr}.png", full_page=True
+            )
+            fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
+            print(f"Browser fingerprint fields:{fingerprint}")
             print("AreYouHeadless", output)
             return output
         except Exception as err:
@@ -247,7 +260,11 @@ class Botcheck:
 
             text = await element.get_attribute("textContent")
             output = "Passed" if text == "NO" else "Failed"
-
+            await self.page.screenshot(
+                path=f"output/FingerprintJS-{self.timestr}.png", full_page=True
+            )
+            fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
+            print(f"Browser fingerprint fields:{fingerprint}")
             print("FingerprintJS", output)
             return output
         except Exception as err:
@@ -270,7 +287,11 @@ class Botcheck:
                 'iframe[src^="https://geo.captcha-delivery.com/captcha/"]'
             )
             output = "Failed" if captcha else "Passed"
-
+            await self.page.screenshot(
+                path=f"output/Datadome-{self.timestr}.png", full_page=True
+            )
+            fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
+            print(f"Browser fingerprint fields:{fingerprint}")
             print("Datadome", output)
             return output
         except Exception as err:
@@ -295,31 +316,135 @@ class Botcheck:
                 'a[href="https://resources.whiteops.com/data-sheets/white-ops-company-overview"]'
             )
             output = "Passed" if test else "Failed"
-
+            await self.page.screenshot(
+                path=f"output/Whiteops-{self.timestr}.png", full_page=True
+            )
+            fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
+            print(f"Browser fingerprint fields:{fingerprint}")
             print("Whiteops", output)
             return output
         except Exception as err:
             raise err
 
-    
+    async def sleep(ms):
+        await asyncio.sleep(ms / 1000)
+
+    async def incolumitas(self):
+        page = self.page
+        await page.goto("https://bot.incolumitas.com/")
+        await page.wait_for_selector("#formStuff")
+        user_name_input = await page.query_selector('[name="userName"]')
+        await user_name_input.click(click_count=3)
+        await user_name_input.type("bot3000")
+
+        email_input = await page.query_selector('[name="eMail"]')
+        await email_input.click(click_count=3)
+        await email_input.type("bot3000@gmail.com")
+
+        await page.select_option('[name="cookies"]', "I want all the Cookies")
+        await page.click("#smolCat")
+        await page.click("#bigCat")
+        await page.click("#submit")
+
+        async def handle_dialog(dialog):
+            print(dialog.message())
+            await dialog.accept()
+
+        page.on("dialog", handle_dialog)
+
+        await page.wait_for_selector("#tableStuff tbody tr .url")
+        await self.sleep(100)
+
+        await page.wait_for_selector("#updatePrice0")
+        await page.click("#updatePrice0")
+        await page.wait_for_function(
+            '!!document.getElementById("price0").getAttribute("data-last-update")'
+        )
+
+        await page.wait_for_selector("#updatePrice1")
+        await page.click("#updatePrice1")
+        await page.wait_for_function(
+            '!!document.getElementById("price1").getAttribute("data-last-update")'
+        )
+
+        data = await page.evaluate(
+            """() => {
+            let results = [];
+            document.querySelectorAll('#tableStuff tbody tr').forEach((row) => {
+                results.push({
+                    name: row.querySelector('.name').innerText,
+                    price: row.querySelector('.price').innerText,
+                    url: row.querySelector('.url').innerText,
+                })
+            });
+            return results;
+        }"""
+        )
+        fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
+        print(f"Browser fingerprint fields:{fingerprint}")
+        print(data)
+        await self.sleep(6000)
+
+        new_tests = await page.inner_text("#new-tests")
+        old_tests = await page.inner_text("#detection-tests")
+        await self.page.screenshot(
+            path=f"output/incolumitas-{self.timestr}.png", full_page=True
+        )
+
+        print(new_tests)
+        print(old_tests)
+
+    async def Imperva(self):
+        url = "https://driverpracticaltest.dvsa.gov.uk/login"
+        url = "https://corretor.portoseguro.com.br/corretoronline/"
+        url = "https://www.cma-cgm.com/"
+        url = "https://www.nordstrom.com/"
+
+        page = self.page
+        await page.goto(url)
+        await self.page.screenshot(
+            path=f"output/Imperva-{self.timestr}.png", full_page=True
+        )
+        fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
+        print(f"Browser fingerprint fields:{fingerprint}")
+
+    async def nowsecure(self):
+        url = "www.nowsecure.nl"
+        # https://bot.incolumitas.com/#botChallenge
+        page = self.page
+        await page.goto(url)
+        await self.page.screenshot(
+            path=f"output/nowsecure-{self.timestr}.png", full_page=True
+        )
+        fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
+        print(f"Browser fingerprint fields:{fingerprint}")
+        return
+
 
 async def main():
     # browser = await async_playwright.chromium.launch()
     # context = await browser.newContext()
     # page = await context.newPage()
     proxy_option = "socks5://127.0.0.1:1080"
-
     pl = await PlaywrightAsyncDriverStealth.create(
         proxy=proxy_option,
         driver_type="firefox",
         timeout=300,
         headless=False,
     )
-    await async_stealth(pl.page, pure=True)
+
+    # await async_stealth(pl.page, pure=True)
 
     botcheck = Botcheck(pl.page)
-    
+    # Extract the browser fingerprint fields
 
+    # for field in fingerprint:
+    #     print(field)
+    await async_stealth(pl.page, pure=True)
+
+    path = os.path.join(os.path.dirname(__file__), "../tsup/utils/js/stealth.min.js")
+
+    await pl.page.add_init_script(path=path)
 
     # botright_client = await Botright(headless=False)
     # browser = await botright_client.new_browser(proxy=proxy_option)
@@ -332,22 +457,32 @@ async def main():
 
     # await pl.page.context.storage_state(path="1.json")
     # await async_stealth(self.page, pure=True)
-    # undetected_driver
-    # www.nowsecure.nl
-    # https://bot.incolumitas.com/#botChallenge
-    
-    
-    # await botcheck.isolatedWorld()
-    # await botcheck.behaviorMonitor()
+
+    # for debug purpose,we should print all request header to find the leak
+
+    # Hey this is most likely caused, by the proxy you're using. You need to make sure your proxy connection does not forcefully send any of these headers
+
+    # 'VIA',
+    # 'X-FORWARDED-FOR',
+    # 'X-FORWARDED',
+    # 'FORWARDED-FOR',
+    # 'FORWARDED-FOR-IP',
+    # 'FORWARDED',
+    # 'CLIENT-IP',
+    # 'PROXY-CONNECTION'
+
+    await botcheck.isolatedWorld()
+    await botcheck.behaviorMonitor()
     await botcheck.f5networkloginForm()
     await botcheck.pixelscan()
-    # await botcheck.sannysoft()
-    # await botcheck.recaptcha()
-    # await botcheck.hellobot()
-    # await botcheck.areyouheadless()
-    # await botcheck.fingerprintjs()
+    await botcheck.sannysoft()
+    await botcheck.recaptcha()
+    await botcheck.hellobot()
+    await botcheck.areyouheadless()
+    await botcheck.fingerprintjs()
     await botcheck.datadome()
     await botcheck.whiteops()
+    await botcheck.incolumitas()
 
     # await pl.browser.close()
 
