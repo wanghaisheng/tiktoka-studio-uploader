@@ -175,6 +175,12 @@ class Botcheck:
                 # await self.page.close()
         else:
             print("falied F5")
+        await self.page.route("**", lambda route: route.continue_())
+        self.page.on(
+            "request", lambda request: print(request.headers.get("X-Forwarded-For"))
+        )
+        self.page.on("request", lambda request: print(request.headers))
+
         fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
         print(f"Browser fingerprint fields:{fingerprint}")
 
