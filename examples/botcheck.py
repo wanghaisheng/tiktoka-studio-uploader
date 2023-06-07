@@ -11,19 +11,19 @@ from tsup.utils.webdriver.playwright_driver_async_stealth import (
 import asyncio
 import os
 from tsup.botright.botright import Botright 
-
+from cf_clearance import async_cf_retry, async_stealth
 
 class Botcheck:
     def __init__(self, page):
         self.page = page
 
-    async def goto(self, url, delay=20000):
+    async def goto(self, url, delay=2000000):
         try:
             if url:
                 # await self.page.goto(url, wait_until="networkidle")
                 await self.page.goto(url)
 
-                self.page.set_default_timeout(delay)
+                # self.page.set_default_timeout(delay)
             else:
                 raise ValueError("No url provided")
         except Exception as err:
@@ -97,20 +97,20 @@ class Botcheck:
     async def f5networkloginForm(self):
         access = False
         try:
-            await self.page.goto("https://ib.bri.co.id/ib-bri", 50000)
+            await self.page.goto("https://ib.bri.co.id/ib-bri")
             access = True
         except Exception as err:
             output = "Failed"
 
-            print("F5 Network", output)
+            print("can not open page,F5 Network", output)
 
-            await self.page.close()
+            # await self.page.close()
         if access == True:
             try:
                 element = await expect(
                     self.page.locator("form#loginForm")
                 ).to_be_visible(
-                    # timeout=50000
+                    timeout=500000
                 )
 
                 output = "Passed" if element else "Failed"
@@ -120,9 +120,9 @@ class Botcheck:
             except:
                 output = "Failed"
 
-                print("F5 Network11", output)
+                print("cannot find login form,F5 Network", output)
 
-                await self.page.close()
+                # await self.page.close()
         else:
             print("falied F5")
 
@@ -136,13 +136,13 @@ class Botcheck:
 
             print("PixelScan", output)
 
-            await self.page.close()
+            # await self.page.close()
         if access == True:
             try:
                 element = await expect(
                     self.page.locator("span.consistency-status-text")
                 ).to_be_visible(
-                    # timeout=50000
+                    timeout=50000
                 )
                 element = element.text_content()
                 output = "Passed" if "inconsistent" in element else "Failed"
@@ -154,7 +154,7 @@ class Botcheck:
 
                 print("PixelScan", output)
 
-                await self.page.close()
+                # await self.page.close()
         else:
             print("falied F5")
 
@@ -212,7 +212,7 @@ class Botcheck:
         try:
             await self.goto("http://anonymity.space/hellobot.php", 3000)
 
-            await self.page.waitForSelector("#result")
+            await self.page.locator("#result").is_visible()
             element = self.page.locator("#result")
 
             output = await element.get_attribute("textContent")
@@ -226,7 +226,7 @@ class Botcheck:
         try:
             await self.goto("https://arh.antoinevastel.com/bots/areyouheadless", 2000)
 
-            await self.page.waitForSelector("#res")
+            await self.page.locator("#res").is_visible()
             element = self.page.locator("#res")
 
             output = await element.get_attribute("textContent")
@@ -240,7 +240,7 @@ class Botcheck:
         try:
             await self.goto("https://fingerprintjs.com/demo", 5000)
 
-            await self.page.waitForSelector("table.table-compact")
+            await self.page.locator("table.table-compact").is_visible()
             element = self.page.locator(
                 "table.table-compact > tbody > tr:nth-child(4) > td.miriam"
             )
@@ -309,25 +309,26 @@ async def main():
     # page = await context.newPage()
     proxy_option = "socks5://127.0.0.1:1080"
 
-    # pl = await PlaywrightAsyncDriverStealth.create(
-    #     proxy=proxy_option,
-    #     driver_type="firefox",
-    #     timeout=300,
-    #     headless=False,
-    # )
+    pl = await PlaywrightAsyncDriverStealth.create(
+        proxy=proxy_option,
+        driver_type="firefox",
+        timeout=300,
+        headless=False,
+    )
+    await async_stealth(pl.page, pure=True)
+
+    botcheck = Botcheck(pl.page)
     
-    # botcheck = Botcheck(pl.page)
-    
 
 
-    botright_client = await Botright(headless=False)
-    browser = await botright_client.new_browser(proxy=proxy_option)
-    page = await browser.new_page()
-    botcheck = Botcheck(page)
+    # botright_client = await Botright(headless=False)
+    # browser = await botright_client.new_browser(proxy=proxy_option)
+    # page = await browser.new_page()
+    # botcheck = Botcheck(page)
 
-    # Continue by using the Page
+    # # Continue by using the Page
 
-    await botright_client.close()
+    # await botright_client.close()
 
     # await pl.page.context.storage_state(path="1.json")
     # await async_stealth(self.page, pure=True)
@@ -338,15 +339,15 @@ async def main():
     
     # await botcheck.isolatedWorld()
     # await botcheck.behaviorMonitor()
-    # await botcheck.f5networkloginForm()
+    await botcheck.f5networkloginForm()
     await botcheck.pixelscan()
     # await botcheck.sannysoft()
     # await botcheck.recaptcha()
     # await botcheck.hellobot()
     # await botcheck.areyouheadless()
     # await botcheck.fingerprintjs()
-    # await botcheck.datadome()
-    # await botcheck.whiteops()
+    await botcheck.datadome()
+    await botcheck.whiteops()
 
     # await pl.browser.close()
 

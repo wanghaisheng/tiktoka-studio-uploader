@@ -120,6 +120,24 @@ def log_function_time(func):
         return func
 
 
+
+def url_ok(proxies,url):
+
+
+    try:
+        response = requests.head(url,proxies=proxies if proxies else None)
+    except Exception as e:
+        # print(f"NOT OK: {str(e)}")
+        return False
+    else:
+        if response.status_code == 400 or response.status_code==404:
+            # print("OK")
+            print(f"NOT OK: HTTP response code {response.status_code}")
+
+            return False
+        else:
+
+            return True   
 def run_safe_model(module_name):
     def inner_run_safe_model(func):
         try:

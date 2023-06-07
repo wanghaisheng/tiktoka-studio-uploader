@@ -239,8 +239,8 @@ class YoutubeUpload:
 
         # self.page = await self.context.new_page()
         # check fakebrowser to bypass captcha and security violations
-        if self.debug:
-            await botcheck(self.pl)
+        # if self.debug:
+        #     await botcheck(self.pl)
 
         await self.page.evaluate(
             "document.body.appendChild(Object.assign(document.createElement('script'), {src: 'https://gitcdn.xyz/repo/berstend/puppeteer-extra/stealth-js/stealth.min.js'}))"
@@ -248,8 +248,8 @@ class YoutubeUpload:
         await async_stealth(self.page, pure=True)
         # store the stealth state to reload next time
         # await botcheck(self)
-        if self.debug:
-            await botcheck(self.pl)
+        # if self.debug:
+        #     await botcheck(self.pl)
         await self.page.context.storage_state(
             path="youtube-stealth-"
             + datetime.now().strftime("%Y-%m-%d-%H-%M-%S")

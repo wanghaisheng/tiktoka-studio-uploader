@@ -225,3 +225,8 @@ https://api64.ipify.org/
 # proxy detect
 
 https://bot.incolumitas.com/proxy_detect.html
+
+
+
+
+https://browserleaks.com/

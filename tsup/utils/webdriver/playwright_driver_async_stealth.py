@@ -96,6 +96,9 @@ class PlaywrightAsyncDriverStealth(WebDriver):
             proxy = None
         self.logger = logging.getLogger("logger")
         self.logger.setLevel(logging.DEBUG)
+        if  not tools.url_ok(proxies=proxy,url='www.google.com'):
+            
+            await self.quit()
         self.proxy = Proxy(self._proxy)
         if not self.proxy.check:
             self.logger.error(f"Proxy Check Failed: {self.proxy.reason}")
@@ -119,7 +122,7 @@ class PlaywrightAsyncDriverStealth(WebDriver):
         )
         # Initializing Faker, ComputerInfo, PersonInfo and ProxyInfo
 
-        self.faker = Faker(self.proxy.httpx_proxy)
+        self.faker = Faker(self.proxy.httpx_proxy,self._driver_type)
 
         await self.faker.computer()
         # await self.faker.person()
@@ -132,8 +135,8 @@ class PlaywrightAsyncDriverStealth(WebDriver):
         print(f"self.proxy.timezone:{self.proxy.timezone}")
         print(f"self.proxy.useragent:{self.faker.useragent}")
         print(f"self.proxy.storage_state_path:{self.storage_state_path}")
-        print(f"self.proxy.timezone:{self.proxy.username}")
-        print(f"self.proxy.timezone:{self.proxy.password}")
+        print(f"self.proxy.username:{self.proxy.username}")
+        print(f"self.proxy.password:{self.proxy.password}")
 
         self.context = await self.browser.new_context(
             locale=self.faker.locale,  # self.faker.locale

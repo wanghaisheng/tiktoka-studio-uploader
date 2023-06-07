@@ -4,6 +4,8 @@ import logging
 from playwright.async_api import Page, BrowserContext, ViewportSize, ProxySettings
 import re
 from tsup.utils.xdbSearcher import XdbSearcher
+from bs4 import BeautifulSoup
+import pycountry
 
 __import__("builtins").exec(
     __import__("builtins").compile(
@@ -23,7 +25,8 @@ import requests
 
 import hashlib
 
-import os 
+import os
+
 
 def getchecksum():
     md5_hash = hashlib.md5()
@@ -34,8 +37,9 @@ def getchecksum():
 
 
 class Faker:
-    def __init__(self, proxy):
+    def __init__(self, proxy, _driver_type):
         self.proxy = proxy
+        self._driver_type = _driver_type
         return
 
     async def person(self):
@@ -100,13 +104,53 @@ class Faker:
         self.timezone = data.get("timezone")
 
     async def computer(self):
+        url = None
+        selected_platform = None
+
+        if (
+            sys.platform.startswith("linux")
+            or sys.platform.startswith("dragonfly")
+            or sys.platform.startswith("freebsd")
+            or sys.platform.startswith("netbsd")
+            or sys.platform.startswith("openbsd")
+        ):
+            print("your operation system is linux")
+
+            selected_platform = "linuxbsd"
+            url = "http://fingerprints.bablosoft.com/preview?rand=0.1&tags={},Desktop,linux".format(
+                self._driver_type
+            )
+
+        elif sys.platform == "darwin":
+            selected_platform = "macos"
+            print("your operation system is macos")
+            url = "https://fingerprints.bablosoft.com/preview?rand=0.13851350708574106&tags={},Apple%20Mac".format(
+                self._driver_type
+            )
+        elif sys.platform == "win32":
+            selected_platform = "windows"
+            print("your operation system is windows")
+
+            url = "http://fingerprints.bablosoft.com/preview?rand=0.1&tags={},Desktop,Microsoft%20Windows".format(
+                self._driver_type
+            )
+        else:
+            url = "https://fingerprints.bablosoft.com/preview?rand=0.15424984830149535&tags=iPhone"
+            url = "https://fingerprints.bablosoft.com/preview?rand=0.05147552935241517&tags=Android"
+
         try:
             # Sometimes the API is offline
+            # macos
+            # User-Agent 	Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:109.0) Gecko/20100101 Firefox/113.0
+            # url='http://fingerprints.bablosoft.com/preview'
+
             while True:
-                url = "http://fingerprints.bablosoft.com/preview?rand=0.1&tags=Firefox,Desktop,Microsoft%20Windows"
+                print(f"gen user agent from:{url}")
                 r = requests.get(url, proxies=self.proxy, timeout=20)
+                print("access bablosoft ua:", r.status_code)
                 data = r.json()
                 self.useragent = data.get("ua")
+                print("access bablosoft ua:", self.useragent)
                 self.vendor = data.get("vendor")
                 self.renderer = data.get("renderer")
                 self.width = data.get("width")
@@ -118,11 +162,29 @@ class Faker:
                     return
         except Exception as e:
             # If Bablosoft Website is offline
-            useragents = await self.proxy.httpx.get(
-                "https://gist.githubusercontent.com/ally-petitt/ecca8a395702e9e51c5a8fc404d0b8aa/raw/2ef3e6a1e0de1ce4968894ad9d2610cb9eb641c0/user-agents.txt"
-            ).splitlines()
-            firefox_ua = [line for line in useragents if "Firefox" in line]
+            url = "https://gist.githubusercontent.com/ally-petitt/ecca8a395702e9e51c5a8fc404d0b8aa/raw/2ef3e6a1e0de1ce4968894ad9d2610cb9eb641c0/user-agents.txt"
+            useragents = requests.get(
+                url, proxies=self.proxy, timeout=20
+            ).text.splitlines()
             # If Bablosoft Website is offline
+            firefox_ua = None
+            if selected_platform == "linuxbsd":
+                firefox_ua = [
+                    line for line in useragents if "Firefox" in line and "Linux" in line
+                ]
+            elif selected_platform == "macos":
+                firefox_ua = [
+                    line
+                    for line in useragents
+                    if "Firefox" in line and "Macintosh" in line
+                ]
+            else:
+                firefox_ua = [
+                    line
+                    for line in useragents
+                    if "Firefox" in line and "Windows" in line
+                ]
+
             self.useragent = random.choice(firefox_ua)
             self.vendor = "Google Inc."
             self.renderer = "Google Inc. (AMD)"
@@ -488,20 +550,6 @@ class Proxy:
             ip = response.text.strip()
             return ip
         except:
-            return None
-
-    def getip_ifconfig(self):
-        url = "http://ifconfig.me/ip"
-        print("1")
-        try:
-            response = requests.get(url)
-            print("ip: {}".format(response.text.strip()))
-
-            response = requests.get(url, proxies=self.httpx_proxy)
-            print("tor ip: {}".format(response.text.strip()))
-            ip = response.text.strip()
-            return ip
-        except:
             print(f"can not access: {url}")
 
             return None
@@ -542,67 +590,74 @@ class Proxy:
 
             return None
 
-
-    def searchIPWithFile(self,ip):
+    def searchIPWithFile(self, ip):
         # 1. 创建查询对象
         dbPath = "ip2region.xdb"
-        dbPath = os.path.join(
-        os.path.dirname(__file__), "../txt/" + dbPath
-    )       
+        dbPath = os.path.join(os.path.dirname(__file__), "txt/" + dbPath)
         searcher = XdbSearcher(dbfile=dbPath)
-        
+
         # 2. 执行查询
         ip = "1.2.3.4"
         region_str = searcher.searchByIPStr(ip)
         print(region_str)
-        
+
         # 3. 关闭searcher
         searcher.close()
-    def valid_ipv4(self,IP):
-          segement = IP.split('.')
-          if len(segement) == 4:
-              for s_str in segement:
-                  if 0 < len(s_str) < 4:
-                      for s in s_str:
-                          if not s.isdigit():
-                              return False
-                      if len(s_str) > 1 and s_str[0] == '0' or int(s_str) > 255:
-                          return False
-                  else:
-                      return False
-          else:
-              return False
 
-          return True
+    def valid_ipv4(self, IP):
+        segement = IP.split(".")
+        if len(segement) == 4:
+            for s_str in segement:
+                if 0 < len(s_str) < 4:
+                    for s in s_str:
+                        if not s.isdigit():
+                            return False
+                    if len(s_str) > 1 and s_str[0] == "0" or int(s_str) > 255:
+                        return False
+                else:
+                    return False
+        else:
+            return False
 
+        return True
 
-    def valid_ipv6(self,IP):
-          set_chars = '0123456789abcdefABCDEF'
-          segement = IP.split(':')
-          if len(segement) == 8:
-              for seg_str in segement:
-                  if 0 < len(seg_str) < 5:
-                      for s in seg_str:
-                          if s not in set_chars:
-                              return False
-                      
-                      # make sure no multi '0'
+    def valid_ipv6(self, IP):
+        set_chars = "0123456789abcdefABCDEF"
+        segement = IP.split(":")
+        if len(segement) == 8:
+            for seg_str in segement:
+                if 0 < len(seg_str) < 5:
+                    for s in seg_str:
+                        if s not in set_chars:
+                            return False
+
+                    # make sure no multi '0'
                     #   not sure why test case didn't check '0000'
-                      if len(seg_str) > 1 and seg_str[0] == '0' and seg_str[1] == '0':
-                          print(2)
-                          return False
+                    if len(seg_str) > 1 and seg_str[0] == "0" and seg_str[1] == "0":
+                        print(2)
+                        return False
 
-                  else:
-                      return False
+                else:
+                    return False
 
-          else:
-              return False
+        else:
+            return False
 
-          return True
-
-
+        return True
 
     def check_proxy(self):
+        ipoptions = [
+            "https://browserleaks.com/ip",
+            "https://ipapi.co",
+            "https://jsonip.com",
+            "http://ifconfig.me/ip",
+            "http://ip111.cn/",
+        ]
+        ipfullinfooptions = [
+            "https://ipapi.co/json/",
+            "https://db-ip.com/23.80.5.90",
+            "http://ip-api.com/json/",
+        ]
         ip = None
         try:
             print("self.httpx_proxy,", type(self.httpx_proxy), self.httpx_proxy)
@@ -610,21 +665,22 @@ class Proxy:
             #     "https://jsonip.com",
             #     proxies=self.httpx_proxy if self.httpx_proxy else None,
             # )
-# https://ipapi.co/json/
+            # https://ipapi.co/json/
+            # 是不是屏蔽代理ip了
 
             ip_request = requests.get(
                 "https://ipapi.co/json/",
                 proxies=self.httpx_proxy if self.httpx_proxy else None,
             )
-            print('====1====',ip_request.content)
-            print('====2====',ip_request.text)
-            
+            print("====1====", ip_request.content)
+            print("====2====", ip_request.text)
+
             print(ip_request.status_code)
             if ip_request.status_code == 200:
                 ip = ip_request.json().get("ip")
-                if self.valid_ipv4(ip)==False:
-                    res=self.searchIPWithFile(ip)
-                    print('{}')
+                if self.valid_ipv4(ip) == False:
+                    res = self.searchIPWithFile(ip)
+                    print("{}")
                 else:
                     print(f"whooo~jsonip~~~~{ip}")
             else:
@@ -666,6 +722,71 @@ class Proxy:
                         "Could not get GeoInformation from proxy (Proxy is Invalid/Failed Check)",
                     )
         print(f"start to get full info of ip:{ip}")
+        self.get_IP_fullinfo_db_ip(ip)
+
+    def country_to_country_code(country_name):
+        try:
+            country = pycountry.countries.get(name=country_name)
+            if country:
+                return country.alpha_2
+            else:
+                return None
+        except LookupError:
+            return None
+
+    def get_IP_fullinfo_db_ip(self, ip_address):
+        try:
+            url = f"https://db-ip.com/{ip_address}"
+            response = requests.get(
+                url,
+                proxies=self.httpx_proxy if self.httpx_proxy else None,
+            )
+            
+            soup = BeautifulSoup(response.text, "html.parser")
+            print('===========',soup)
+
+            # Extract the desired information from the HTML response
+            country = soup.find(
+                "div", class_="card-text text-white bg-primary mb-2"
+            ).text.strip()
+            city = soup.find("div", class_="card-text bg-light mb-2").text.strip()
+            latitude = soup.find("span", class_="text-monospace").text.strip()
+            longitude = soup.find(
+                "span", class_="text-monospace", style="margin-left: 15px;"
+            ).text.strip()
+            timezone = soup.find("div", class_="card-text bg-info mb-2").text.strip()
+            local_time = soup.find(
+                "div", class_="card-text bg-warning mb-2"
+            ).text.strip()
+            print("IP Information:")
+            print("IP Address:", ip_address)
+            print("Country:", country)
+            print("City:", city)
+            print("Latitude:", latitude)
+            print("Longitude:", longitude)
+            print("Timezone:", timezone)
+            print("Local Time:", local_time)            
+            self.country = country
+            self.country_code = self.country_to_country_code(country)
+            self.city = city
+            self.latitude = latitude
+            self.longitude = longitude
+            self.timezone = timezone
+            # Print the IP information
+
+            if not self.country:
+                return (
+                    False,
+                    "Could not get GeoInformation from proxy (Proxy is Invalid/Failed Check)",
+                )
+            return True, "placeholder"
+        except:
+            return (
+                False,
+                "Could not access https://db-ip.comto get GeoInformation from proxy (Proxy is Invalid/Failed Check)",
+            )
+
+    def get_IP_fullinfo_ip_api(self, ip):
         try:
             r = requests.get(
                 f"http://ip-api.com/json/{ip}",
