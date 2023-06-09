@@ -57,8 +57,8 @@ class Botcheck:
             await self.page.screenshot(
                 path=f"output/IsolatedWorld-{self.timestr}.png", full_page=True
             )
-            fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
-            print(f"Browser fingerprint fields:{fingerprint}")
+            # fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
+            # print(f"Browser fingerprint fields:{fingerprint}")
             print("IsolatedWorld", output)
             return output
         except Exception as err:
@@ -98,12 +98,24 @@ class Botcheck:
             await self.page.screenshot(
                 path=f"output/BehaviorMonitor-{self.timestr}.png", full_page=True
             )
-            fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
-            print(f"Browser fingerprint fields:{fingerprint}")
+            # fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
+            # print(f"Browser fingerprint fields:{fingerprint}")
             print("BehaviorMonitor", output)
             return output
         except Exception as err:
             raise err
+
+    async def niespodd(self):
+        access = False
+        try:
+            await self.page.goto("https://niespodd.github.io/browser-fingerprinting/")
+            access = True
+            await self.page.screenshot(
+                path=f"output/niespodd-{self.timestr}.png", full_page=True
+            )
+
+        except Exception as err:
+            output = "Failed"
 
     async def f5networkloginForm(self):
         access = False
@@ -140,8 +152,8 @@ class Botcheck:
                 # await self.page.close()
         else:
             print("falied F5")
-        fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
-        print(f"Browser fingerprint fields:{fingerprint}")
+        # fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
+        # print(f"Browser fingerprint fields:{fingerprint}")
 
     async def pixelscan(self):
         access = False
@@ -152,8 +164,15 @@ class Botcheck:
             output = "Failed"
 
             print("PixelScan", output)
+            await self.page.route("**", lambda route: route.continue_())
+            self.page.on(
+                "request", lambda request: print(request.headers.get("X-Forwarded-For"))
+            )
+            self.page.on("request", lambda request: print(request.headers))
 
-            # await self.page.close()
+            # fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
+            # print(f"Browser fingerprint fields:{fingerprint}")
+        # await self.page.close()
         if access == True:
             try:
                 element = await expect(
@@ -175,26 +194,18 @@ class Botcheck:
                 # await self.page.close()
         else:
             print("falied F5")
-        await self.page.route("**", lambda route: route.continue_())
-        self.page.on(
-            "request", lambda request: print(request.headers.get("X-Forwarded-For"))
-        )
-        self.page.on("request", lambda request: print(request.headers))
-
-        fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
-        print(f"Browser fingerprint fields:{fingerprint}")
 
     async def sannysoft(self):
         try:
-            await self.goto("https://bot.sannysoft.com", 5000)
+            await self.goto("https://bot.sannysoft.com")
 
             await self.page.screenshot(
                 path=f"output/Sannysoft-{self.timestr}.png", full_page=True
             )
             # print("Sannysoft", output)
             # return output
-            fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
-            print(f"Browser fingerprint fields:{fingerprint}")
+            # fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
+            # print(f"Browser fingerprint fields:{fingerprint}")
         except Exception as err:
             raise err
 
@@ -206,16 +217,21 @@ class Botcheck:
             )
 
             element = self.page.locator("#score")
-            output = await self.page.evaluate(
-                "(element) => element.textContent", element
-            )
-            await self.page.screenshot(
-                path=f"output/Recaptcha-{self.timestr}.png", full_page=True
-            )
-            fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
-            print(f"Browser fingerprint fields:{fingerprint}")
-            print("Recaptcha Score", output)
-            return output
+            ishere = expect(element).to_be_visible()
+            if ishere:
+                output = await self.page.evaluate(
+                    "(element) => element.textContent", element
+                )
+                await self.page.screenshot(
+                    path=f"output/Recaptcha-{self.timestr}.png", full_page=True
+                )
+                # fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
+                # print(f"Browser fingerprint fields:{fingerprint}")
+                print("Recaptcha Score", output)
+                return output
+
+            else:
+                print("page not well load-antcpt Recaptcha ")
         except Exception as err:
             raise err
 
@@ -230,8 +246,8 @@ class Botcheck:
             await self.page.screenshot(
                 path=f"output/HelloBot-{self.timestr}.png", full_page=True
             )
-            fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
-            print(f"Browser fingerprint fields:{fingerprint}")
+            # fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
+            # print(f"Browser fingerprint fields:{fingerprint}")
             print("HelloBot", output)
             return output
         except Exception as err:
@@ -248,8 +264,8 @@ class Botcheck:
             await self.page.screenshot(
                 path=f"output/AreYouHeadless-{self.timestr}.png", full_page=True
             )
-            fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
-            print(f"Browser fingerprint fields:{fingerprint}")
+            # fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
+            # print(f"Browser fingerprint fields:{fingerprint}")
             print("AreYouHeadless", output)
             return output
         except Exception as err:
@@ -269,8 +285,8 @@ class Botcheck:
             await self.page.screenshot(
                 path=f"output/FingerprintJS-{self.timestr}.png", full_page=True
             )
-            fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
-            print(f"Browser fingerprint fields:{fingerprint}")
+            # fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
+            # print(f"Browser fingerprint fields:{fingerprint}")
             print("FingerprintJS", output)
             return output
         except Exception as err:
@@ -296,8 +312,8 @@ class Botcheck:
             await self.page.screenshot(
                 path=f"output/Datadome-{self.timestr}.png", full_page=True
             )
-            fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
-            print(f"Browser fingerprint fields:{fingerprint}")
+            # fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
+            # print(f"Browser fingerprint fields:{fingerprint}")
             print("Datadome", output)
             return output
         except Exception as err:
@@ -325,8 +341,8 @@ class Botcheck:
             await self.page.screenshot(
                 path=f"output/Whiteops-{self.timestr}.png", full_page=True
             )
-            fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
-            print(f"Browser fingerprint fields:{fingerprint}")
+            # fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
+            # print(f"Browser fingerprint fields:{fingerprint}")
             print("Whiteops", output)
             return output
         except Exception as err:
@@ -386,8 +402,8 @@ class Botcheck:
             return results;
         }"""
         )
-        fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
-        print(f"Browser fingerprint fields:{fingerprint}")
+        # fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
+        # print(f"Browser fingerprint fields:{fingerprint}")
         print(data)
         await self.sleep(6000)
 
@@ -411,8 +427,8 @@ class Botcheck:
         await self.page.screenshot(
             path=f"output/Imperva-{self.timestr}.png", full_page=True
         )
-        fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
-        print(f"Browser fingerprint fields:{fingerprint}")
+        # fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
+        # print(f"Browser fingerprint fields:{fingerprint}")
 
     async def nowsecure(self):
         url = "www.nowsecure.nl"
@@ -422,8 +438,8 @@ class Botcheck:
         await self.page.screenshot(
             path=f"output/nowsecure-{self.timestr}.png", full_page=True
         )
-        fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
-        print(f"Browser fingerprint fields:{fingerprint}")
+        # fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
+        # print(f"Browser fingerprint fields:{fingerprint}")
         return
 
 
@@ -442,11 +458,10 @@ async def main():
     # await async_stealth(pl.page, pure=True)
 
     botcheck = Botcheck(pl.page)
-    # Extract the browser fingerprint fields
+    await botcheck.niespodd()
 
-    # for field in fingerprint:
-    #     print(field)
     await async_stealth(pl.page, pure=True)
+    await botcheck.niespodd()
 
     path = os.path.join(os.path.dirname(__file__), "../tsup/utils/js/stealth.min.js")
 
@@ -456,6 +471,7 @@ async def main():
     # browser = await botright_client.new_browser(proxy=proxy_option)
     # page = await browser.new_page()
     # botcheck = Botcheck(page)
+    await botcheck.niespodd()
 
     # # Continue by using the Page
 
