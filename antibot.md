@@ -236,3 +236,27 @@ Powered by Imperva
 ```
 
 https://github.com/aiden2048/Browser-Env
+
+走代理后 ip 匿名检测
+
+    https://bgp.he.net/
+    https://browserleaks.com/
+    https://ip.voidsec.com/
+    https://ipinfo.io/
+    https://ipleak.com/
+    https://ipleak.net/
+    https://ipleak.org/
+    https://ipx.ac/run
+    https://nstool.netease.com/
+    https://test-ipv6.com/
+    https://whatismyipaddress.com/blacklist-check
+    https://whoer.net/
+    https://www.astrill.com/dns-leak-test
+    https://www.astrill.com/ipv6-leak-test
+    https://www.astrill.com/port-scan
+    https://www.astrill.com/vpn-leak-test
+    https://www.astrill.com/what-is-my-ip
+    https://www.deviceinfo.me/
+    https://www.dnsleaktest.com/
+    https://www.doileak.com/
+    https://www.expressvpn.com/webrtc-leak-test

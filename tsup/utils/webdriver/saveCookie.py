@@ -1,6 +1,6 @@
 import subprocess
-from tsup.playwright_driver_async import PlaywrightAsyncDriver
-from tsup.webdirver import InterceptResponse, InterceptRequest
+from tsup.utils.webdriver import PlaywrightAsyncDriver
+from tsup.utils.webdriver.webdirver import InterceptResponse, InterceptRequest
 from cf_clearance import async_cf_retry, async_stealth
 from datetime import datetime, date, timedelta, time
 from playwright.async_api import Page, expect
