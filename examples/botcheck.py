@@ -13,6 +13,7 @@ import os
 from tsup.botright.botright import Botright
 from cf_clearance import async_cf_retry, async_stealth
 from datetime import datetime
+from urllib.parse import urlparse, urlunsplit, urlsplit
 
 
 class Botcheck:
@@ -442,6 +443,26 @@ class Botcheck:
         # print(f"Browser fingerprint fields:{fingerprint}")
         return
 
+    def uri_validator(self, x):
+        try:
+            result = urlparse(x)
+            return all([result.scheme, result.netloc])
+        except:
+            return None
+
+    async def checkIP(self, url):
+        # url = "www.nowsecure.nl"
+        # https://bot.incolumitas.com/#botChallenge
+        domain = self.uri_validator(url).netloc
+        page = self.page
+        await page.goto(url)
+        await self.page.screenshot(
+            path=f"output/{domain}-{self.timestr}.png", full_page=True
+        )
+        # fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
+        # print(f"Browser fingerprint fields:{fingerprint}")
+        return
+
 
 async def main():
     # browser = await async_playwright.chromium.launch()
@@ -458,11 +479,43 @@ async def main():
     # await async_stealth(pl.page, pure=True)
 
     botcheck = Botcheck(pl.page)
-    await botcheck.niespodd()
+    ipchecklist = [
+        "https://niespodd.github.io/browser-fingerprinting/",
+        "https://bgp.he.net/",
+        "https://browserleaks.com/",
+        "https://ip.voidsec.com/",
+        "https://ipinfo.io/",
+        "https://ipleak.com/",
+        "https://ipleak.net/",
+        "https://ipleak.org/",
+        "https://ipx.ac/run",
+        "https://nstool.netease.com/",
+        "https://test-ipv6.com/",
+        "https://whatismyipaddress.com/blacklist-check",
+        "https://whoer.net/",
+        "https://www.astrill.com/dns-leak-test",
+        "https://www.astrill.com/ipv6-leak-test",
+        "https://www.astrill.com/port-scan",
+        "https://www.astrill.com/vpn-leak-test",
+        "https://www.astrill.com/what-is-my-ip",
+        "https://www.deviceinfo.me/",
+        "https://www.dnsleaktest.com/",
+        "https://www.doileak.com/",
+        "https://www.expressvpn.com/webrtc-leak-test",
+        "https://bot.incolumitas.com/proxy_detect.html",
+        "https://corretor.portoseguro.com.br/corretoronline/",
+        "https://ipapi.co/json/",
+        "https://jsonip.com/",
+        "https://ipinfo.io/json",
+        "https://jsonip.com/",
+        "https://api64.ipify.org/",
+    ]
+    for url in ipchecklist:
+        await botcheck.checkIP(url)
 
     await async_stealth(pl.page, pure=True)
-    await botcheck.niespodd()
-
+    for url in ipchecklist:
+        await botcheck.checkIP(url)
     path = os.path.join(os.path.dirname(__file__), "../tsup/utils/js/stealth.min.js")
 
     await pl.page.add_init_script(path=path)
@@ -471,8 +524,8 @@ async def main():
     # browser = await botright_client.new_browser(proxy=proxy_option)
     # page = await browser.new_page()
     # botcheck = Botcheck(page)
-    await botcheck.niespodd()
-
+    for url in ipchecklist:
+        await botcheck.checkIP(url)
     # # Continue by using the Page
 
     # await botright_client.close()
