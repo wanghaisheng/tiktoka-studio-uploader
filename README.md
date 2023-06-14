@@ -252,4 +252,6 @@ Join forum for debugging your issues with me
 
 <img src="https://raw.githubusercontent.com/wanghaisheng/youtube-auto-upload/playwright/assets/feishu-chatgroup.jpg" alt="" data-canonical-src="https://github.com/wanghaisheng/youtube-auto-upload/blob/playwright/assets/feishu-chatgroup.jpg" width="250" height="250" />
 
+## Star History
+
 [![Star History Chart](https://api.star-history.com/svg?repos=wanghaisheng/tiktoka-studio-uploader&type=Date)](https://star-history.com/#wanghaisheng/tiktoka-studio-uploader&Date)
