@@ -450,14 +450,13 @@ class Botcheck:
         except:
             return None
 
-    async def checkIP(self, url):
+    async def checkIP(self,page, url):
         # url = "www.nowsecure.nl"
         # https://bot.incolumitas.com/#botChallenge
         if self.uri_validator(url):
             domain = urlparse(url).netloc
-            page = self.page
             await page.goto(url)
-            await self.page.screenshot(
+            await page.screenshot(
                 path=f"output/{domain}-{self.timestr}.png", full_page=True
             )
             # fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
@@ -513,20 +512,19 @@ async def main():
     for url in ipchecklist:
         print('raw pl')
         botcheck = Botcheck(pl.page)
-        botcheck.page=pl.page        
-        await botcheck.checkIP(url)
+        await botcheck.checkIP(pl.page ,url)
     for url in ipchecklist:
         print('raw pl with async_stealth')
 
         botcheck = Botcheck(pl.page)
         await async_stealth(pl.page, pure=True)
-        await botcheck.checkIP(url)
+        await botcheck.checkIP(pl.page ,url)
     for url in ipchecklist:
         print('raw pl with stealth js')
         
         path = os.path.join(os.path.dirname(__file__), "../tsup/utils/js/stealth.min.js")
         await pl.page.add_init_script(path=path)
-        await botcheck.checkIP(url)
+        await botcheck.checkIP(pl.page ,url)
 
     # botright_client = await Botright(headless=False)
     # browser = await botright_client.new_browser(proxy=proxy_option)
