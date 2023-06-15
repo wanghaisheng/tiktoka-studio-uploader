@@ -26,3 +26,5 @@ requests[socks]
 pycountry
 BeautifulSoup4
 async_class #==0.5.0
+httpx
+numpy
