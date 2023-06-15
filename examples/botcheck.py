@@ -453,15 +453,16 @@ class Botcheck:
     async def checkIP(self, url):
         # url = "www.nowsecure.nl"
         # https://bot.incolumitas.com/#botChallenge
-        domain = self.uri_validator(url).netloc
-        page = self.page
-        await page.goto(url)
-        await self.page.screenshot(
-            path=f"output/{domain}-{self.timestr}.png", full_page=True
-        )
-        # fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
-        # print(f"Browser fingerprint fields:{fingerprint}")
-        return
+        if self.uri_validator(url):
+            domain = urlparse(url).netloc
+            page = self.page
+            await page.goto(url)
+            await self.page.screenshot(
+                path=f"output/{domain}-{self.timestr}.png", full_page=True
+            )
+            # fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
+            # print(f"Browser fingerprint fields:{fingerprint}")
+            return
 
 
 async def main():
