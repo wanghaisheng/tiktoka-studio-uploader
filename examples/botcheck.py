@@ -509,7 +509,7 @@ async def main():
         "https://ipinfo.io/json",
         "https://jsonip.com/",
         "https://api64.ipify.org/",
-    ]pl.page
+    ]
     for url in ipchecklist:
         botcheck = Botcheck(pl.page)
         print('raw pl',pl.page)
