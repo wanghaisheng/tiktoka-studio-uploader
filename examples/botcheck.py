@@ -479,8 +479,6 @@ async def main():
 
     # await async_stealth(pl.page, pure=True)
 
-    botcheck = Botcheck(pl.page)
-    botcheck.page=pl.page
     ipchecklist = [
         "https://niespodd.github.io/browser-fingerprinting/",
         "https://bgp.he.net/",
@@ -513,21 +511,27 @@ async def main():
         "https://api64.ipify.org/",
     ]
     for url in ipchecklist:
+        print('raw pl')
+        botcheck = Botcheck(pl.page)
+        botcheck.page=pl.page        
         await botcheck.checkIP(url)
-
-    await async_stealth(pl.page, pure=True)
     for url in ipchecklist:
-        await botcheck.checkIP(url)
-    path = os.path.join(os.path.dirname(__file__), "../tsup/utils/js/stealth.min.js")
+        print('raw pl with async_stealth')
 
-    await pl.page.add_init_script(path=path)
+        botcheck = Botcheck(pl.page)
+        await async_stealth(pl.page, pure=True)
+        await botcheck.checkIP(url)
+    for url in ipchecklist:
+        print('raw pl with stealth js')
+        
+        path = os.path.join(os.path.dirname(__file__), "../tsup/utils/js/stealth.min.js")
+        await pl.page.add_init_script(path=path)
+        await botcheck.checkIP(url)
 
     # botright_client = await Botright(headless=False)
     # browser = await botright_client.new_browser(proxy=proxy_option)
     # page = await browser.new_page()
     # botcheck = Botcheck(page)
-    for url in ipchecklist:
-        await botcheck.checkIP(url)
     # # Continue by using the Page
 
     # await botright_client.close()
@@ -548,18 +552,18 @@ async def main():
     # 'CLIENT-IP',
     # 'PROXY-CONNECTION'
 
-    await botcheck.isolatedWorld()
-    await botcheck.behaviorMonitor()
-    await botcheck.f5networkloginForm()
-    await botcheck.pixelscan()
-    await botcheck.sannysoft()
-    await botcheck.recaptcha()
-    await botcheck.hellobot()
-    await botcheck.areyouheadless()
-    await botcheck.fingerprintjs()
-    await botcheck.datadome()
-    await botcheck.whiteops()
-    await botcheck.incolumitas()
+#     await botcheck.isolatedWorld()
+#     await botcheck.behaviorMonitor()
+#     await botcheck.f5networkloginForm()
+#     await botcheck.pixelscan()
+#     await botcheck.sannysoft()
+#     await botcheck.recaptcha()
+#     await botcheck.hellobot()
+#     await botcheck.areyouheadless()
+#     await botcheck.fingerprintjs()
+#     await botcheck.datadome()
+#     await botcheck.whiteops()
+#     await botcheck.incolumitas()
 
     # await pl.browser.close()
 
