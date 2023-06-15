@@ -710,7 +710,7 @@ class Proxy:
                         print(
                             f"access ip from getip_ifconfig failed,use the last solution"
                         )
-                        ip = self.get_IP_ip_api_com(ip)
+                        ip = self.get_IP_ip_api_com()
                         if ip is None:
                             return (
                                 False,
@@ -729,7 +729,7 @@ class Proxy:
                 print(f"whooo~getip_ifconfig:{ip}")
                 if ip is None:
                     print(f"access ip from getip_ifconfig failed,use the last solution")
-                    ip = self.get_IP_ip_api_com(ip)
+                    ip = self.get_IP_ip_api_com()
                     if ip is None:
                         return (
                             False,
