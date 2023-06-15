@@ -89,22 +89,24 @@ class PlaywrightAsyncDriverStealth(WebDriver):
 
     async def _setup(self):
         # 处理参数
+        proxy = None               
         if self._proxy:
             proxy = self._proxy() if callable(self._proxy) else self._proxy
             proxy = self.format_context_proxy(proxy)
+            if  not tools.url_ok(proxies=proxy,url='www.google.com'):
+
+                await self.quit()
+            self.proxy = Proxy(self._proxy)
+            if not self.proxy.check:
+                self.logger.error(f"Proxy Check Failed: {self.proxy.reason}")
+                return False
+            else:
+                proxy = None            
         else:
             proxy = None
         self.logger = logging.getLogger("logger")
         self.logger.setLevel(logging.DEBUG)
-        if  not tools.url_ok(proxies=proxy,url='www.google.com'):
-            
-            await self.quit()
-        self.proxy = Proxy(self._proxy)
-        if not self.proxy.check:
-            self.logger.error(f"Proxy Check Failed: {self.proxy.reason}")
-            return False
-        else:
-            proxy = None
+
         # 初始化浏览器对象
         self.driver = await async_playwright().start()
         self.browser = await getattr(self.driver, self._driver_type).launch(
