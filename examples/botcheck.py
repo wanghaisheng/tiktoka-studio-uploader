@@ -480,6 +480,7 @@ async def main():
     # await async_stealth(pl.page, pure=True)
 
     botcheck = Botcheck(pl.page)
+    botcheck.page=pl.page
     ipchecklist = [
         "https://niespodd.github.io/browser-fingerprinting/",
         "https://bgp.he.net/",
