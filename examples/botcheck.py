@@ -474,7 +474,10 @@ async def main():
         proxy=proxy_option,
         driver_type="firefox",
         timeout=300,
-        headless=False,
+#         headless=False,
+#         for github action
+        headless=True,
+        
     )
 
     # await async_stealth(pl.page, pure=True)
