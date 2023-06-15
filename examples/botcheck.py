@@ -469,6 +469,7 @@ async def main():
     # context = await browser.newContext()
     # page = await context.newPage()
     proxy_option = "socks5://127.0.0.1:1080"
+    proxy_option=None
     pl = await PlaywrightAsyncDriverStealth.create(
         proxy=proxy_option,
         driver_type="firefox",
@@ -508,10 +509,11 @@ async def main():
         "https://ipinfo.io/json",
         "https://jsonip.com/",
         "https://api64.ipify.org/",
-    ]
+    ]pl.page
     for url in ipchecklist:
-        print('raw pl')
         botcheck = Botcheck(pl.page)
+        print('raw pl',pl.page)
+        
         await botcheck.checkIP(pl.page ,url)
     for url in ipchecklist:
         print('raw pl with async_stealth')
