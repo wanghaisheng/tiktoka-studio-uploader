@@ -202,19 +202,21 @@ class PlaywrightAsyncDriverStealth(WebDriver):
 
             await playwright_stealth.stealth_async(self.page, config)
         else:
-                self.context = await self.browser.new_context(
+            self.context = await self.browser.new_context(
 #                 locale=self.faker.locale,  # self.faker.locale
-                permissions=["geolocation"],
-                # screen={"width": self.faker.avail_width, "height": self.faker.avail_height},
+            permissions=["geolocation"],
+            # screen={"width": self.faker.avail_width, "height": self.faker.avail_height},
 #                 user_agent=self.faker.useragent,
-                no_viewport=True,
-                # viewport={"width": self.faker.width, "height": self.faker.height},
-                # here proxy format is important
-                storage_state=self.storage_state_path if self._isRecodingVideo else None,
-                record_video_dir=os.getcwd() + os.sep + "screen-recording"
-                if self._isRecodingVideo
-                else None,
-            )            
+            no_viewport=True,
+            # viewport={"width": self.faker.width, "height": self.faker.height},
+            # here proxy format is important
+            storage_state=self.storage_state_path if self._isRecodingVideo else None,
+            record_video_dir=os.getcwd() + os.sep + "screen-recording"
+            if self._isRecodingVideo
+            else None,
+        )         
+        self.page = await self.context.new_page()
+                
         self.page.set_default_timeout(self._timeout * 1000)
 
 
