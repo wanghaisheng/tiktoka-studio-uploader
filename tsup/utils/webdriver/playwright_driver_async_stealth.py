@@ -129,7 +129,7 @@ class PlaywrightAsyncDriverStealth(WebDriver):
         if proxy:   
             self.faker = Faker(proxy.httpx_proxy,self._driver_type)
         else:
-            self.faker = Faker(proxy=None,self._driver_type)
+            self.faker = Faker(proxy,self._driver_type)
 
         await self.faker.computer()
         # await self.faker.person()
