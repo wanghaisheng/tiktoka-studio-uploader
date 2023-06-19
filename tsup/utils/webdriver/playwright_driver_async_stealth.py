@@ -150,7 +150,7 @@ class PlaywrightAsyncDriverStealth(WebDriver):
             self.context = await self.browser.new_context(
                 locale=self.faker.locale,  # self.faker.locale
                 geolocation={
-                    "longitude": self.proxy.longitude 
+                    "longitude": self.proxy.longitude,
                     "latitude": self.proxy.latitude,
                     "accuracy": 0.7,
                 },
