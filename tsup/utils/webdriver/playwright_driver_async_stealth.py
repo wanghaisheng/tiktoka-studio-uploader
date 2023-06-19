@@ -136,43 +136,57 @@ class PlaywrightAsyncDriverStealth(WebDriver):
         country_code="US"
         if proxy:
             country_code=proxy.country_code
-        await self.faker.locale(country_code)
-        print(f"self locale is:{self.faker.locale}")
-        # Context for more options
-        print(f"self.proxy.longitude:{self.proxy.longitude}")
-        print(f"self.proxy.latitude:{self.proxy.latitude}")
-        print(f"self.proxy.timezone:{self.proxy.timezone}")
-        print(f"self.proxy.useragent:{self.faker.useragent}")
-        print(f"self.proxy.storage_state_path:{self.storage_state_path}")
-        print(f"self.proxy.username:{self.proxy.username}")
-        print(f"self.proxy.password:{self.proxy.password}")
+            await self.faker.locale(country_code)
+            print(f"self locale is:{self.faker.locale}")
+            # Context for more options
+            print(f"self.proxy.longitude:{self.proxy.longitude}")
+            print(f"self.proxy.latitude:{self.proxy.latitude}")
+            print(f"self.proxy.timezone:{self.proxy.timezone}")
+            print(f"self.proxy.useragent:{self.faker.useragent}")
+            print(f"self.proxy.storage_state_path:{self.storage_state_path}")
+            print(f"self.proxy.username:{self.proxy.username}")
+            print(f"self.proxy.password:{self.proxy.password}")
 
-        self.context = await self.browser.new_context(
-            locale=self.faker.locale,  # self.faker.locale
-            geolocation={
-                "longitude": self.proxy.longitude,
-                "latitude": self.proxy.latitude,
-                "accuracy": 0.7,
-            },
-            timezone_id=self.proxy.timezone,
-            permissions=["geolocation"],
-            # screen={"width": self.faker.avail_width, "height": self.faker.avail_height},
-            user_agent=self.faker.useragent,
-            no_viewport=True,
-            # viewport={"width": self.faker.width, "height": self.faker.height},
-            proxy=proxy,
-            # here proxy format is important
-            storage_state=self.storage_state_path if self._isRecodingVideo else None,
-            record_video_dir=os.getcwd() + os.sep + "screen-recording"
-            if self._isRecodingVideo
-            else None,
-            http_credentials={
-                "username": self.proxy.username,
-                "password": self.proxy.password,
-            }
-            if self.proxy.username
-            else None,
-        )
+            self.context = await self.browser.new_context(
+                locale=self.faker.locale,  # self.faker.locale
+                geolocation={
+                    "longitude": self.proxy.longitude 
+                    "latitude": self.proxy.latitude,
+                    "accuracy": 0.7,
+                },
+                timezone_id=self.proxy.timezone,
+                permissions=["geolocation"],
+                # screen={"width": self.faker.avail_width, "height": self.faker.avail_height},
+                user_agent=self.faker.useragent,
+                no_viewport=True,
+                # viewport={"width": self.faker.width, "height": self.faker.height},
+                proxy=proxy,
+                # here proxy format is important
+                storage_state=self.storage_state_path if self._isRecodingVideo else None,
+                record_video_dir=os.getcwd() + os.sep + "screen-recording"
+                if self._isRecodingVideo
+                else None,
+                http_credentials={
+                    "username": self.proxy.username,
+                    "password": self.proxy.password,
+                }
+                if self.proxy.username
+                else None,
+            )
+        else:
+                self.context = await self.browser.new_context(
+#                 locale=self.faker.locale,  # self.faker.locale
+                permissions=["geolocation"],
+                # screen={"width": self.faker.avail_width, "height": self.faker.avail_height},
+#                 user_agent=self.faker.useragent,
+                no_viewport=True,
+                # viewport={"width": self.faker.width, "height": self.faker.height},
+                # here proxy format is important
+                storage_state=self.storage_state_path if self._isRecodingVideo else None,
+                record_video_dir=os.getcwd() + os.sep + "screen-recording"
+                if self._isRecodingVideo
+                else None,
+            )
         # Grant Permissions to Discord to use Geolocation
         await self.context.grant_permissions(["geolocation"], origin=self.url)
         # Create new Page and do something idk why i did that lol
