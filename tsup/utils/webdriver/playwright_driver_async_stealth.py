@@ -70,6 +70,7 @@ class PlaywrightAsyncDriverStealth(WebDriver):
         self._url_regexes = url_regexes
         self._save_all = save_all
         self._timeout = 300
+        self._headless=headless
         self.country = None
         self.country_code = None
         self.region = None
