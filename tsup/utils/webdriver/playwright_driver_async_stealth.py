@@ -127,7 +127,7 @@ class PlaywrightAsyncDriverStealth(WebDriver):
         )
         # Initializing Faker, ComputerInfo, PersonInfo and ProxyInfo
 
-        self.faker = Faker(self.proxy.httpx_proxy,self._driver_type)
+        self.faker = Faker(proxy.httpx_proxy,self._driver_type)
 
         await self.faker.computer()
         # await self.faker.person()
