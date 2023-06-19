@@ -173,6 +173,34 @@ class PlaywrightAsyncDriverStealth(WebDriver):
                 if self.proxy.username
                 else None,
             )
+
+            # Grant Permissions to Discord to use Geolocation
+            await self.context.grant_permissions(["geolocation"], origin=self.url)
+            # Create new Page and do something idk why i did that lol
+            # await page.emulate_media(
+            #     color_scheme="dark", media="screen", reduced_motion="reduce"
+            # )
+            self.page = await self.context.new_page()
+
+            # Stealthen the page with custom Stealth Config
+
+            config = playwright_stealth.StealthConfig()
+            (
+                config.navigator_languages,
+                config.permissions,
+                config.navigator_platform,
+                config.navigator_vendor,
+                config.outerdimensions,
+            ) = (False, False, False, False, False)
+            config.vendor, config.renderer, config.nav_user_agent, config.nav_platform = (
+                self.faker.vendor,
+                self.faker.renderer,
+                self.faker.useragent,
+                "Win32",
+            )
+            config.languages = ("en-US", "en", self.faker.locale, self.faker.language_code)
+
+            await playwright_stealth.stealth_async(self.page, config)
         else:
                 self.context = await self.browser.new_context(
 #                 locale=self.faker.locale,  # self.faker.locale
@@ -186,34 +214,7 @@ class PlaywrightAsyncDriverStealth(WebDriver):
                 record_video_dir=os.getcwd() + os.sep + "screen-recording"
                 if self._isRecodingVideo
                 else None,
-            )
-        # Grant Permissions to Discord to use Geolocation
-        await self.context.grant_permissions(["geolocation"], origin=self.url)
-        # Create new Page and do something idk why i did that lol
-        # await page.emulate_media(
-        #     color_scheme="dark", media="screen", reduced_motion="reduce"
-        # )
-        self.page = await self.context.new_page()
-
-        # Stealthen the page with custom Stealth Config
-        
-        config = playwright_stealth.StealthConfig()
-        (
-            config.navigator_languages,
-            config.permissions,
-            config.navigator_platform,
-            config.navigator_vendor,
-            config.outerdimensions,
-        ) = (False, False, False, False, False)
-        config.vendor, config.renderer, config.nav_user_agent, config.nav_platform = (
-            self.faker.vendor,
-            self.faker.renderer,
-            self.faker.useragent,
-            "Win32",
-        )
-        config.languages = ("en-US", "en", self.faker.locale, self.faker.language_code)
-
-        await playwright_stealth.stealth_async(self.page, config)
+            )            
         self.page.set_default_timeout(self._timeout * 1000)
 
 
