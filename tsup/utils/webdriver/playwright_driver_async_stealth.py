@@ -45,6 +45,7 @@ class PlaywrightAsyncDriverStealth(WebDriver):
         driver_type: Literal["chromium", "firefox", "webkit"] = "chromium",
         url_regexes: list = None,
         save_all: bool = False,
+        headless: bool = True,
         **kwargs,
     ):
         """
