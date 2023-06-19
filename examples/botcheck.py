@@ -463,7 +463,7 @@ class Botcheck:
                 # fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
                 # print(f"Browser fingerprint fields:{fingerprint}")
             except:
-                print(f'failed to load url:'{url})
+                print(f"failed to load url:{url}")
 #             return
 
 
