@@ -133,8 +133,9 @@ class PlaywrightAsyncDriverStealth(WebDriver):
 
         await self.faker.computer()
         # await self.faker.person()
-
-        await self.faker.locale(self.proxy.country_code)
+        if not proxy.country_code:
+             proxy.country_code="US"
+        await self.faker.locale(proxy.country_code)
         print(f"self locale is:{self.faker.locale}")
         # Context for more options
         print(f"self.proxy.longitude:{self.proxy.longitude}")
