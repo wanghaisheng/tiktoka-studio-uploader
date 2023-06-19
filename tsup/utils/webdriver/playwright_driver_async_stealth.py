@@ -111,6 +111,7 @@ class PlaywrightAsyncDriverStealth(WebDriver):
 
         # 初始化浏览器对象
         self.driver = await async_playwright().start()
+        print('self._headless:',self._headless)
         self.browser = await getattr(self.driver, self._driver_type).launch(
             headless=self._headless,
             args=["--no-sandbox"],
