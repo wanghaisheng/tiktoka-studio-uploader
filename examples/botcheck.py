@@ -455,13 +455,16 @@ class Botcheck:
         # https://bot.incolumitas.com/#botChallenge
         if self.uri_validator(url):
             domain = urlparse(url).netloc
-            await page.goto(url)
-            await page.screenshot(
-                path=f"output/{domain}-{self.timestr}.png", full_page=True
-            )
-            # fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
-            # print(f"Browser fingerprint fields:{fingerprint}")
-            return
+            try:
+                await page.goto(url)
+                await page.screenshot(
+                    path=f"output/{domain}-{self.timestr}.png", full_page=True
+                )
+                # fingerprint = await self.page.evaluate("Object.keys(window.navigator)")
+                # print(f"Browser fingerprint fields:{fingerprint}")
+            except:
+                print(f'failed to load url:'{url})
+#             return
 
 
 async def main():
