@@ -113,9 +113,9 @@ class PlaywrightAsyncDriverStealth(WebDriver):
         self.driver = await async_playwright().start()
         print('self._headless:',self._headless)
         if self._driver_type=="firefox":
-            args=[],
+            args=[]
         else:
-            args=["--no-sandbox"],
+            args=["--no-sandbox"]
             
         self.browser = await getattr(self.driver, self._driver_type).launch(
             headless=self._headless,
