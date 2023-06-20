@@ -531,6 +531,13 @@ async def main():
         print('raw pl with stealth js')
         
         path = os.path.join(os.path.dirname(__file__), "../tsup/utils/js/stealth.min.js")
+        if os.path.exists(path):
+            print('stealth js is found ')
+        path = "../tsup/utils/js/stealth.min.js"
+
+
+        if os.path.exists(path):
+            print('stealth js is found ')        
         print(f'stealth js :{path}')
         await pl.page.add_init_script(path=path)
         await botcheck.checkIP(pl.page ,url)
