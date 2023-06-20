@@ -482,7 +482,7 @@ async def main():
         headless=True,
         
     )
-
+    freshpage=pl.page
     # await async_stealth(pl.page, pure=True)
 
     ipchecklist = [
@@ -517,19 +517,20 @@ async def main():
         "https://api64.ipify.org/",
     ]
     for url in ipchecklist:
-        botcheck = Botcheck(pl.page)
-        print('raw pl',pl.page)
+        botcheck = Botcheck(freshpage)
+        print('raw pl',botcheck.page)
         
-        await botcheck.checkIP(pl.page ,url)
+        await botcheck.checkIP(botcheck.page ,url)
     for url in ipchecklist:
         print('raw pl with async_stealth')
 
-        botcheck = Botcheck(pl.page)
-        await async_stealth(pl.page, pure=True)
-        await botcheck.checkIP(pl.page ,url)
+        botcheck = Botcheck(freshpage)
+        await async_stealth(botcheck.page, pure=True)
+        await botcheck.checkIP(botcheck.page ,url)
     for url in ipchecklist:
-        print('raw pl with stealth js')
-        
+        print('raw pl with stealth js',pl.page)
+        botcheck = Botcheck(freshpage)
+
         path = os.path.join(os.path.dirname(__file__), "../tsup/utils/js/stealth.min.js")
         if os.path.exists(path):
             print('stealth js is found ')
@@ -541,6 +542,24 @@ async def main():
         print(f'stealth js :{path}')
         await pl.page.add_init_script(path=path)
         await botcheck.checkIP(pl.page ,url)
+
+    for url in ipchecklist:
+        print('raw pl with navigator',pl.page)
+        await pl.page.add_init_script(
+                """
+if (navigator.webdriver === false) {
+    // Post Chrome 89.0.4339.0 and already good
+} else if (navigator.webdriver === undefined) {
+    // Pre Chrome 89.0.4339.0 and already good
+} else {
+    // Pre Chrome 88.0.4291.0 and needs patching
+    delete Object.getPrototypeOf(navigator).webdriver
+}
+            """
+            )
+        await botcheck.checkIP(pl.page ,url)
+
+
 
     # botright_client = await Botright(headless=False)
     # browser = await botright_client.new_browser(proxy=proxy_option)
@@ -566,20 +585,6 @@ async def main():
     # 'CLIENT-IP',
     # 'PROXY-CONNECTION'
 
-#     await botcheck.isolatedWorld()
-#     await botcheck.behaviorMonitor()
-#     await botcheck.f5networkloginForm()
-#     await botcheck.pixelscan()
-#     await botcheck.sannysoft()
-#     await botcheck.recaptcha()
-#     await botcheck.hellobot()
-#     await botcheck.areyouheadless()
-#     await botcheck.fingerprintjs()
-#     await botcheck.datadome()
-#     await botcheck.whiteops()
-#     await botcheck.incolumitas()
-
-    # await pl.browser.close()
 
 
 asyncio.run(main())
