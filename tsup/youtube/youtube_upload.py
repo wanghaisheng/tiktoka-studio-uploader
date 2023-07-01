@@ -209,7 +209,7 @@ class YoutubeUpload:
                 proxy=None,
                 driver_type=self.browserType,
                 timeout=3000,
-                use_stealth_js=True,
+                use_stealth_js=False,
             )
             self.pl = pl
             self.page = pl.page

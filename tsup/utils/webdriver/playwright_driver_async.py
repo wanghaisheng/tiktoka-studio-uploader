@@ -45,6 +45,7 @@ class PlaywrightAsyncDriver(WebDriver):
         driver_type: Literal["chromium", "firefox", "webkit"] = "chromium",
         url_regexes: list = None,
         save_all: bool = False,
+        use_stealth_js:bool=False,
         **kwargs
     ):
         """
@@ -70,6 +71,7 @@ class PlaywrightAsyncDriver(WebDriver):
         self._url_regexes = url_regexes
         self._save_all = save_all
         self._timeout = 300
+        self._use_stealth_js=use_stealth_js
 
         if self._save_all and self._url_regexes:
             log.warning(
@@ -145,7 +147,7 @@ class PlaywrightAsyncDriver(WebDriver):
                     record_video_dir=os.getcwd() + os.sep + "screen-recording",
                 )
 
-        if self._use_stealth_js:
+        if self._proxy and self._use_stealth_js:
             # https://gitcdn.xyz/repo/berstend/puppeteer-extra/stealth-js/stealth.min.js
             # https://raw.githubusercontent.com/requireCool/stealth.min.js/main/stealth.min.js
             # https://gitee.com/edwin_uestc/stealth.min.js/raw/main/stealth.min.js
