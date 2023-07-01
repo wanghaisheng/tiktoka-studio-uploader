@@ -3,6 +3,9 @@ from datetime import datetime, date, timedelta
 import asyncio
 from tsup.utils.webdriver.setupPL import checkRequirments
 
+
+# If it is the first time you've run the utility, a browser window should popup and prompt you to provide Youtube credentials. A token will be created and stored in request.token file in the local directory for subsequent use.
+
 profilepath = (
     r"D:\Download\audio-visual\make-text-video\reddit-to-video\assets\profile\fastlane"
 )

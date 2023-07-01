@@ -259,3 +259,28 @@ https://github.com/aiden2048/Browser-Env
 
 > * 显示 `type: "isp"` 表示家庭用户，最佳；
 > * 显示 `type: "hosting"` 表示代理托管，也能注册成功，但ISP的成功率更大点。
+
+走代理后 ip 匿名检测
+
+    https://bgp.he.net/
+    https://browserleaks.com/
+    https://ip.voidsec.com/
+    https://ipinfo.io/
+    https://ipleak.com/
+    https://ipleak.net/
+    https://ipleak.org/
+    https://ipx.ac/run
+    https://nstool.netease.com/
+    https://test-ipv6.com/
+    https://whatismyipaddress.com/blacklist-check
+    https://whoer.net/
+    https://www.astrill.com/dns-leak-test
+    https://www.astrill.com/ipv6-leak-test
+    https://www.astrill.com/port-scan
+    https://www.astrill.com/vpn-leak-test
+    https://www.astrill.com/what-is-my-ip
+    https://www.deviceinfo.me/
+    https://www.dnsleaktest.com/
+    https://www.doileak.com/
+    https://www.expressvpn.com/webrtc-leak-test
+>>>>>>> c899edd58dcf7a1ec38d3bd8ea555b827e6c4a8e

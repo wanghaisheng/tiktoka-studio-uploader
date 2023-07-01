@@ -1,4 +1,4 @@
 pip uninstall -y tsup
 pip install -i https://pypi.mirrors.ustc.edu.cn/simple/ -r requirements.txt
 python setup.py install
-PWDEBUG=1 python examples/botcheck.py
+PWDEBUG=0 HOME=/root python examples/botcheck.py

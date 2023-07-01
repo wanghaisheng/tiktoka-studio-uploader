@@ -10,7 +10,7 @@
 import time
 import os
 import random
-import cv as cv
+import cv2 as cv
 import math
 import numpy as np
 
@@ -96,13 +96,13 @@ def discern(inner_image_brg, outer_image_brg, result_img=None, angle=4, default_
 
 def solve_captcha_tiktok(self, code_path, count=0):
     # get inner /outer images
-    page.goto("https://www.tiktok.com/login/phone-or-email/email")
-    page.get_by_placeholder("电子邮件或用户名").click()
-    page.get_by_placeholder("电子邮件或用户名").fill("unboxdoctor@outlook.com")
-    page.get_by_placeholder("密码").click()
-    page.get_by_placeholder("密码").click(modifiers=["Control"])
-    page.get_by_placeholder("密码").fill("95Qa*G*za5Gb")
-    page.get_by_role("button", name="登录").click()
+    self.page.goto("https://www.tiktok.com/login/phone-or-email/email")
+    self.page.get_by_placeholder("电子邮件或用户名").click()
+    self.page.get_by_placeholder("电子邮件或用户名").fill("unboxdoctor@outlook.com")
+    self.page.get_by_placeholder("密码").click()
+    self.page.get_by_placeholder("密码").click(modifiers=["Control"])
+    self.page.get_by_placeholder("密码").fill("95Qa*G*za5Gb")
+    self.page.get_by_role("button", name="登录").click()
 
     # cal rotate angle
     # cal drager distance
@@ -127,16 +127,19 @@ def solve_captcha_tiktok(self, code_path, count=0):
         img = self.page.locator("#captcha_container")
         # ""加不加一样
         print("detected capatcha image", img.get_attribute("src"))
-        outerimg = self.page.locator(" # captcha_container > div > div.sc-jTzLTM.irVQmi > img.sc-fjdhpX.bKqdsG")
+        outerimg = self.page.locator(
+            " # captcha_container > div > div.sc-jTzLTM.irVQmi > img.sc-fjdhpX.bKqdsG"
+        )
 
-        
-        innerimg = self.page.locator(" # captcha_container > div > div.sc-jTzLTM.irVQmi > img.sc-cSHVUG.hmxWbL")
+        innerimg = self.page.locator(
+            " # captcha_container > div > div.sc-jTzLTM.irVQmi > img.sc-cSHVUG.hmxWbL"
+        )
 
         if img.get_attribute("src"):
             # time.sleep(1)
             # self.page.screenshot(path=code_path, clip=clip)
-            
-        print("finished screenshot of slide")
+
+            print("finished screenshot of slide")
 
         offsetlist = sorted(list(set(offsetlist)))
 
@@ -316,8 +319,9 @@ def solve_captcha_douyin(self, code_path, count=0):
 
 
 if __name__ == "__main__":
-    discern(
-        r"D:\Download\audio-visual\saas\tiktoka\ytb-up\tests\b8f374292c5249d2b441813000802779~tplv-71rtze2081-1.png",
-        r"D:\Download\audio-visual\saas\tiktoka\ytb-up\tests\7e7bc2d3c90d4df5b1e8c569242b328b~tplv-71rtze2081-1.png",
-        "./result.png",
-    )
+    # discern(
+    #     "../tests/b8f374292c5249d2b441813000802779~tplv-71rtze2081-1.png",
+    #     "../tests/7e7bc2d3c90d4df5b1e8c569242b328b~tplv-71rtze2081-1.png",
+    #     "./result.png",
+    # )
+    solve_captcha_tiktok()

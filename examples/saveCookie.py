@@ -46,6 +46,50 @@ def getCookie(
             print("just check your cookie file", channelname + "-cookie.json")
 
 
+def loadCookie(
+    browserType: str = "firefox",
+    proxyserver: str = "",
+    cookiefile: str = "cookie json file",
+    url: str = "www.youtube.com",
+):
+    if browserType in ["firefox", "webkit", ""]:
+        if proxyserver:
+            command = (
+                "playwright codegen -b "
+                + browserType
+                # + ' --device "iPhone 12" '
+                # + ' --device "iPad Pro 11 landscape" '
+                + " --proxy-server "
+                + proxyserver
+                + " --lang 'en-GB' --load-storage="
+                + cookiefile
+                + " "
+                + url
+            )
+        else:
+            command = (
+                "playwright codegen -b "
+                + browserType
+                # + ' --device "iPhone 12" '
+                + " --lang 'en-GB' --load-storage="
+                + cookiefile
+                + " "
+                + url
+            )
+        result = subprocess.run(
+            command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
+        )
+        print(result)
+        if result.returncode:
+            print(f"failed to load cookie file:{result.stderr}")
+        else:
+            print("just check your cookie file", channelname + "-cookie.json")
+
+
+
+
+
+
 if __name__ == "__main__":
     checkRequirments()
 #     sites = [
