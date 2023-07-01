@@ -236,3 +236,26 @@ Powered by Imperva
 ```
 
 https://github.com/aiden2048/Browser-Env
+
+
+
+
+
+
+## 步骤一、检测 IP，美国原生IP
+* 选取你的美国线路，打开全局代理，确保路线切换为 `美国`（全局模式）；将电脑DNS 改为 `8.8.8.8`和8.8.4.4
+
+![](pic/020.jpg)
+
+* 浏览器 `无痕模式` 打开 [https://whoer.net](https://whoer.net)，检测路线是否被 Google 识别出来。
+  
+  > * 百分比越高越好，不足地方会列出，如低于 `70%` 建议更换路线<br>
+  > * 一定保证IP地址和DNS全部为美国
+  > * 最好将系统时间也改为美国时间
+  
+![](pic/002.jpg)
+
+* 打开 [https://ipdata.co/](https://ipdata.co/)， 输入whoer.net查出来的代理IP地址，测试路线为 `家庭` 或 `托管`。
+
+> * 显示 `type: "isp"` 表示家庭用户，最佳；
+> * 显示 `type: "hosting"` 表示代理托管，也能注册成功，但ISP的成功率更大点。

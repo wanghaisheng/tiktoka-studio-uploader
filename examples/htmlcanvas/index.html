@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>video thumbnail batch generation</title>
+</head>
+<body>
+    <h1>Image Processing</h1>
+    <input type="file" id="jsonFile" accept=".json" required />
+    <button onclick="processJSON()">Submit</button>
+    <canvas id="canvas"></canvas>
+    <a id="downloadLink" style="display: none;"></a>
+
+    <script>
+function resizeImage(img, maxWidth, maxHeight) {
+  var width = img.width;
+  var height = img.height;
+
+  if (width > height) {
+    if (width > maxWidth) {
+      height *= maxWidth / width;
+      width = maxWidth;
+    }
+  } else {
+    if (height > maxHeight) {
+      width *= maxHeight / height;
+      height = maxHeight;
+    }
+  }
+
+  var canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  var ctx = canvas.getContext("2d");
+  ctx.drawImage(img, 0, 0, width, height);
+
+  var resizedImg = new Image();
+//   resizedImg.src = canvas.toDataURL("image/jpeg");
+// Create a Blob from the canvas data
+canvas.toBlob(function(blob) {
+  // Create a temporary <a> element to trigger the download
+  var tempLink = document.createElement("a");
+  tempLink.href = URL.createObjectURL(blob);
+  tempLink.download = "result_image.jpg";
+
+  // Programmatically trigger the download
+  tempLink.click();
+
+  // Clean up the temporary <a> element
+  URL.revokeObjectURL(tempLink.href);
+}, "image/jpeg");
+
+  return resizedImg;
+}        
+function processJSON() {
+    // Read the JSON file
+    var fileInput = document.getElementById("jsonFile");
+    var file = fileInput.files[0];
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        var json = JSON.parse(e.target.result);
+        var canvas = document.getElementById("canvas");
+        var ctx = canvas.getContext("2d");
+
+        // Load the background image
+        var backgroundImg = json[0].background_image;
+        var img = new Image();
+        img.onload = function() {
+            // Resize the background image to 1280x720
+            var resizedImg = resizeImage(img, 1280, 720);
+            canvas.width = resizedImg.width;
+            canvas.height = resizedImg.height;
+            ctx.drawImage(resizedImg, 0, 0);
+
+            // Split the background image into grid zones
+            var gridsize = Math.sqrt(json.length);
+            var zoneWidth = canvas.width / gridsize;
+            var zoneHeight = canvas.height / gridsize;
+
+            // Iterate over each JSON object
+            json.forEach(function(obj) {
+                var title = obj.title;
+                var sub_title = obj.sub_title;
+                var extra_text = obj.extra_text;
+                var titleZone = obj.title_zone;
+                var sub_titleZone = obj.sub_title_zone;
+                var extra_textZone = obj.extra_text_zone;
+
+                // Calculate the pixel coordinates of each zone
+                var titleX = (titleZone % gridsize) * zoneWidth;
+                var titleY = Math.floor(titleZone / gridsize) * zoneHeight;
+                var sub_titleX = (sub_titleZone % gridsize) * zoneWidth;
+                var sub_titleY = Math.floor(sub_titleZone / gridsize) * zoneHeight;
+                var extra_textX = (extra_textZone % gridsize) * zoneWidth;
+                var extra_textY = Math.floor(extra_textZone / gridsize) * zoneHeight;
+
+                // Draw the title text
+                ctx.font = obj.title_font_size + "px " + obj.title_font_file;
+                ctx.fillStyle = obj.title_color;
+                ctx.fillText(title, titleX, titleY);
+
+                // Draw the sub_title text
+                ctx.font = obj.sub_title_font_size + "px " + obj.sub_title_font_file;
+                ctx.fillStyle = obj.sub_title_color;
+                ctx.fillText(sub_title, sub_titleX, sub_titleY);
+
+                // Draw the extra_text text
+                ctx.font = obj.extra_text_font_size + "px " + obj.extra_text_font_file;
+                ctx.fillStyle = obj.extra_text_color;
+                ctx.fillText(extra_text, extra_textX, extra_textY);
+            });
+
+            // Trigger the download of the result image
+            // var downloadLink = document.getElementById("downloadLink");
+            // downloadLink.href = canvas.toDataURL();
+            // downloadLink.download = "result_image.png";
+            // downloadLink.click();
+// Trigger the download of the result image
+canvas.toBlob(function(blob) {
+  var downloadLink = document.getElementById("downloadLink");
+  downloadLink.href = URL.createObjectURL(blob);
+  downloadLink.download = "result_image.png";
+  downloadLink.click();
+}, "image/png");
+
+        };
+        img.src = backgroundImg;
+    };
+    reader.readAsText(file);
+}
+
+        function downloadImage(data, filename) {
+            var link = document.createElement("a");
+            link.href = data;
+            link.download = filename;
+            link.click();
+        }
+    </script>
+</body>
+</html>
