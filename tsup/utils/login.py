@@ -194,6 +194,8 @@ def kill_orphan_chrome(self):
 
 
 async def botcheck(self):
+    print('this is a placeholder for now,full code  is in the  examples/botcheck.py,but fake browser is a little bit diffcult for me now')
+async def botcheck_sannysoft(self):
     # self.kill_orphan_chrome()
     url = "https://abrahamjuliot.github.io/creepjs/"
     url = "http://f.vision/"
@@ -284,119 +286,153 @@ async def youtube_login(self, account, password):
     # self.kill_orphan_chrome()
     # url = 'https://accounts.google.com/ServiceLogin?service=youtube&uilel=3&passive=true&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Ddesktop%26hl%3Dzh-CN%26next%3Dhttps%253A%252F%252Fwww.youtube.com%252F&hl=zh-CN&ec=65620'
     url = "https://accounts.google.com/ServiceLogin"
-    print("======", type(self))
-    await botcheck(self)
-    if self.page:
-        for i in range(10):
-            # input('test:::: ')
-            sleep(random.uniform(1, 2))
-            current_url = self.page.url
-            if i > 6:
-                print(
-                    f"6次未找到input 密码框,重新初始化chrome ",
-                    datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                )
-                break
-            elif "signin/identifier" in current_url:
-                self.page.locator('//input[@type="email"]').click()
-                sleep(1)
-                # self.page.locator(by='xpath', value='//input[@type="email"]').send_keys(account)
-                for one in account:
-                    self.page.locator('//input[@type="email"]').send_keys(one)
-                    sleep(random.uniform(0.1, 0.4))
-                print(
-                    f"输入账号: {account}! ",
-                    datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                )
+    print("youtube_login auto login", type(self))
+    try:
+        await self.page.goto(url)
+
+
+        if self.page:
+            for i in range(10):
+                # input('test:::: ')
                 sleep(random.uniform(1, 2))
-                self.page.locator('//*[@id="identifierNext"]/div/button').click()
-                sleep(2)
-                continue
-            elif "challenge/pwd" in current_url:
-                if self.is_element_exist_wait(self.wait, '//*[@id="selectionc1"]'):
-                    self.page.locator('//input[@type="password"]').send_keys(password)
+                current_url = self.page.url
+                if i > 6:
                     print(
-                        f"输入密码: {password}! ",
+                        f"6次未找到input 密码框,重新初始化chrome ",
                         datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                     )
-                    sleep(0.5)
-                    self.page.locator('//*[@id="passwordNext"]//button').click()
-                    print(f"点击完成! ", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-                    sleep(2)
-                    self.page.goto("https://studio.youtube.com/channel/")
-                    sleep(random.uniform(1, 2))
                     break
+                elif "signin/identifier" in current_url:
+                    # await self.page.locator('//input[@type="email"]').click()
+                    # sleep(1)
+                    # # self.page.locator(by='xpath', value='//input[@type="email"]').send_keys(account)
+                    # for one in account:
+                    #     await self.page.locator('//input[@type="email"]').send_keys(one)
+                    #     sleep(random.uniform(0.1, 0.4))
+                    # print(
+                    #     f"输入账号: {account}! ",
+                    #     datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    # )
+                    # sleep(random.uniform(1, 2))
+                    # await self.page.locator('//*[@id="identifierNext"]/div/button').click()
+                    
+                    try:
+                        await self.page.get_by_role("textbox", name="Email or phone").is_visible()
+                        await self.page.get_by_role("textbox", name="Email or phone").fill(self.username)
+                    except:
+                        self.log.debug("could not find email or phone input textbox")
+                    try:
+                        await self.page.get_by_role("textbox", name="Enter your password").is_visible()
+                        await self.page.get_by_role("textbox", name="Enter your password").fill(
+                            self.password
+                        )
+                    except:
+                        self.log.debug("could not find email or phone input textbox")
+                    #     page.get_by_text("We noticed unusual activity in your Google Account. To keep your account safe, y").click()
+
+                    await self.page.get_by_role("button", name="Next").click()
+                    try:
+                        await self.page.locator("#headingText").get_by_text("2-Step Verification").click()
+                        await self.page.get_by_text("Google Authenticator").click()
+                        await self.page.get_by_text(
+                            "Get a verification code from the Google Authenticator app"
+                        ).click()
+                        await self.page.get_by_role("textbox", name="Enter code").click()
+                        sleep(6000)
+                    except:
+                        self.log.debug("failed to input code")
+                    await self.page.get_by_role("button", name="Next").click()                
+                    sleep(2)
+                    continue
+                elif "challenge/pwd" in current_url:
+                    if self.is_element_exist_wait(self.wait, '//*[@id="selectionc1"]'):
+                        await self.page.locator('//input[@type="password"]').send_keys(password)
+                        print(
+                            f"输入密码: {password}! ",
+                            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                        )
+                        sleep(0.5)
+                        await self.page.locator('//*[@id="passwordNext"]//button').click()
+                        print(f"点击完成! ", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+                        sleep(2)
+                        await self.page.goto("https://studio.youtube.com/channel/")
+                        sleep(random.uniform(1, 2))
+                        break
+                    else:
+                        print(
+                            f"第{i + 1}次未找到input 密码框! ",
+                            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                        )
+                        sleep(1)
+                        continue
+                elif "signin/rejected" in current_url:
+                    print(
+                        f"被检测, 重新初始化chrome... ",
+                        datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    )
+                    await self.page.quit()
+                    sleep(1)
+                    for i in range(3):
+                        port = f"{random.randint(6, 9)}{random.randint(1, 9)}{random.randint(1, 9)}{random.randint(1, 9)}"
+                        print(f"第 {i + 1} 次初始化chrome, 端口为:{port} ")
+                        try:
+                            chrome, wait = await self.init_broswer_popen(url=url, port=port)
+                            if "accounts" in chrome.current_url:
+                                print(
+                                    "chrome 正常状态...",
+                                    datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                                )
+                                break
+                            else:
+                                if chrome:
+                                    await chrome.quit()
+                                continue
+                        except Exception as e:
+                            print(f"初始化chrome异常: {e}")
+                            if chrome:
+                                await chrome.quit()
+                            continue
+                    # sleep(random.uniform(1, 2))
+                    continue
                 else:
                     print(
-                        f"第{i + 1}次未找到input 密码框! ",
+                        f"第{i+1}次未找到input 密码框! ",
                         datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                     )
-                    sleep(1)
                     continue
-            elif "signin/rejected" in current_url:
+            current_url = self.page.url
+            print(f"current_url: {current_url}")
+            if "/studio.youtube.com/" in current_url:
                 print(
-                    f"被检测, 重新初始化chrome... ",
+                    f"youtube 登录成功!!!",
                     datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 )
-                self.page.quit()
-                sleep(1)
-                for i in range(3):
-                    port = f"{random.randint(6, 9)}{random.randint(1, 9)}{random.randint(1, 9)}{random.randint(1, 9)}"
-                    print(f"第 {i + 1} 次初始化chrome, 端口为:{port} ")
+                if self.page:
                     try:
-                        chrome, wait = self.init_broswer_popen(url=url, port=port)
-                        if "accounts" in chrome.current_url:
-                            print(
-                                "chrome 正常状态...",
-                                datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                            )
-                            break
-                        else:
-                            if chrome:
-                                chrome.quit()
-                            continue
-                    except Exception as e:
-                        print(f"初始化chrome异常: {e}")
-                        if chrome:
-                            chrome.quit()
-                        continue
-                # sleep(random.uniform(1, 2))
-                continue
+                        await self.page.close()
+                    except:
+                        pass
+                return True
             else:
                 print(
-                    f"第{i+1}次未找到input 密码框! ",
+                    f"youtube 登录失败!!!",
                     datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 )
-                continue
-        current_url = self.page.url
-        print(f"current_url: {current_url}")
-        if "/studio.youtube.com/" in current_url:
-            print(
-                f"youtube 登录成功!!!",
-                datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            )
-            if self.page:
-                try:
-                    self.page.close()
-                except:
-                    pass
-            return True
+                if self.page:
+                    try:
+                        await self.page.close()
+                    except:
+                        pass
+                return None
         else:
-            print(
-                f"youtube 登录失败!!!",
-                datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            )
+            print(f"初始化chrome失败! ", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
             if self.page:
                 try:
-                    self.page.close()
+                    await self.page.close()
                 except:
                     pass
             return None
-    else:
-        print(f"初始化chrome失败! ", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-        if self.page:
-            try:
-                self.page.close()
-            except:
-                pass
+    except:
+        print(f'due to network issue,we can not access: {url}. change another proxy to try')
         return None
+        

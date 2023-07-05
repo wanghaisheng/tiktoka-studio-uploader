@@ -16,7 +16,6 @@ from tsup.utils.webdriver import (
 )
 import asyncio
 from playwright.async_api import Page, expect
-from cf_clearance import async_cf_retry, async_stealth
 from playwright.async_api import Playwright, Browser, BrowserContext
 
 
@@ -220,6 +219,8 @@ class YoutubeUpload:
             )
 
         else:
+            self.log.debug(f"start web page with proxy:{self.proxy_option}")
+            
             pl = await PlaywrightAsyncDriver.create(
                 proxy=self.proxy_option,
                 driver_type=self.browserType,
@@ -237,24 +238,12 @@ class YoutubeUpload:
                 f"{self.browserType} is now running with proxy:{self.proxy_option}"
             )
 
-        # self.page = await self.context.new_page()
-        # check fakebrowser to bypass captcha and security violations
-        # if self.debug:
-        #     await botcheck(self.pl)
+            # self.page = await self.context.new_page()
+            # check fakebrowser to bypass captcha and security violations
+            # if self.debug:
+            #     await botcheck(self.pl)
 
-        await self.page.evaluate(
-            "document.body.appendChild(Object.assign(document.createElement('script'), {src: 'https://gitcdn.xyz/repo/berstend/puppeteer-extra/stealth-js/stealth.min.js'}))"
-        )
-        await async_stealth(self.page, pure=True)
-        # store the stealth state to reload next time
-        # await botcheck(self)
-        # if self.debug:
-        #     await botcheck(self.pl)
-        await self.page.context.storage_state(
-            path="youtube-stealth-"
-            + datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-            + ".json"
-        )
+
         if not videopath:
             raise FileNotFoundError(f'Could not find file with path: "{videopath}"')
 
@@ -277,12 +266,19 @@ class YoutubeUpload:
                 self.log.debug(
                     "you can mannually sign in to save credentials for later auto login"
                 )
+                if self.proxy_option:
+                    print(f'you use proxy:{self.proxy_option}, first run a botcheck')
+                    await botcheck(self.pl)
+                else:
+                    print(f'you dont use any proxy {self.proxy_option}')
                 await youtube_login(self.pl, self.username, self.password)
 
                 # self.page = await self.context.new_page()
 
         except:
-            await youtube_login(self.pl, self.username, self.password)
+            print('there is exception in loading cookie files')
+            await self.page.close()
+            return 
 
             # save cookie to later import
             # login_using_cookie_file(self,self.CHANNEL_COOKIES,page)

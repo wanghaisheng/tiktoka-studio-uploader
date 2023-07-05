@@ -33,6 +33,8 @@ import requests
 
 from typing import Optional, AsyncIterator
 from contextlib import asynccontextmanager
+from cf_clearance import async_cf_retry, async_stealth
+from datetime import datetime, date, timedelta
 
 
 class PlaywrightAsyncDriver(WebDriver):
@@ -160,7 +162,7 @@ class PlaywrightAsyncDriver(WebDriver):
                 os.path.dirname(__file__), "../js/" + local_filename
             )
 
-            print("using stealth")
+            print("we are trying to use stealth.js to fake like a human")
             with requests.get(url, stream=True) as r:
                 r.raise_for_status()
                 with open(latest_path, "wb") as f:
@@ -183,14 +185,33 @@ class PlaywrightAsyncDriver(WebDriver):
                     os.remove(path)
                     os.rename(latest_path, path)
                     print("stealth is  upgraded just now ")
+
+            # await self.page.evaluate(
+            #     "document.body.appendChild(Object.assign(document.createElement('script'), {src: 'https://gitcdn.xyz/repo/berstend/puppeteer-extra/stealth-js/stealth.min.js'}))"
+            # )
+            self.page = await self.context.new_page()
+            print("we are trying to use async_stealth to bypass cloudflare detection")
+            
+            await async_stealth(self.page, pure=True)
+            # store the stealth state to reload next time
+            # await botcheck(self)
+            # if self.debug:
+            #     await botcheck(self.pl)
+            await self.page.context.storage_state(
+                path="youtube-stealth-"
+                + datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+                + ".json"
+            )
+                    
             # print("stealth js path:", path)
             # self.page = await self.context.new_page()
 
             # await self.page.goto("https://www.google.com")
 
             await self.context.add_init_script(path=path)
-
-        self.page = await self.context.new_page()
+        else:
+            self.page = await self.context.new_page()
+            
         # await self.page.goto("https://www.baidu.com")
 
         self.page.set_default_timeout(self._timeout * 1000)
