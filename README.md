@@ -77,13 +77,13 @@ python setup.py install
    If given user's account have only onedefault video channel. Many users (myself included) manage multiple channels under the same youtube account,so after login in, you need switch to the channel you want video uploading to save different cookie.json for each channel. then you can close the openning browser.
 
 ```
-python saveCookie.py
+python examples/saveCookie.py
 ```
 
 5. run upload demo
 
 ```
-python onefile-example_youtube.py
+python examples/onefile-example_youtube.py
 ```
 
 ### for those tech guy
