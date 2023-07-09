@@ -2,6 +2,10 @@
 
 main branch may not work, I am working on v0.1.16 to refactor a lot, bring an embed fake browser to avoid capcha especially for tiktok and other bot detect to ease the upload and keep your account safe.
 
+for tiktok part,lately there is official api coming, I created another repo for building with official api way:
+
+https://github.com/wanghaisheng/tiktok-opensdk-web
+
 
 <!-- MANPAGE: BEGIN EXCLUDED SECTION -->
 <div align="center">
