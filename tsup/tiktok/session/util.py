@@ -1,4 +1,3 @@
-
 import requests
 import datetime
 import hashlib
@@ -11,11 +10,13 @@ import string
 def sign(key, msg):
     return hmac.new(key, msg.encode('utf-8'), hashlib.sha256).digest()
 
+
 def getCreationId():
     length = 21
     characters = string.ascii_letters + string.digits
     creationid = ''.join(random.choice(characters) for i in range(length))
     return creationid
+
 
 def getSignatureKey(key, dateStamp, regionName, serviceName):
     kDate = sign(('AWS4' + key).encode('utf-8'), dateStamp)
@@ -78,7 +79,7 @@ def log(name):
 # 获取真实标签
 
 
-def getTagsExtra(title, tags, users, session):
+def getTagsExtra(title, tags, users, session, url_prefix):
     text_extra = []
     # 处理tag
     for tag in tags:
@@ -96,7 +97,7 @@ def getTagsExtra(title, tags, users, session):
             title), "user_id": "", "type": 1, "hashtag_name": verified_tag})
     # 处理users
     for user in users:
-        url = "https://us.tiktok.com/api/upload/search/user/"
+        url = f"https://{url_prefix}.tiktok.com/api/upload/search/user/"
         params = {"keyword": user}
         r = session.get(url, params=params)
         if not assertSuccess(url, r):
