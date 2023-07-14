@@ -45,7 +45,6 @@ class PlaywrightAsyncDriverStealth(WebDriver):
         driver_type: Literal["chromium", "firefox", "webkit"] = "chromium",
         url_regexes: list = None,
         save_all: bool = False,
-        headless: bool = True,
         **kwargs,
     ):
         """
@@ -71,7 +70,6 @@ class PlaywrightAsyncDriverStealth(WebDriver):
         self._url_regexes = url_regexes
         self._save_all = save_all
         self._timeout = 300
-        self._headless=headless
         self.country = None
         self.country_code = None
         self.region = None
@@ -111,15 +109,9 @@ class PlaywrightAsyncDriverStealth(WebDriver):
 
         # 初始化浏览器对象
         self.driver = await async_playwright().start()
-        print('self._headless:',self._headless)
-        if self._driver_type=="firefox":
-            args=[]
-        else:
-            args=["--no-sandbox"]
-            
         self.browser = await getattr(self.driver, self._driver_type).launch(
             headless=self._headless,
-            args=args,
+            args=["--no-sandbox"],
             proxy=proxy,
             executable_path=self._executable_path,
             downloads_path=self._download_path,
@@ -131,97 +123,76 @@ class PlaywrightAsyncDriverStealth(WebDriver):
             else None,
         )
         # Initializing Faker, ComputerInfo, PersonInfo and ProxyInfo
-        if proxy:   
-            self.faker = Faker(proxy.httpx_proxy,self._driver_type)
-        else:
-            self.faker = Faker(proxy,self._driver_type)
+
+        self.faker = Faker(self.proxy.httpx_proxy,self._driver_type)
 
         await self.faker.computer()
         # await self.faker.person()
-        country_code="US"
-        if proxy:
-            country_code=proxy.country_code
-            await self.faker.locale(country_code)
-            print(f"self locale is:{self.faker.locale}")
-            # Context for more options
-            print(f"self.proxy.longitude:{self.proxy.longitude}")
-            print(f"self.proxy.latitude:{self.proxy.latitude}")
-            print(f"self.proxy.timezone:{self.proxy.timezone}")
-            print(f"self.proxy.useragent:{self.faker.useragent}")
-            print(f"self.proxy.storage_state_path:{self.storage_state_path}")
-            print(f"self.proxy.username:{self.proxy.username}")
-            print(f"self.proxy.password:{self.proxy.password}")
 
-            self.context = await self.browser.new_context(
-                locale=self.faker.locale,  # self.faker.locale
-                geolocation={
-                    "longitude": self.proxy.longitude,
-                    "latitude": self.proxy.latitude,
-                    "accuracy": 0.7,
-                },
-                timezone_id=self.proxy.timezone,
-                permissions=["geolocation"],
-                # screen={"width": self.faker.avail_width, "height": self.faker.avail_height},
-                user_agent=self.faker.useragent,
-                no_viewport=True,
-                # viewport={"width": self.faker.width, "height": self.faker.height},
-                proxy=proxy,
-                # here proxy format is important
-                storage_state=self.storage_state_path if self._isRecodingVideo else None,
-                record_video_dir=os.getcwd() + os.sep + "screen-recording"
-                if self._isRecodingVideo
-                else None,
-                http_credentials={
-                    "username": self.proxy.username,
-                    "password": self.proxy.password,
-                }
-                if self.proxy.username
-                else None,
-            )
+        await self.faker.locale(self.proxy.country_code)
+        print(f"self locale is:{self.faker.locale}")
+        # Context for more options
+        print(f"self.proxy.longitude:{self.proxy.longitude}")
+        print(f"self.proxy.latitude:{self.proxy.latitude}")
+        print(f"self.proxy.timezone:{self.proxy.timezone}")
+        print(f"self.proxy.useragent:{self.faker.useragent}")
+        print(f"self.proxy.storage_state_path:{self.storage_state_path}")
+        print(f"self.proxy.username:{self.proxy.username}")
+        print(f"self.proxy.password:{self.proxy.password}")
 
-            # Grant Permissions to Discord to use Geolocation
-            await self.context.grant_permissions(["geolocation"], origin=self.url)
-            # Create new Page and do something idk why i did that lol
-            # await page.emulate_media(
-            #     color_scheme="dark", media="screen", reduced_motion="reduce"
-            # )
-            self.page = await self.context.new_page()
-
-            # Stealthen the page with custom Stealth Config
-
-            config = playwright_stealth.StealthConfig()
-            (
-                config.navigator_languages,
-                config.permissions,
-                config.navigator_platform,
-                config.navigator_vendor,
-                config.outerdimensions,
-            ) = (False, False, False, False, False)
-            config.vendor, config.renderer, config.nav_user_agent, config.nav_platform = (
-                self.faker.vendor,
-                self.faker.renderer,
-                self.faker.useragent,
-                "Win32",
-            )
-            config.languages = ("en-US", "en", self.faker.locale, self.faker.language_code)
-
-            await playwright_stealth.stealth_async(self.page, config)
-        else:
-            self.context = await self.browser.new_context(
-#                 locale=self.faker.locale,  # self.faker.locale
+        self.context = await self.browser.new_context(
+            locale=self.faker.locale,  # self.faker.locale
+            geolocation={
+                "longitude": self.proxy.longitude,
+                "latitude": self.proxy.latitude,
+                "accuracy": 0.7,
+            },
+            timezone_id=self.proxy.timezone,
             permissions=["geolocation"],
             # screen={"width": self.faker.avail_width, "height": self.faker.avail_height},
-#                 user_agent=self.faker.useragent,
+            user_agent=self.faker.useragent,
             no_viewport=True,
             # viewport={"width": self.faker.width, "height": self.faker.height},
+            proxy=proxy,
             # here proxy format is important
             storage_state=self.storage_state_path if self._isRecodingVideo else None,
             record_video_dir=os.getcwd() + os.sep + "screen-recording"
             if self._isRecodingVideo
             else None,
-        )         
+            http_credentials={
+                "username": self.proxy.username,
+                "password": self.proxy.password,
+            }
+            if self.proxy.username
+            else None,
+        )
+        # Grant Permissions to Discord to use Geolocation
+        await self.context.grant_permissions(["geolocation"], origin=self.url)
+        # Create new Page and do something idk why i did that lol
+        # await page.emulate_media(
+        #     color_scheme="dark", media="screen", reduced_motion="reduce"
+        # )
         self.page = await self.context.new_page()
-                
+
+        # Stealthen the page with custom Stealth Config
+        
+        config = playwright_stealth.StealthConfig()
+        (
+            config.navigator_languages,
+            config.permissions,
+            config.navigator_platform,
+            config.navigator_vendor,
+            config.outerdimensions,
+        ) = (False, False, False, False, False)
+        config.vendor, config.renderer, config.nav_user_agent, config.nav_platform = (
+            self.faker.vendor,
+            self.faker.renderer,
+            self.faker.useragent,
+            "Win32",
+        )
+        config.languages = ("en-US", "en", self.faker.locale, self.faker.language_code)
+
+        await playwright_stealth.stealth_async(self.page, config)
         self.page.set_default_timeout(self._timeout * 1000)
 
 
