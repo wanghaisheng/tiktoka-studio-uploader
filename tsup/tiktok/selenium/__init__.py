@@ -7,9 +7,6 @@ Created on 2023/6/05 12:09 AM
 @author: wanghaisheng
 @email: admin@tiktokastudio.com
 
-https://github.com/wkaisertexas/tiktok-uploader
-
-https://github.com/wanghaisheng/homework
 
 
 """

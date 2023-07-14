@@ -24,3 +24,14 @@ if __name__ == '__main__':
     url_server='us'
 
     uploadVideo(session_id, path, title, tags, users, url_server, schedule_time)
+
+# videos = [
+#     {
+#         "path": "upload.mp4",
+#         "description": "This is the first upload"
+#     },
+#     {
+#         "filename": "upload.mp4",
+#         "desc": "This is my description"
+#     }
+# ]
