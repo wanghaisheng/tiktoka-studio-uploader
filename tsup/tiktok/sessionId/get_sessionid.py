@@ -7,6 +7,11 @@ class ExtractSessionid:
         self.green = Fore.LIGHTGREEN_EX
         self.red = Fore.LIGHTRED_EX
         self.reset = Fore.RESET
+        self.proxy = {
+            'http' : "socks5://127.0.0.1:1080",
+            'https' : "socks5://127.0.0.1:1080"
+        }
+
     def choice(self):
         print(f'[{self.green}+{self.reset}] 1 - Extract Sessionid From File ( account.txt )\n[{self.green}+{self.reset}] 2 - Extract Sessionid From Input\n[{self.green}+{self.reset}] Number : ', end='')
         self.number = int(input())
@@ -109,6 +114,39 @@ class ExtractSessionid:
                 pass
         except:
             pass
-if __name__ == '__main__':
-    E = ExtractSessionid()
-    E.choice()
+    def ExtractSessionidSingle(self, email, password):
+        print('start')
+        try:
+            self.login = requests.post("https://api2.musical.ly/passport/user/login/?mix_mode=1&username=&email=&mobile=&account=&password=&captcha=&ts=&app_type=normal&app_language=en&manifest_version_code=2018073102&_rticket=1633593458298&iid=7011916372695598854&channel=googleplay&language=en&fp=&device_type=SM-G955F&resolution=1440*2792&openudid=91cac57ba8ef12b6&update_version_code=2018073102&sys_region=AS&os_api=28&is_my_cn=0&dpi=560&carrier_region=OM&ac=wifi&device_id=6785177577851504133&mcc_mnc=42203&timezone_offset=14400&os_version=9&version_code=800&carrier_region_v2=422&app_name=musical_ly&version_name=8.0.0&device_brand=samsung&ssmix=a&build_number=8.0.0&device_platform=android&region=US&aid=&as=&cp=Qm&mas=",headers={'User-Agent':'Connectionzucom.zhiliaoapp.musically/2018073102 (Linux; U; Android 9; en_AS; SM-G955F; Build/PPR1.180610.011; Cronet/58.0.2991.0)z','Host':'api2.musical.ly','Connection':'keep-alive'},data={'email':email,'password':password},proxies=self.proxy if self.proxy else None)
+            print('--', self.login.text )
+            if 'email' in self.login.text:
+                self.sessionid = self.login.json()['data']['session_key']
+                print(f'[{self.green}+{self.reset}] Successfully Login\n[{self.green}+{self.reset}] Sessionid : {self.sessionid}\n[{self.green}+{self.reset}] Press Enter To Exit')
+                with open('sessionidsaved.txt', 'a') as self.saved:
+                    self.saved.write(f'[+] Sessionid Input : {self.sessionid}\n')
+                # input()
+                # exit(0)
+            elif 'Incorrect account or password' in self.login.text:
+                print(f'[{self.red}+{self.reset}] Password Error\n[{self.red}+{self.reset}] Press Enter To Exit')
+                # input()
+                # exit(0)
+            elif 'Invalid Email address' or 'The account you entered does not exist.' in self.login.text:
+                print(f'[{self.red}+{self.reset}] Email Error\n[{self.red}+{self.reset}] {self.login.text }')
+                # input()
+                # exit(0)
+            elif '"error_code":7' in self.login.text:
+                print(f'[{self.red}+{self.reset}] To Many Attempts , Try Again Later\n[{self.red}+{self.reset}] Press Enter To Exit')
+                # input()
+                # exit(0)
+            else:
+                pass
+        except:
+            pass
+# if __name__ == '__main__':
+#     E = ExtractSessionid()
+# # console
+# #     E.choice()
+# # 
+#     username="offloaddogsboner@outlook.com"
+#     password="i7SNiSG8V7jND^"
+#     E.ExtractSessionidSingle(username,password)

@@ -4,6 +4,7 @@
 import subprocess
 import time
 
+from typing import Tuple, Optional, Union, Literal
 
 def checkPLInstalled():
     print("start to check Tiktoka Studio requirements whether playwright intalled")
@@ -17,7 +18,7 @@ def checkPLInstalled():
         return False
 
 
-def checkBrowserInstalled():
+def checkBrowserInstalled(browserType:Literal["chromium", "firefox", "webkit"] = "firefox"):
     try:
         print(
             "start to check Tiktoka Studio requirements whether playwright browser intalled"
@@ -30,20 +31,9 @@ def checkBrowserInstalled():
             print("initial pl library")
 
             try:
-                print(
-                    "start to check Tiktoka Studio requirements whether chromium intalled"
-                )
-                chromium_browser = p.chromium.launch()
-                print(
-                    "start to check Tiktoka Studio requirements whether webkit/edge intalled"
-                )
-                webkit_browser = p.webkit.launch()
-
-                print(
-                    "start to check Tiktoka Studio requirements whether firefox intalled"
-                )
-
-                firefox_browser = p.firefox.launch()
+                print(f"start to check Tiktoka Studio requirements whether {browserType} intalled")
+                browser = p.browserType.launch()
+                print(f"{browserType}  intalled")
 
                 return True
 
@@ -89,10 +79,18 @@ def runPl():
         attempt(step_arglist, max_attempts=3, name=step_name)
 
 
-def runBrowser():
-    steps = {
-        "step1": """playwright install""".split(" "),
-    }
+def runBrowser(browserType:Literal["chromium", "firefox", "webkit"] = None):
+    if browserType==None:
+        steps = {
+            "step1": """playwright install""".split(" "),
+        }
+        print(f'install all type browsers')
+
+    else:
+        steps = {
+            "step1": ("""playwright install """+ browserType).split(" "),
+        }        
+        print(f'install browsertype {browserType}')
 
     for step_name, step_arglist in steps.items():
         print(
@@ -101,22 +99,51 @@ def runBrowser():
         attempt(step_arglist, max_attempts=3, name=step_name)
 
 
-def checkRequirments():
+def checkRequirments(browserType:Literal["chromium", "firefox", "webkit"] = None):
     print("start to check Tiktoka Studio requirements whether  intalled")
 
     plinstall = checkPLInstalled()
-    browserinstall = checkBrowserInstalled()
     if plinstall == False:
         print("Tiktoka Studio requirements-playwright not intalled")
 
         runPl()
     else:
         print("Tiktoka Studio requirements-playwright have intalled")
-    if browserinstall == False:
-        print("Tiktoka Studio requirements-browser not intalled")
-
+    if browserType==None:
         runBrowser()
-        print("Tiktoka Studio requirements-auto browser intalled")
+    if browserType=="chromium":
 
-    else:
-        print("Tiktoka Studio requirements-browser have intalled")
+        browserinstall = checkBrowserInstalled(browserType="chromium")
+
+        if browserinstall == False:
+            print(f"Tiktoka Studio requirements-browser {browserType} not intalled")
+
+            runBrowser("chromium")
+            print(f"Tiktoka Studio requirements-auto browser {browserType} intalled")
+
+        else:
+            print(f"Tiktoka Studio requirements-browser {browserType} have intalled")
+    if browserType=="firefox":
+
+        browserinstall = checkBrowserInstalled(browserType="firefox")
+
+        if browserinstall == False:
+            print(f"Tiktoka Studio requirements-browser {browserType} not intalled")
+
+            runBrowser("firefox")
+            print(f"Tiktoka Studio requirements-auto browser {browserType} intalled")
+
+        else:
+            print(f"Tiktoka Studio requirements-browser {browserType} have intalled")
+    if browserType=="webkit":
+
+        browserinstall = checkBrowserInstalled(browserType="webkit")
+
+        if browserinstall == False:
+            print(f"Tiktoka Studio requirements-browser {browserType} not intalled")
+
+            runBrowser("webkit")
+            print(f"Tiktoka Studio requirements-auto browser {browserType} intalled")
+
+        else:
+            print(f"Tiktoka Studio requirements-browser {browserType} have intalled")

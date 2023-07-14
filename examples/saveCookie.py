@@ -91,20 +91,29 @@ def loadCookie(
 
 
 if __name__ == "__main__":
+    # checkRequirments("firefox")
+    # checkRequirments("webkit")
+    # checkRequirments("chromium")
     checkRequirments()
-#     sites = [
-#         "https://www.youtube.com/upload?persist_gl=1",
-#         "https://www.tiktok.com",
-#         "https://www.douyin.com",
-#         "https://www.tiktok.com/login/phone-or-email/email",
-#     ]
+    sites = [
+        "https://www.youtube.com/upload?persist_gl=1",
+        "https://www.tiktok.com",
+        "https://www.douyin.com",
+        "https://www.tiktok.com/login/phone-or-email/email",
+    ]
 # channelname is your account name or something else
 # for youtube
 # getCookie(browserType='firefox',proxyserver='socks5://127.0.0.1:1080',channelname='',url=sites[0])
+
 # for tiktok
 # i7SNiSG8V7jND^
 # offloaddogsboner@outlook.com
-
+getCookie(
+    browserType="firefox",
+    proxyserver="socks5://127.0.0.1:1080",
+    channelname="offloaddogsboner",
+    url=sites[3],
+)
 # unboxdoctor@outlook.com
 # 95Qa*G*za5Gb
 # getCookie(
@@ -113,5 +122,7 @@ if __name__ == "__main__":
 #     channelname="",
 #     url=sites[0],
 # )
+
+
 # for douyin
 # getCookie(browserType='firefox',proxyserver='socks5://127.0.0.1:1080',channelname='',url=sites[2])
