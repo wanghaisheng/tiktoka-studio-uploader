@@ -10,9 +10,9 @@ from collections import defaultdict
 import json
 from pathlib import Path
 import logging
-from Constant import TIKTOK_CONSTANT
-from ChromeDriver import ChromeDriver
-from AdsChrome import AdsChromeDriver
+from tsup.tiktok.selenium.Constant import TIKTOK_CONSTANT
+from  tsup.utils.webdriver.ChromeDriver import ChromeDriver
+from tsup.utils.webdriver.AdsChrome import AdsChromeDriver
 logging.basicConfig()
 
 

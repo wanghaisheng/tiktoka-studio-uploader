@@ -13,6 +13,7 @@ import calendar
 import codecs
 import configparser  # 读配置文件的
 import datetime
+from dateutil.relativedelta import relativedelta
 import functools
 import hashlib
 import html
@@ -932,6 +933,42 @@ def del_html_js_css(content):
 
     return content
 
+def get_duration_timestamp(    year_target = 2023,
+    month_target = 8,
+    day_target = 31,
+    hour_target = 12,
+    minute_target = 0,
+    second_target = 0):
+
+
+    # Define the target date and time
+
+
+    # Get the current date and time
+    current_date = datetime.datetime.now()
+
+    # Adjust the target date if it's in the future compared to the current date
+    if current_date > datetime.datetime(year_target, month_target, day_target, hour_target, minute_target, second_target):
+        year_target += 1
+
+    # Create datetime objects for target and current dates
+    target_date = datetime.datetime(year_target, month_target, day_target, hour_target, minute_target, second_target)
+
+    # Calculate the duration using relativedelta
+    duration = relativedelta(target_date, current_date)
+
+    # Calculate the total seconds in the duration
+    duration_seconds = (
+        duration.years * 31536000 +  # 365 days
+        duration.months * 2592000 +  # 30 days
+        duration.days * 86400 +  # 24 hours
+        duration.hours * 3600 +  # 60 minutes
+        duration.minutes * 60 +
+        duration.seconds
+    )
+
+    print("Duration in seconds:", duration_seconds)
+    return duration_seconds
 
 def is_have_chinese(content):
     regex = "[\u4e00-\u9fa5]+"
