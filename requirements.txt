@@ -28,3 +28,4 @@ BeautifulSoup4
 async_class #==0.5.0
 httpx
 numpy
+colorama==0.4.6

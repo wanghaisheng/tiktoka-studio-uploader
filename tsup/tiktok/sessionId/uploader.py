@@ -3,9 +3,8 @@ import json
 import time
 import datetime
 from urllib.parse import urlencode
-
-from TikTokUploader.x_bogus_ import get_x_bogus
-from TikTokUploader.util import assertSuccess, printError, getTagsExtra, uploadToTikTok, log, getCreationId
+from tsup.tiktok.sessionId.x_bogus_ import get_x_bogus
+from tsup.tiktok.sessionId.util import assertSuccess, printError, getTagsExtra, uploadToTikTok, log, getCreationId
 
 
 UA = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36'
