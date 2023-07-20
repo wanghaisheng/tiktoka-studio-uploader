@@ -546,6 +546,31 @@ class YoutubeUpload:
             self.log.debug(f'finishing to set "{thumbnail}" as thumbnail...')
 
         await VerifyDialog(self, page)
+
+        try:
+            if playlist:
+                self.log.debug(f'Trying to add video to "{playlist}" playlist...')
+                await page.locator("#basics").get_by_text("Playlists", exact=True).is_visible()
+                await page.locator("#basics").get_by_text("Playlists", exact=True).click()
+
+                await page.locator(".ytcp-video-metadata-playlists tp-yt-iron-icon").click()
+
+                playlists_element = page.locator("tp-yt-iron-list")
+                await playlists_element.is_visible()
+                if playlist in await playlists_element.inner_html():
+                    await page.get_by_text(playlist, exact=True).click()
+                    await page.get_by_text("Done", exact=True).click()
+                else:
+                    await page.keyboard.press("Escape")
+                    self.log.debug(f'"{playlist}" playlist not found')
+            else:
+                self.log.debug("No playlist provided")
+        except:
+            await page.keyboard.press("Escape")
+            self.log.debug("failed to add video to playlist")
+            
+
+
         self.log.debug('Trying to set video to "Not made for kids"...')
 
         try:
