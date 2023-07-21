@@ -8,6 +8,10 @@ from playwright.async_api import (
 from tsup.utils.webdriver.playwright_driver_async_stealth import (
     PlaywrightAsyncDriverStealth,
 )
+
+from tsup.utils.webdriver.playwright_driver_async import (
+    PlaywrightAsyncDriver,
+)
 import asyncio
 import os
 from tsup.botright.botright import Botright
@@ -473,16 +477,7 @@ async def main():
     # page = await context.newPage()
     proxy_option = "socks5://127.0.0.1:1080"
     proxy_option=None
-    pl = await PlaywrightAsyncDriverStealth.create(
-        proxy=proxy_option,
-        driver_type="firefox",
-        timeout=300,
-#         headless=False,
-#         for github action
-        headless=True,
-        
-    )
-    freshpage=pl.page
+
     # await async_stealth(pl.page, pure=True)
 
     ipchecklist = [
@@ -517,29 +512,69 @@ async def main():
         "https://api64.ipify.org/",
     ]
     for url in ipchecklist:
+
+        pl = await PlaywrightAsyncDriver.create(
+            proxy=proxy_option,
+            driver_type="firefox",
+            timeout=300,
+            use_stealth_js=False,
+    #         for github action
+            headless=True,
+            
+        )
+        freshpage=pl.page        
+        print('raw pl',url)
+        
         botcheck = Botcheck(freshpage)
-        print('raw pl',botcheck.page)
         
         await botcheck.checkIP(botcheck.page ,url)
     for url in ipchecklist:
-        print('raw pl with async_stealth')
 
+        pl = await PlaywrightAsyncDriver.create(
+            proxy=proxy_option,
+            driver_type="firefox",
+            timeout=300,
+            use_stealth_js=True,
+    #         for github action
+            headless=True,
+            
+        )
+        freshpage=pl.page       
+        print('raw pl with stealth js',url)
+
+        await botcheck.checkIP(pl.page ,url)        
+    for url in ipchecklist:
+        print('raw pl with async_stealth',url)
+        pl = await PlaywrightAsyncDriverStealth.create(
+            proxy=proxy_option,
+            driver_type="firefox",
+            timeout=300,
+    #         headless=False,
+    #         for github action
+            headless=True,
+            
+        )
+        freshpage=pl.page     
         botcheck = Botcheck(freshpage)
         await async_stealth(botcheck.page, pure=True)
         await botcheck.checkIP(botcheck.page ,url)
-    for url in ipchecklist:
-        print('raw pl with stealth js',pl.page)
-        botcheck = Botcheck(freshpage)
 
-        path = os.path.join(os.path.dirname(__file__), "../tsup/utils/js/stealth.min.js")
-        if os.path.exists(path):
-            print('stealth js is found ')    
-        print(f'stealth js :{path}')
-        await pl.page.add_init_script(path=path)
-        await botcheck.checkIP(pl.page ,url)
 
     for url in ipchecklist:
-        print('raw pl with navigator',pl.page)
+        pl = await PlaywrightAsyncDriver.create(
+            proxy=proxy_option,
+            driver_type="firefox",
+            timeout=300,
+            use_stealth_js=False,
+    #         for github action
+            headless=True,
+            
+        )
+        freshpage=pl.page        
+        
+        botcheck = Botcheck(freshpage)        
+        print('raw pl with navigator',url)
+
         await pl.page.add_init_script(
                 """
 if (navigator.webdriver === false) {

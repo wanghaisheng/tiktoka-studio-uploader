@@ -286,16 +286,18 @@ async def youtube_login(self, account, password):
     # self.kill_orphan_chrome()
     # url = 'https://accounts.google.com/ServiceLogin?service=youtube&uilel=3&passive=true&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Ddesktop%26hl%3Dzh-CN%26next%3Dhttps%253A%252F%252Fwww.youtube.com%252F&hl=zh-CN&ec=65620'
     url = "https://accounts.google.com/ServiceLogin"
-    print("youtube_login auto login", type(self))
     try:
         await self.page.goto(url)
 
 
         if self.page:
+            current_url = self.page.url            
+            print("youtube_login auto login", current_url)
+            
             for i in range(10):
                 # input('test:::: ')
                 sleep(random.uniform(1, 2))
-                current_url = self.page.url
+                
                 if i > 6:
                     print(
                         f"6次未找到input 密码框,重新初始化chrome ",
@@ -303,24 +305,15 @@ async def youtube_login(self, account, password):
                     )
                     break
                 elif "signin/identifier" in current_url:
-                    # await self.page.locator('//input[@type="email"]').click()
-                    # sleep(1)
-                    # # self.page.locator(by='xpath', value='//input[@type="email"]').send_keys(account)
-                    # for one in account:
-                    #     await self.page.locator('//input[@type="email"]').send_keys(one)
-                    #     sleep(random.uniform(0.1, 0.4))
-                    # print(
-                    #     f"输入账号: {account}! ",
-                    #     datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    # )
-                    # sleep(random.uniform(1, 2))
-                    # await self.page.locator('//*[@id="identifierNext"]/div/button').click()
-                    
+
                     try:
-                        await self.page.get_by_role("textbox", name="Email or phone").is_visible()
-                        await self.page.get_by_role("textbox", name="Email or phone").fill(self.username)
+                        
+                        await self.page.locator('#identifierId').is_visible()
+                        await self.page.locator('#identifierId').fill(self.username)
                     except:
                         self.log.debug("could not find email or phone input textbox")
+                    await self.page.get_by_role("button", name="Next").click()
+
                     try:
                         await self.page.get_by_role("textbox", name="Enter your password").is_visible()
                         await self.page.get_by_role("textbox", name="Enter your password").fill(
@@ -330,7 +323,6 @@ async def youtube_login(self, account, password):
                         self.log.debug("could not find email or phone input textbox")
                     #     page.get_by_text("We noticed unusual activity in your Google Account. To keep your account safe, y").click()
 
-                    await self.page.get_by_role("button", name="Next").click()
                     try:
                         await self.page.locator("#headingText").get_by_text("2-Step Verification").click()
                         await self.page.get_by_text("Google Authenticator").click()
