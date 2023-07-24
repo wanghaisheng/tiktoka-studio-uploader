@@ -35,6 +35,7 @@ def videoMetaString():
     second_target = 0
 
     schedule_time=get_duration_timestamp(year_target,month_target,day_target,hour_target,minute_target,second_target)
+# Note that you cannot schedule a video more than 10 days in advance.
 
 
     session_id="5139870b7334ad6b92e7e8ca2a3ce2ca"
