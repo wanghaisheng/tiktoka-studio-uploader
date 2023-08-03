@@ -1,11 +1,17 @@
-**Caution**
+**Update**
 
-main branch may not work, I am working on v0.1.16 to refactor a lot, bring an embed fake browser to avoid capcha especially for tiktok and other bot detect to ease the upload and keep your account safe.
+1. we now support tiktok now by sessionId way,and you can even grab a sessionid in your local pc and use it in your remote server.check [tiktok how to doc](./how-to-upload-tiktok.md)
+
+2. Hungup the  support an embed fake browser fingerprint to tiktok 
+
+3. will support tiktok official api 
 
 for tiktok part,lately there is official api coming, I created another repo for building with official api way:
 
 https://github.com/wanghaisheng/tiktok-opensdk-web
 
+
+4. will support playwright way for tiktok, especially for the rotate capcha verify
 
 <!-- MANPAGE: BEGIN EXCLUDED SECTION -->
 <div align="center">
@@ -47,6 +53,20 @@ AS a code dummy, I do accept any advice because my only purpose is to get things
 
 3. more like category setting, subtitle upload etc are considered
 
+### Methods
+
+#### youtube
+
+* we use playwright and selenium automation testing framework to act like as a human user to hand over the video uploading process to save your time for coffee.
+
+#### tiktok
+
+* we use playwright and selenium automation testing framework to act like as a human user to hand over the video uploading process to save your time for coffee.
+
+* we develop an api based on  official openapi documentations to support 2b partners to batch upload video from their mobile app or application.
+
+* we use sessionId and cracked uploading endpoint api to finish video uploading processing.
+
 ## USAGE
 
 if there's anything you don't understand, submit an issue or cantact me
@@ -55,73 +75,13 @@ if there's anything you don't understand, submit an issue or cantact me
 
 checkout the GUI version.
 
-### for those not that tech savy
+### youtube platform
 
-1. install python on your computer. if you do not know how ,check here
+check [how to upload youtube videos](./how-to-upload-youtube.md)
 
-```
-https://docs.python.org/3.9/using/index.html
-```
+### tiktok
 
-3. just download zip from here
-
-```
-https://github.com/wanghaisheng/youtube-auto-upload/archive/refs/heads/playwright.zip
-```
-
-4. unzip this into anywhere you like，open terminal:
-
-```
-pip install -r requirements.txt
-
-python setup.py install
-```
-
-4. get cookies for your youtube channel without any efforts,for those proxy setting, adjust the code as you wish.
-   If given user's account have only onedefault video channel. Many users (myself included) manage multiple channels under the same youtube account,so after login in, you need switch to the channel you want video uploading to save different cookie.json for each channel. then you can close the openning browser.
-
-```
-python examples/saveCookie.py
-```
-
-5. run upload demo
-
-```
-python examples/onefile-example_youtube.py
-```
-
-### for those tech guy
-
-1. we recommend you setup 2FA for youtube channel
-
-2. install python on your computer. if you do not know how ,check here
-
-```
-https://docs.python.org/3.9/using/index.html
-```
-
-3. download code
-
-```
-
-git clone https://github.com/wanghaisheng/youtube-auto-upload
-
-pip install -r requirements.txt
-
-python setup.py install
-
-```
-
-all codes under **ytb_up**, twist them as you wish
-
-4. There is a selenium and playwright version, choose the one you like
-   switch branches to find it
-
-5. use existing without modification as a lib
-
-```
-pip install ytb-up
-```
+check [how to upload tiktok videos](./how-to-upload-tiktok.md)
 
 ## features YOU MAY NEED
 
