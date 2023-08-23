@@ -19,7 +19,7 @@ from selenium.webdriver.edge.service import Service as EdgeService
 
 from selenium import webdriver
 
-from tiktok_uploader import config, logger
+from tsup.tiktok.selenium import config, logger
 
 
 def get_browser(name: str = 'chrome', options=None, *args, **kwargs) -> webdriver:

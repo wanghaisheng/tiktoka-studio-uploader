@@ -1,0 +1,60 @@
+# TikTok Uploader Default Configuation File
+
+headless = true
+quit_on_end = true
+
+# Messing around with inputs
+valid_path_names = ["path", "filename", "video", "video_path"]
+valid_descriptions = ["description", "desc", "caption"]
+
+# Selenium Webdriver Waits
+implicit_wait = 5  # seconds
+explicit_wait = 60 # seconds
+
+supported_file_types = ["mp4", "mov", "avi", "wmv", "flv", "webm", "mkv", "m4v", "3gp", "3g2", "gif"]
+
+max_description_length = 150 # characters
+
+[paths]
+main = "https://www.tiktok.com/"
+login = "https://www.tiktok.com/login/phone-or-email/email"
+upload = "https://www.tiktok.com/upload?lang=en"
+
+[disguising]
+user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+
+[selectors] # Selenium XPATH selectors
+
+	[selectors.login]
+	username_field = "//input[@name=\"username\"]"
+	password_field = "//input[@type=\"password\"]"
+	login_button = "//button[@type=\"submit\"]"
+	
+	alert_user_if_failed = true # sends an alert and waits instead of failing
+	
+	cookie_of_interest = "sessionid" # cookie to check if login was successful
+	
+	[selectors.upload]
+	iframe = "//iframe"
+	
+	upload_video = "//input[@type='file']"
+	upload_in_progress = "//*[.='Cancel']"
+	upload_confirmation = "//video" 
+	process_confirmation = "//img[@draggable='false']"
+
+	description = "//div[@contenteditable='true']"
+
+	visibility = "//div[@class='tiktok-select-selector']"
+	options = ["Public", "Friends", "Private"]
+
+	hashtags = "//div[@class='mentionSuggestions']//*[contains(text(), '{}')]"
+	mentions = "//div[contains(concat(' ', normalize-space(@class), ' '), 'user-id') and .='{}']/.."
+
+	mention_box = "//input[contains(concat(' ', normalize-space(@class), ' '), 'search-friends')]"
+
+	comment = "//label[.='Comment']/following-sibling::div/input"
+	duet = "//label[.='Duet']/following-sibling::div/input"
+	stitch = "//label[.='Stitch']/following-sibling::div/input"
+
+	post = "//button[.='Post']"
+	post_confirmation = "//div[.='Your videos are being uploaded to TikTok!']"

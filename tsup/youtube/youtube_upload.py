@@ -30,6 +30,7 @@ class YoutubeUpload:
         username: str = "",
         password: str = "",
         recoveryemail: str = "",
+        use_stealth_js:bool = False,
         browserType: Literal["chromium", "firefox", "webkit"] = "firefox",
         # 'chromium', 'firefox', or 'webkit'
         CHANNEL_COOKIES: str = "",
@@ -45,6 +46,7 @@ class YoutubeUpload:
         self.debug = debug
         self.username = username
         self.password = password
+        self.use_stealth_js=use_stealth_js
         self.CHANNEL_COOKIES = CHANNEL_COOKIES
         self.root_profile_directory = root_profile_directory
         self.proxy_option = proxy_option
@@ -225,7 +227,7 @@ class YoutubeUpload:
                 proxy=self.proxy_option,
                 driver_type=self.browserType,
                 timeout=3000,
-                use_stealth_js=True,
+                use_stealth_js=self.use_stealth_js,
                 url=YOUTUBE_URL,
             )
             self.pl = pl
@@ -247,36 +249,42 @@ class YoutubeUpload:
         if not videopath:
             raise FileNotFoundError(f'Could not find file with path: "{videopath}"')
 
-        try:
-            self.CHANNEL_COOKIES
-            self.log.debug(f"cookies existing:{self.CHANNEL_COOKIES}")
+        if not self.CHANNEL_COOKIES is None:
+            self.log.debug(f"Try to load specified cookie file:{self.CHANNEL_COOKIES}")
 
-            if (
-                not self.CHANNEL_COOKIES is None
-                and os.path.exists(self.CHANNEL_COOKIES)
+            if (os.path.exists(self.CHANNEL_COOKIES)
                 and os.path.getsize(self.CHANNEL_COOKIES) > 0
             ):
+                self.log.debug(f"cookies existing:{self.CHANNEL_COOKIES}")
+
                 await self.context.clear_cookies()
 
                 await self.context.add_cookies(
                     json.load(open(self.CHANNEL_COOKIES, "r"))["cookies"]
                 )
-            else:
-                print("your should provide a valid cookie file")
-                self.log.debug(
-                    "you can mannually sign in to save credentials for later auto login"
-                )
+            else:         
+                
+                self.log.debug(f"your should provide a valid cookie file:{self.CHANNEL_COOKIES} is not found or broken")
+
                 if self.proxy_option:
                     print(f'you use proxy:{self.proxy_option}, first run a botcheck')
                     await botcheck(self.pl)
                 else:
                     print(f'you dont use any proxy {self.proxy_option}')
-                await youtube_login(self.pl, self.username, self.password)
+                # await passwordlogin(self, page)
 
+                login=await youtube_login(self,self.username, self.password)
+                if login:
+                    print('we need save cookie to future usage')
+                # save cookie
+                else:
+                    self.log.debug(
+                    "first try for autologin failed,you can mannually sign in to save credentials for later auto login"
+                )
                 # self.page = await self.context.new_page()
 
-        except:
-            print('there is exception in loading cookie files')
+        else:
+            self.log.debug('cookie files is not provided')
             await self.page.close()
             return 
 

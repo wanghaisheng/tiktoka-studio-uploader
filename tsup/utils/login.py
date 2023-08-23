@@ -109,9 +109,12 @@ def confirm_logged_in_tiktok(self) -> bool:
 
 async def passwordlogin(self, page):
     await page.goto(YoutubeHomePageURL)
+    self.log.debug("try to login in from youtube homepage")
+
     try:
         await page.get_by_role("link", name="Sign in").is_visible()
         await page.get_by_role("link", name="Sign in").click()
+        self.log.debug("detected  sign in button")
 
     except:
         self.log.debug("could not find sign in button")
@@ -123,24 +126,34 @@ async def passwordlogin(self, page):
         if not "English" in s:
             await page.get_by_role("combobox").click()
             await page.get_by_role("option", name="English (United States)").click()
+        self.log.debug("changed to english display language")
+            
     except:
         self.log.debug("could not find language option ")
 
     try:
         await page.get_by_role("textbox", name="Email or phone").is_visible()
         await page.get_by_role("textbox", name="Email or phone").fill(self.username)
+        self.log.debug("detected  Email or phone textbox")
+        
     except:
         self.log.debug("could not find email or phone input textbox")
+    await page.get_by_role("button", name="Next").click()
+        
     try:
         await page.get_by_role("textbox", name="Enter your password").is_visible()
         await page.get_by_role("textbox", name="Enter your password").fill(
             self.password
         )
+        self.log.debug("detected  password textbox")
+        
     except:
-        self.log.debug("could not find email or phone input textbox")
+        self.log.debug("could not find password input textbox")
     #     page.get_by_text("We noticed unusual activity in your Google Account. To keep your account safe, y").click()
 
     await page.get_by_role("button", name="Next").click()
+    self.log.debug("detected  Next button")
+    
     try:
         await page.locator("#headingText").get_by_text("2-Step Verification").click()
         await page.get_by_text("Google Authenticator").click()
@@ -157,13 +170,37 @@ async def passwordlogin(self, page):
     # await page.get_by_role("checkbox", name="不再询问").click()
     # await page.locator("ytd-identity-prompt-footer-renderer").click()
     # await page.locator("ytd-simple-menu-header-renderer").click()
-    if not self.CHANNEL_COOKIES:
-        self.CHANNEL_COOKIES = self.username
-    state = self.context.storage_state(path=self.CHANNEL_COOKIES)
-    self.log.debug("we auto save your channel cookies to file:", self.CHANNEL_COOKIES)
 
-    return
+    current_url = self.page.url
+    if "/studio.youtube.com/" in current_url:
+        print(f"studio.youtube.com in current_url: {current_url}")
 
+        print(
+            f"youtube 登录成功!!!",
+            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        )
+        if not self.CHANNEL_COOKIES:
+            self.CHANNEL_COOKIES = self.username
+        state = self.context.storage_state(path=self.CHANNEL_COOKIES)
+        self.log.debug("we auto save your channel cookies to file:", self.CHANNEL_COOKIES)
+
+        if self.page:
+            try:
+                await self.page.close()
+            except:
+                pass
+        return True
+    else:
+        print(
+            f"youtube 登录失败!!!",
+            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        )
+        if self.page:
+            try:
+                await self.page.close()
+            except:
+                pass
+        return None
 
 def kill_orphan_chrome(self):
     num = 1
@@ -281,22 +318,55 @@ async def tiktok_login(self, account, password):
                 pass
         return "初始化chrome失败! "
 
-
+def init_broswer_popen(self, url, port):
+    self.kill_orphan_chrome()
+    if self.arg == 'test':
+        if self.proxy:
+            os.popen(f'{self.chrome_path} --remote-debugging-port={port} --proxy-server="{self.proxy}" --user-data-dir="{path_config["Chrome_log"]}{port+ "_"+ str(time.time())}" --disable-gpu --incognito --disable-extensions --window-size="1920,1080" --no-first-run --disable-dev-shm-usage --no-first-run --mute-audio --disable-infobars ')
+        else:
+            os.popen(f'{self.chrome_path} --remote-debugging-port={port} --user-data-dir="{path_config["Chrome_log"]}{port+ "_"+ str(time.time())}" --disable-gpu --incognito --disable-extensions --window-size="1920,1080" --no-first-run --disable-dev-shm-usage --no-first-run --mute-audio --disable-infobars ')
+    else:
+        if self.proxy:
+            os.popen(f'{self.chrome_path} --remote-debugging-port={port} --user-data-dir="{path_config["Chrome_log"]}{port+ "_"+ str(time.time())}" --proxy-server="{self.proxy}" --headless --disable-gpu --incognito --disable-extensions --window-size="1920,1080" --no-first-run --disable-dev-shm-usage --no-first-run --mute-audio --disable-infobars ')
+        else:
+            os.popen(
+                f'{self.chrome_path} --remote-debugging-port={port} --user-data-dir="{path_config["Chrome_log"]}{port+ "_"+ str(time.time())}" --headless --disable-gpu --incognito --disable-extensions --window-size="1920,1080" --no-first-run --disable-dev-shm-usage --no-first-run --mute-audio --disable-infobars ')
+    opt = webdriver.ChromeOptions()
+    opt.add_experimental_option("debuggerAddress", f"127.0.0.1:{port}")
+    print('chrome 正在连接', datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    _browser = webdriver.Chrome(options=opt)
+    print('chrome 连接成功', datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    # with open('stealth.min.js', mode='r') as f:
+    #     js = f.read()
+    # _browser.execute_cdp_cmd(
+    #     cmd_args={'source': js},
+    #     cmd="Page.addScriptToEvaluateOnNewDocument",
+    # )
+    _browser.get(url)
+    self.broswer = _browser
+    self.wait = WebDriverWait(_browser, timeout=5, poll_frequency=0.5)
+    return _browser, self.wait
 async def youtube_login(self, account, password):
     # self.kill_orphan_chrome()
     # url = 'https://accounts.google.com/ServiceLogin?service=youtube&uilel=3&passive=true&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Ddesktop%26hl%3Dzh-CN%26next%3Dhttps%253A%252F%252Fwww.youtube.com%252F&hl=zh-CN&ec=65620'
     url = "https://accounts.google.com/ServiceLogin"
-    try:
-        await self.page.goto(url)
+    if self.page:
+        print(f"init chrome success! ", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
 
-        if self.page:
+
+        try:
+
+            await self.page.goto(url
+                            #  , {'waitUntil': "load"}
+                             )
             current_url = self.page.url            
-            print("youtube_login auto login", current_url)
+            print(f"youtube_login auto login from {url}")
             
             for i in range(10):
                 # input('test:::: ')
-                sleep(random.uniform(1, 2))
+                print(f'trying in {i} times')
+                # sleep(random.uniform(1, 2))
                 
                 if i > 6:
                     print(
@@ -305,23 +375,91 @@ async def youtube_login(self, account, password):
                     )
                     break
                 elif "signin/identifier" in current_url:
+                    self.log.debug("signin/identifier in url")
 
                     try:
                         
                         await self.page.locator('#identifierId').is_visible()
                         await self.page.locator('#identifierId').fill(self.username)
+                        self.log.debug("detected  Email or phone textbox")
+                        
                     except:
                         self.log.debug("could not find email or phone input textbox")
+                    
                     await self.page.get_by_role("button", name="Next").click()
+                    
+                    self.log.debug("detected  Next button")
+                    sleep(random.uniform(5, 6))
+                    try:
+                        self.log.debug(f"Trying to detect insecure browser...{self.page.url}")         
+                        hint = await self.page.locator(".tCpFMc > form").all_text_contents()
+                        hint = "".join(hint)
+                        print(f'hints:{hint}')
+
+                        if  'This browser or app may not be secure' in hint:
+                            self.log.debug(f"you have detect insecure browser")
+                            print(
+                                f"被检测, 重新初始化chrome... ",
+                                datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                            )
+                            await self.page.quit()
+                            sleep(1)
+                            for i in range(3):
+                                port = f"{random.randint(6, 9)}{random.randint(1, 9)}{random.randint(1, 9)}{random.randint(1, 9)}"
+                                print(f"第 {i + 1} 次初始化chrome, 端口为:{port} ")
+                                try:
+                                    chrome, wait = await self.init_broswer_popen(url=url, port=port)
+                                    if "accounts" in chrome.current_url:
+                                        print(
+                                            "chrome 正常状态...",
+                                            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                                        )
+                                        break
+                                    else:
+                                        if chrome:
+                                            await chrome.quit()
+                                        continue
+                                except Exception as e:
+                                    print(f"初始化chrome异常: {e}")
+                                    if chrome:
+                                        await chrome.quit()
+                                    continue
+                            # sleep(random.uniform(1, 2))
+                            continue
+
+                        else:
+                            pass
+
+                    except:
+                        self.log.debug(f"Finishing detect insecure browser...")
 
                     try:
                         await self.page.get_by_role("textbox", name="Enter your password").is_visible()
                         await self.page.get_by_role("textbox", name="Enter your password").fill(
                             self.password
                         )
+                        self.log.debug("detected  password textbox")
+                        
                     except:
-                        self.log.debug("could not find email or phone input textbox")
+                        self.log.debug("could not find password input textbox")
                     #     page.get_by_text("We noticed unusual activity in your Google Account. To keep your account safe, y").click()
+                    sleep(random.uniform(5, 6))
+                    try:
+                        self.log.debug(f"Trying to detect insecure browser...{self.page.url}")         
+                        hint = await self.page.locator(".tCpFMc > form").all_text_contents()
+                        hint = "".join(hint)
+                        print(f'hints:{hint}')
+
+                        if  'This browser or app may not be secure' in hint:
+                            self.log.debug(f"you have detect insecure browser")
+
+                            self.close()
+                        else:
+                            pass
+
+                    except:
+                        self.log.debug(f"Finishing detect insecure browser...")
+
 
                     try:
                         await self.page.locator("#headingText").get_by_text("2-Step Verification").click()
@@ -337,6 +475,8 @@ async def youtube_login(self, account, password):
                     sleep(2)
                     continue
                 elif "challenge/pwd" in current_url:
+                    self.log.debug("challenge/pwd in url")
+
                     if self.is_element_exist_wait(self.wait, '//*[@id="selectionc1"]'):
                         await self.page.locator('//input[@type="password"]').send_keys(password)
                         print(
@@ -393,8 +533,9 @@ async def youtube_login(self, account, password):
                     )
                     continue
             current_url = self.page.url
-            print(f"current_url: {current_url}")
             if "/studio.youtube.com/" in current_url:
+                print(f"studio.youtube.com in current_url: {current_url}")
+
                 print(
                     f"youtube 登录成功!!!",
                     datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -416,15 +557,16 @@ async def youtube_login(self, account, password):
                     except:
                         pass
                 return None
-        else:
-            print(f"初始化chrome失败! ", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-            if self.page:
-                try:
-                    await self.page.close()
-                except:
-                    pass
+
+        except:
+            print(f'due to network issue,we can not access: {url}. change another proxy to try')
             return None
-    except:
-        print(f'due to network issue,we can not access: {url}. change another proxy to try')
-        return None
         
+    else:
+        print(f"init chrome failed! ", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+        if self.page:
+            try:
+                await self.page.close()
+            except:
+                pass
+        return None

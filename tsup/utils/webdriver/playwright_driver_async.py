@@ -155,7 +155,7 @@ class PlaywrightAsyncDriver(WebDriver):
             # https://gitee.com/edwin_uestc/stealth.min.js/raw/main/stealth.min.js
             # https://github.com/requireCool/stealth.min.js
             url = "https://gitee.com/edwin_uestc/stealth.min.js/raw/main/stealth.min.js"
-            url_ = "https://raw.githubusercontent.com/requireCool/stealth.min.js/main/stealth.min.js"
+            url= "https://raw.githubusercontent.com/requireCool/stealth.min.js/main/stealth.min.js"
             local_filename = "stealth.min-latest.js"
             # NOTE the stream=True parameter below
             latest_path = os.path.join(
@@ -163,7 +163,7 @@ class PlaywrightAsyncDriver(WebDriver):
             )
 
             print("we are trying to use stealth.js to fake like a human")
-            with requests.get(url, stream=True) as r:
+            with requests.get(url, stream=True, proxies=self._proxy) as r:
                 r.raise_for_status()
                 with open(latest_path, "wb") as f:
                     for chunk in r.iter_content(chunk_size=8192):

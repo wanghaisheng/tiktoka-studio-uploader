@@ -1,4 +1,6 @@
-"""Handles authentication for TikTokUploader"""
+"""
+Handles authentication for TikTokUploader
+"""
 from http import cookiejar
 from time import time, sleep
 
@@ -7,9 +9,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-from tiktok_uploader import config, logger
-from tiktok_uploader.browsers import get_browser
-from tiktok_uploader.utils import green
+from tsup.tiktok.selenium import config, logger
+from tsup.tiktok.selenium.browsers import get_browser
+from tsup.tiktok.selenium.utils import green
 
 class AuthBackend:
     """

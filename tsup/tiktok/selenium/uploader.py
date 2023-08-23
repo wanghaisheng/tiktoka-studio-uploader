@@ -17,10 +17,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 
-from tiktok_uploader.browsers import get_browser
-from tiktok_uploader.auth import AuthBackend
-from tiktok_uploader import config, logger
-from tiktok_uploader.utils import bold, green
+from tsup.tiktok.selenium.browsers import get_browser
+from tsup.tiktok.selenium.auth import AuthBackend
+from tsup.tiktok.selenium import config, logger
+from tsup.tiktok.selenium.utils import bold, green
 
 
 def upload_video(filename=None, description='', username='',

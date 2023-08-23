@@ -3,17 +3,15 @@ from datetime import datetime, date, timedelta
 import asyncio
 from tsup.utils.webdriver.setupPL import checkRequirments
 
-import os
+
 # If it is the first time you've run the utility, a browser window should popup and prompt you to provide Youtube credentials. A token will be created and stored in request.token file in the local directory for subsequent use.
 
 profilepath = (
     r"D:\Download\audio-visual\make-text-video\reddit-to-video\assets\profile\fastlane"
 )
-CHANNEL_COOKIES =r"/Users/wenke/github/tiktoka-studio-uploader/offloaddogsboner-cookie.json"
+CHANNEL_COOKIES = "../fastlane-cookie.json"
 
-
-
-videopath =r"/Users/wenke/github/tiktoka-studio-uploader/tests/1.mp4"
+videopath = "../tests/1.mp4"
 tags = ["ba,baaa,bababa"]
 date_to_publish = ""
 # if you use some kinda of proxy to access youtube,
@@ -26,7 +24,7 @@ username = "edwin.uestc@gmail.com"
 password = "U437P8Is9prmNquVerHJ9%R00bn"
 description = "========================balabala"
 invalid_thumbnail = r"D:\Download\audio-visual\make-reddit-video\reddit-to-video\assets\ace\ace-attorney_feature.jpg"
-thumbnail = r"/Users/wenke/github/tiktoka-studio-uploader/tests/1/sp/1-001.jpg"
+thumbnail = r"D:\Download\audio-visual\saas\tiktoka\ytb-up\tests\1\sp\1-001.jpg"
 scheduleTimeSlots = [
     "00:00",
     "00:15",
@@ -130,16 +128,7 @@ closewhen100percent = 0
 # 0-wait uploading done
 # 1-wait Processing done
 # 2-wait Checking done
-def checkfilebroken(path):
-    if (os.path.exists(path)
-        and os.path.getsize(path) > 0
-    ):
-        print(f'{path} is exist')
-        return True
-    else:
-        print(f'{path} is not  exist')
-        
-        return False
+
 
 # auto install requirments for user
 # checkRequirments()
@@ -289,12 +278,7 @@ def scheduletopublish_at_specific_date():
     #             else:
     #                 date_to_publish += offset
 
-checkfilebroken(CHANNEL_COOKIES)
-checkfilebroken(thumbnail)
-checkfilebroken(videopath)
 
-
-checkRequirments()
 scheduletopublish_tomorrow()
 scheduletopublish_at_specific_date()
 scheduletopublish_every7days()
