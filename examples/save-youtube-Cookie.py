@@ -83,7 +83,7 @@ def loadCookie(
         if result.returncode:
             print(f"failed to load cookie file:{result.stderr}")
         else:
-            print("just check your cookie file", channelname + "-cookie.json")
+            print("just check your cookie file", cookiefile )
 
 
 

@@ -119,17 +119,23 @@ async def passwordlogin(self, page):
     except:
         self.log.debug("could not find sign in button")
     # change sign in language
-    try:
-        await page.get_by_role("combobox").is_visible()
-        s = await page.get_by_role("combobox").all_text_contents()
-        s = "".join(s)
-        if not "English" in s:
-            await page.get_by_role("combobox").click()
-            await page.get_by_role("option", name="English (United States)").click()
-        self.log.debug("changed to english display language")
-            
-    except:
-        self.log.debug("could not find language option ")
+    if 'hl=en-US' in page.url:
+        self.log.debug(" sign in display language is already english")
+        
+    else:
+        self.log.debug("change sign in display language to english")
+
+        try:
+            await page.get_by_role("combobox").is_visible()
+            s = await page.get_by_role("combobox").all_text_contents()
+            s = "".join(s)
+            if not "English" in s:
+                await page.get_by_role("combobox").click()
+                await page.get_by_role("option", name="English (United States)").click()
+            self.log.debug("changed to english display language")
+                
+        except:
+            self.log.debug("could not find language option ")
 
     try:
         await page.get_by_role("textbox", name="Email or phone").is_visible()
@@ -348,8 +354,8 @@ def init_broswer_popen(self, url, port):
     return _browser, self.wait
 async def youtube_login(self, account, password):
     # self.kill_orphan_chrome()
-    # url = 'https://accounts.google.com/ServiceLogin?service=youtube&uilel=3&passive=true&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Ddesktop%26hl%3Dzh-CN%26next%3Dhttps%253A%252F%252Fwww.youtube.com%252F&hl=zh-CN&ec=65620'
-    url = "https://accounts.google.com/ServiceLogin"
+    url = 'https://accounts.google.com/ServiceLogin?hl=en-US'
+    # url = "https://accounts.google.com/ServiceLogin"
     if self.page:
         print(f"init chrome success! ", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
@@ -376,10 +382,33 @@ async def youtube_login(self, account, password):
                     break
                 elif "signin/identifier" in current_url:
                     self.log.debug("signin/identifier in url")
+                    # change sign in language
+
+                    # en_url="https://accounts.google.com/v3/signin/identifier?ifkv=AXo7B7WV1MWT3cc0y6PGLgNhHIdw6juZErladSFpSPlHDTEu1tUAdj8vSh76tt8VHr3B09rlUlEQ&flowName=GlifWebSignIn&flowEntry=ServiceLogin&dsh=S-889014747%3A1692840349105425&hl=en-US"
+                    # await self.page.goto(url
+                    #         #  , {'waitUntil': "load"}
+                    #          )
+                    try:
+                        self.log.debug("detect login page display language")
+                        
+                        await self.page.get_by_role("combobox").is_visible()
+                        s = await self.page.get_by_role("combobox").all_text_contents()
+                        s = "".join(s)
+                        if not "English" in s:
+                            await self.page.get_by_role("combobox").click()
+                            await self.page.get_by_role("option", name="English (United States)").click()
+                            self.log.debug("changed to english display language")
+                        else:
+                            self.log.debug("already choose english display language")
+                            
+                    except:
+                        self.log.debug("could not find language option ")
 
                     try:
                         
                         await self.page.locator('#identifierId').is_visible()
+                        sleep(random.uniform(1, 2))
+
                         await self.page.locator('#identifierId').fill(self.username)
                         self.log.debug("detected  Email or phone textbox")
                         
@@ -435,6 +464,8 @@ async def youtube_login(self, account, password):
 
                     try:
                         await self.page.get_by_role("textbox", name="Enter your password").is_visible()
+                        sleep(random.uniform(1, 2))
+                       
                         await self.page.get_by_role("textbox", name="Enter your password").fill(
                             self.password
                         )

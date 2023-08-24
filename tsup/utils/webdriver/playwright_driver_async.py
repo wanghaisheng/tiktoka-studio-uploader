@@ -163,7 +163,9 @@ class PlaywrightAsyncDriver(WebDriver):
             )
 
             print("we are trying to use stealth.js to fake like a human")
-            with requests.get(url, stream=True, proxies=self._proxy) as r:
+            print("we are trying to update latest stealth.js",proxy)
+
+            with requests.get(url, stream=True, proxies=proxy) as r:
                 r.raise_for_status()
                 with open(latest_path, "wb") as f:
                     for chunk in r.iter_content(chunk_size=8192):

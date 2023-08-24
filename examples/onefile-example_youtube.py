@@ -148,6 +148,7 @@ upload = YoutubeUpload(
     root_profile_directory="",
     proxy_option=proxy_option,
     headless=False,
+    use_stealth_js=False,
     debug=True,
     # if you want to silent background running, set watcheveryuploadstep false
     CHANNEL_COOKIES=CHANNEL_COOKIES,

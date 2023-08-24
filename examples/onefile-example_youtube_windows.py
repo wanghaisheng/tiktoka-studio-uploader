@@ -9,9 +9,9 @@ from tsup.utils.webdriver.setupPL import checkRequirments
 profilepath = (
     r"D:\Download\audio-visual\make-text-video\reddit-to-video\assets\profile\fastlane"
 )
-CHANNEL_COOKIES = "../fastlane-cookie.json"
+CHANNEL_COOKIES = r"D:\Download\audio-visual\saas\tiktoka\tiktoka-studio-uploader\fastlane-cookie.json"
 
-videopath = "../tests/1.mp4"
+videopath = r"D:\Download\audio-visual\saas\tiktoka\tiktoka-studio-uploader\tests\1.mp4"
 tags = ["ba,baaa,bababa"]
 date_to_publish = ""
 # if you use some kinda of proxy to access youtube,
@@ -138,6 +138,7 @@ upload = YoutubeUpload(
     proxy_option=proxy_option,
     headless=False,
     debug=True,
+    use_stealth_js=False,
     # if you want to silent background running, set watcheveryuploadstep false
     CHANNEL_COOKIES=CHANNEL_COOKIES,
     username=username,
@@ -217,7 +218,7 @@ def scheduletopublish_every7days():
     # mode c:release_offset not exist, publishdate not exist,daily count to increment schedule from tomorrow
     # mode d: offset exist, publish date not exist, daily count to increment with specific offset schedule from tomorrow
     date_to_publish = datetime(today.year, today.month, today.day)
-    hour_to_publish = "10:15"
+    hour_to_publish = "17:15"
     # if you want more delay ,just change 1 to other numbers to start from other days instead of tomorrow
     date_to_publish += timedelta(days=7)
     # hour_to_publish=datetime.strptime(hour_to_publish, "%H:%M")

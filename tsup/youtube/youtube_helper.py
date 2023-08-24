@@ -368,11 +368,13 @@ async def setscheduletime(page, date_to_publish, hour_to_publish):
     await page.keyboard.press("Backspace")
     await page.keyboard.press("Control+KeyA")
     await page.keyboard.press("Delete")
+    print('enter new timesetting  ')
     await page.keyboard.type(hour_to_publish)
     # 很可能就是这个没有确认输入，导致悬浮窗口，无法获取提交按钮
     await page.keyboard.press("Enter")
+    print('ensure new timesetting  ')
 
-    await page.locator("h1.style-scope:nth-child(2)").click()
+    # await page.locator("h1.style-scope:nth-child(2)").click()
     sleep(1)
 
 

@@ -83,7 +83,7 @@ def loadCookie(
         if result.returncode:
             print(f"failed to load cookie file:{result.stderr}")
         else:
-            print("just check your cookie file", channelname + "-cookie.json")
+            print("just check your cookie file", cookiefile )
 
 
 
@@ -103,17 +103,17 @@ if __name__ == "__main__":
     ]
 # channelname is your account name or something else
 # for youtube
-getCookie(browserType='firefox',proxyserver='socks5://127.0.0.1:1080',channelname='fastlane',url=sites[0])
+# getCookie(browserType='firefox',proxyserver='socks5://127.0.0.1:1080',channelname='fastlane',url=sites[0])
 
 # for tiktok
 # i7SNiSG8V7jND^
 # offloaddogsboner@outlook.com
-# getCookie(
-#     browserType="firefox",
-#     proxyserver="socks5://127.0.0.1:1080",
-#     channelname="offloaddogsboner",
-#     url=sites[3],
-# )
+getCookie(
+    browserType="firefox",
+    proxyserver="socks5://127.0.0.1:1080",
+    channelname="offloaddogsboner",
+    url=sites[3],
+)
 # unboxdoctor@outlook.com
 # 95Qa*G*za5Gb
 # getCookie(

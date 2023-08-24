@@ -121,7 +121,9 @@ class YoutubeUpload:
         """
         print(f"default closewhen100percent:{self.closewhen100percent}")
         video_id = None
-        if hour_to_publish and hour_to_publish not in availableScheduleTimes:
+        if hour_to_publish is None:
+            hour_to_publish="10:15"
+        elif hour_to_publish and hour_to_publish not in availableScheduleTimes:
             self.log.debug(
                 f"you give a invalid hour_to_publish:{self.hour_to_publish}, ,try to choose one of them{availableScheduleTimes},we change it to  default 10:15"
             )
@@ -262,6 +264,8 @@ class YoutubeUpload:
                 await self.context.add_cookies(
                     json.load(open(self.CHANNEL_COOKIES, "r"))["cookies"]
                 )
+                self.log.debug(f"cookies file load success:{self.CHANNEL_COOKIES}")
+               
             else:         
                 
                 self.log.debug(f"your should provide a valid cookie file:{self.CHANNEL_COOKIES} is not found or broken")
@@ -295,21 +299,23 @@ class YoutubeUpload:
         page = self.page
         islogin = False
         try:
+            self.log.debug(f"start checking login status:{islogin}")
+
             islogin = await confirm_logged_in(self)
-            self.log.debug(f"checking login status:{islogin}")
+            self.log.debug(f"finish checking login status:{islogin}")
         except:
             self.log.debug(f"checking login status failed")
 
-            if not islogin:
-                self.log.debug(
-                    "you can mannually sign in to save credentials for later auto login"
-                )
-                await passwordlogin(self, page)
-                # save cookie to later import
-                await page.goto(YoutubeHomePageURL, timeout=self.timeout)
-                self.log.debug("start to check login status")
+        if not islogin:
+            self.log.debug(
+                "you can mannually sign in to save credentials for later auto login"
+            )
+            await passwordlogin(self, page)
+            # save cookie to later import
+            await page.goto(YoutubeHomePageURL, timeout=self.timeout)
+            self.log.debug("start to check login status")
 
-                islogin = confirm_logged_in(self)
+            islogin = confirm_logged_in(self)
 
             # https://github.com/xtekky/google-login-bypass/blob/main/login.py
 
@@ -878,7 +884,6 @@ class YoutubeUpload:
                 self.log.debug(
                     f"your specified schedule time is not supported by youtube yet{hour_to_publish}"
                 )
-                hour_to_publish = "10:15"
                 hour_to_publish = hour_to_publish.strftime("%I:%M %p")
 
             self.log.debug(

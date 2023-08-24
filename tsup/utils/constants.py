@@ -1,3 +1,5 @@
+from typing import Tuple, Optional, Union, Literal
+
 # URLS
 invalidCharacters = ["<", ">"]
 closewhen100percentOptions = [
