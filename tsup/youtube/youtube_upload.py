@@ -51,9 +51,7 @@ class YoutubeUpload:
         self.root_profile_directory = root_profile_directory
         self.proxy_option = proxy_option
         self.headless = headless
-        print("------------", headless)
         self.browserType = browserType
-        print("------------", browserType)
 
         self.pl: Playwright = None
         self.browser: Browser = None
@@ -115,6 +113,9 @@ class YoutubeUpload:
         CommentsRatingsPolicy: Optional[int] = 1,
         isShowHowManyLikes: Optional[bool] = True,
         tags: list = [],
+        firstComment:Optional[str]=None,
+        subtitle:Optional[str]=None,
+        alternateSubs:Optional[list[alternateSub]]=None
     ) -> Tuple[bool, Optional[str]]:
         """Uploads a video to YouTube.
         Returns if the video was uploaded and the video id.
@@ -947,6 +948,12 @@ class YoutubeUpload:
             "https://studio.youtube.com/video/" + video_id + "/translations"
         )
 
+        # submit first comment to drive more traffic for your website
+        # firstComment
+        # videourl access
+        # locator the comment field
+        # input 
+        # submit and check
         await self.pl.quit()
         # page.locator("#close-icon-button > tp-yt-iron-icon:nth-child(1)").click()
         # self.log.debug(page.expect_popup().locator("#html-body > ytcp-uploads-still-processing-dialog:nth-child(39)"))
