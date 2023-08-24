@@ -9,7 +9,7 @@ https://docs.python.org/3.9/using/index.html
 3. just download zip from here
 
 ```
-https://github.com/wanghaisheng/youtube-auto-upload/archive/refs/heads/playwright.zip
+https://github.com/wanghaisheng/tiktoka-studio-uploader/archive/refs/heads/playwright.zip
 ```
 
 4. unzip this into anywhere you like，open terminal:
@@ -47,7 +47,7 @@ https://docs.python.org/3.9/using/index.html
 
 ```
 
-git clone https://github.com/wanghaisheng/youtube-auto-upload
+git clone https://github.com/wanghaisheng/tiktoka-studio-uploader
 
 pip install -r requirements.txt
 

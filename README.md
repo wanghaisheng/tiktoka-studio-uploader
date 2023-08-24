@@ -27,8 +27,8 @@ https://github.com/wanghaisheng/tiktok-opensdk-web
 
 [![Supported Sites](https://img.shields.io/badge/-Supported_Sites-brightgreen.svg?style=for-the-badge)](supportedsites.md "Supported Sites")
 [![License: Unlicense](https://img.shields.io/badge/-Unlicense-blue.svg?style=for-the-badge)](LICENSE "License")
-[![Commits](https://img.shields.io/github/commit-activity/m/wanghaisheng/youtube-auto-upload?label=commits&style=for-the-badge)](https://github.com/wanghaisheng/youtube-auto-upload/commits "Commit History")
-[![Last Commit](https://img.shields.io/github/last-commit/wanghaisheng/youtube-auto-upload/playwright?label=&style=for-the-badge)](https://github.com/wanghaisheng/youtube-auto-upload/commits "Commit History")
+[![Commits](https://img.shields.io/github/commit-activity/m/wanghaisheng/youtube-auto-upload?label=commits&style=for-the-badge)](https://github.com/wanghaisheng/tiktoka-studio-uploader/commits "Commit History")
+[![Last Commit](https://img.shields.io/github/last-commit/wanghaisheng/youtube-auto-upload/playwright?label=&style=for-the-badge)](https://github.com/wanghaisheng/tiktoka-studio-uploader/commits "Commit History")
 
 </div>
 <!-- MANPAGE: END EXCLUDED SECTION -->
@@ -211,7 +211,7 @@ We'd love to hear your feedback on our new feature! 😊
 
 ## supported sites
 
-https://github.com/wanghaisheng/youtube-auto-upload/blob/playwright/supportedsites.md
+https://github.com/wanghaisheng/tiktoka-studio-uploader/blob/playwright/supportedsites.md
 
 you can submit an issue too
 
@@ -219,7 +219,7 @@ you can submit an issue too
 
 Join forum for debugging your issues with me
 
-<img src="https://raw.githubusercontent.com/wanghaisheng/youtube-auto-upload/playwright/assets/feishu-chatgroup.jpg" alt="" data-canonical-src="https://github.com/wanghaisheng/youtube-auto-upload/blob/playwright/assets/feishu-chatgroup.jpg" width="250" height="250" />
+<img src="https://raw.githubusercontent.com/wanghaisheng/youtube-auto-upload/playwright/assets/feishu-chatgroup.jpg" alt="" data-canonical-src="https://github.com/wanghaisheng/tiktoka-studio-uploader/blob/playwright/assets/feishu-chatgroup.jpg" width="250" height="250" />
 
 ## Star History
 

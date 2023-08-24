@@ -11,11 +11,11 @@ body:
       options:
         - label: I'm asking a question and **not** reporting a bug/feature request
           required: true
-        - label: I've looked through the [README](https://github.com/wanghaisheng/youtube-auto-upload#readme)
+        - label: I've looked through the [README](https://github.com/wanghaisheng/tiktoka-studio-uploader#readme)
           required: true
-        - label: I've read the [guidelines for opening an issue](https://github.com/wanghaisheng/youtube-auto-upload/blob/master/CONTRIBUTING.md#opening-an-issue)
+        - label: I've read the [guidelines for opening an issue](https://github.com/wanghaisheng/tiktoka-studio-uploader/blob/master/CONTRIBUTING.md#opening-an-issue)
           required: true
-        - label: I've searched the [bugtracker](https://github.com/wanghaisheng/youtube-auto-upload/issues?q=) for similar questions including closed ones
+        - label: I've searched the [bugtracker](https://github.com/wanghaisheng/tiktoka-studio-uploader/issues?q=) for similar questions including closed ones
           required: true
   - type: textarea
     id: question
