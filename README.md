@@ -13,6 +13,24 @@ https://github.com/wanghaisheng/tiktok-opensdk-web
 
 4. will support playwright way for tiktok, especially for the rotate capcha verify
 
+
+
+## USAGE
+
+if there's anything you don't understand, submit an issue or cantact me
+
+### for those beginner
+
+checkout the GUI version.
+
+### youtube platform
+
+check [how to upload youtube videos](./how-to-upload-youtube.md)
+
+### tiktok
+
+check [how to upload tiktok videos](./how-to-upload-tiktok.md)
+
 <!-- MANPAGE: BEGIN EXCLUDED SECTION -->
 <div align="center">
 
@@ -67,21 +85,6 @@ AS a code dummy, I do accept any advice because my only purpose is to get things
 
 * we use sessionId and cracked uploading endpoint api to finish video uploading processing.
 
-## USAGE
-
-if there's anything you don't understand, submit an issue or cantact me
-
-### for those beginner
-
-checkout the GUI version.
-
-### youtube platform
-
-check [how to upload youtube videos](./how-to-upload-youtube.md)
-
-### tiktok
-
-check [how to upload tiktok videos](./how-to-upload-tiktok.md)
 
 ## features YOU MAY NEED
 

@@ -1,3 +1,8 @@
+you can run 
+
+>bash test-youtube-windows.sh
+
+
 ### for those not that tech savy
 
 1. install python on your computer. if you do not know how ,check here
@@ -24,7 +29,7 @@ python setup.py install
    If given user's account have only onedefault video channel. Many users (myself included) manage multiple channels under the same youtube account,so after login in, you need switch to the channel you want video uploading to save different cookie.json for each channel. then you can close the openning browser.
 
 ```
-python examples/saveCookie.py
+python examples/save-youtube-Cookie.py
 ```
 
 5. run upload demo
