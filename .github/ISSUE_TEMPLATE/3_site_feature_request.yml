@@ -35,7 +35,7 @@ body:
       placeholder: |
         https://www.youtube.com/watch?v=BaW_jenozKc
     validations:
-      required: true
+      required: false
   - type: textarea
     id: description
     attributes:
