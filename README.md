@@ -1,18 +1,12 @@
 **Update**
 
-1. we now support tiktok now by sessionId way,and you can even grab a sessionid in your local pc and use it in your remote server.check [tiktok how to doc](./how-to-upload-tiktok.md)
+1. add test-youtube-windows.sh to help tiktokers 
 
-2. Hungup the  support an embed fake browser fingerprint to tiktok 
+2. add test-tiktok-manual-sessionId.sh to help youtubers 
 
-3. will support tiktok official api 
+3. examples\save-tiktok-sessionId.py to auto export sessionid
 
-for tiktok part,lately there is official api coming, I created another repo for building with official api way:
-
-https://github.com/wanghaisheng/tiktok-opensdk-web
-
-
-4. will support playwright way for tiktok, especially for the rotate capcha verify
-
+4. examples\save-youtube-Cookie.py to auto export youtube cookie files
 
 
 ## USAGE
@@ -23,7 +17,7 @@ if there's anything you don't understand, submit an issue or cantact me
 
 checkout the GUI version.
 
-### youtube platform
+### youtube
 
 check [how to upload youtube videos](./how-to-upload-youtube.md)
 
@@ -90,18 +84,16 @@ AS a code dummy, I do accept any advice because my only purpose is to get things
 
 ### 1. proxy support
 
-auto detect whether need a proxy
+auto detect whether need a proxy.
+you can use socks5 too.
 
-### 2. cookie support
+### 2. auto cookie export without any browser extension/plugins
 
-for those with multiple channels under the one Google account
+see  script for [youtube] (examples/save-youtube-Cookie.py)
+see script for [tiktok](examples\save-tiktok-sessionId.py)
 
-pls check
-https://github.com/microsoft/playwright/issues/12616
+for those with multiple channels under the one Google account,you need each cookie file for each channel.
 
-manually change all occurances of no_restriction in your cookies.json file to
-
->        "sameSite": "None",
 
 ### 3. schedule time publish
 
@@ -218,9 +210,9 @@ https://github.com/wanghaisheng/tiktoka-studio-uploader/blob/playwright/supporte
 
 you can submit an issue too
 
-## Support
+## community/Support
 
-Join forum for debugging your issues with me
+Join lark for debugging your issues with me
 
 <img src="https://raw.githubusercontent.com/wanghaisheng/youtube-auto-upload/playwright/assets/feishu-chatgroup.jpg" alt="" data-canonical-src="https://github.com/wanghaisheng/tiktoka-studio-uploader/blob/playwright/assets/feishu-chatgroup.jpg" width="250" height="250" />
 
