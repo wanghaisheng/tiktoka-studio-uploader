@@ -14,6 +14,7 @@ import re
 from collections import defaultdict
 from typing import Union, List
 import playwright_stealth
+from tsup.utils.stealth import stealth_async
 
 try:
     from typing import Literal  # python >= 3.8
@@ -193,6 +194,8 @@ class PlaywrightAsyncDriverStealth(WebDriver):
         config.languages = ("en-US", "en", self.faker.locale, self.faker.language_code)
 
         await playwright_stealth.stealth_async(self.page, config)
+        #use https://github.com/davidteather/TikTok-Api/ stealth way
+        # await stealth_async(self.page)
         self.page.set_default_timeout(self._timeout * 1000)
 
 
