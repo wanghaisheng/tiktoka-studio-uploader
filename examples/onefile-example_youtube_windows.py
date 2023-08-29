@@ -9,7 +9,7 @@ from tsup.utils.webdriver.setupPL import checkRequirments
 profilepath = (
     r"D:\Download\audio-visual\make-text-video\reddit-to-video\assets\profile\fastlane"
 )
-channel_cookie_path = r"D:\Download\audio-visual\saas\tiktoka\tiktoka-studio-uploader\fastlane-cookie.json"
+channel_cookie_path = r"D:\Download\audio-visual\saas\tiktoka\tiktoka-studio-uploader\offloaddogsboner-cookie.json"
 
 videopath = r"D:\Download\audio-visual\saas\tiktoka\tiktoka-studio-uploader\tests\1.mp4"
 tags = ["ba,baaa,bababa"]

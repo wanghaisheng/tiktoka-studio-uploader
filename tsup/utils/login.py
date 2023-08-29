@@ -119,7 +119,7 @@ async def passwordlogin(self, page):
     except:
         self.log.debug("could not find sign in button")
     # change sign in language
-    if 'hl=en-US' in page.url:
+    if 'hl=en' in page.url:
         self.log.debug(" sign in display language is already english")
         
     else:
@@ -136,6 +136,23 @@ async def passwordlogin(self, page):
                 
         except:
             self.log.debug("could not find language option ")
+        sleep(random.uniform(5, 6))
+        try:
+            self.log.debug(f"Trying to detect Verify it’s you...")         
+            hint = await self.page.locator(".tCpFMc > form").all_text_contents()
+            hint = "".join(hint)
+            print(f'hints:{hint}')
+
+            if  'Verify it’s you' in hint:
+                self.log.debug(f"To help keep your account secure, Google needs to verify it’s you. Please sign in again to continue to YouTube.")
+                self.log.debug(f"for this situation you need a fresh new cookie file")
+
+                self.quit()
+            else:
+                pass
+
+        except:
+            self.log.debug(f"Finishing detect insecure browser...")
 
     try:
         await page.get_by_role("textbox", name="Email or phone").is_visible()
@@ -145,7 +162,24 @@ async def passwordlogin(self, page):
     except:
         self.log.debug("could not find email or phone input textbox")
     await page.get_by_role("button", name="Next").click()
-        
+
+    try:
+        self.log.debug(f"Trying to detect insecure browser...")         
+        hint = await self.page.locator(".tCpFMc > form").all_text_contents()
+        hint = "".join(hint)
+        print(f'hints:{hint}')
+
+        if  'This browser or app may not be secure' in hint:
+            self.log.debug(f"you have detect insecure browser")
+
+            self.quit()
+        else:
+            pass
+
+    except:
+        self.log.debug(f"Finishing detect insecure browser...")
+
+
     try:
         await page.get_by_role("textbox", name="Enter your password").is_visible()
         await page.get_by_role("textbox", name="Enter your password").fill(
@@ -431,30 +465,30 @@ async def youtube_login(self, account, password):
                                 f"被检测, 重新初始化chrome... ",
                                 datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                             )
-                            await self.page.quit()
-                            sleep(1)
-                            for i in range(3):
-                                port = f"{random.randint(6, 9)}{random.randint(1, 9)}{random.randint(1, 9)}{random.randint(1, 9)}"
-                                print(f"第 {i + 1} 次初始化chrome, 端口为:{port} ")
-                                try:
-                                    chrome, wait = await self.init_broswer_popen(url=url, port=port)
-                                    if "accounts" in chrome.current_url:
-                                        print(
-                                            "chrome 正常状态...",
-                                            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                                        )
-                                        break
-                                    else:
-                                        if chrome:
-                                            await chrome.quit()
-                                        continue
-                                except Exception as e:
-                                    print(f"初始化chrome异常: {e}")
-                                    if chrome:
-                                        await chrome.quit()
-                                    continue
-                            # sleep(random.uniform(1, 2))
-                            continue
+                            await self.quit()
+                            # sleep(1)
+                            # for i in range(3):
+                            #     port = f"{random.randint(6, 9)}{random.randint(1, 9)}{random.randint(1, 9)}{random.randint(1, 9)}"
+                            #     print(f"第 {i + 1} 次初始化chrome, 端口为:{port} ")
+                            #     try:
+                            #         chrome, wait = await self.init_broswer_popen(url=url, port=port)
+                            #         if "accounts" in chrome.current_url:
+                            #             print(
+                            #                 "chrome 正常状态...",
+                            #                 datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                            #             )
+                            #             break
+                            #         else:
+                            #             if chrome:
+                            #                 await chrome.quit()
+                            #             continue
+                            #     except Exception as e:
+                            #         print(f"初始化chrome异常: {e}")
+                            #         if chrome:
+                            #             await chrome.quit()
+                            #         continue
+                            # # sleep(random.uniform(1, 2))
+                            # continue
 
                         else:
                             pass
@@ -484,7 +518,7 @@ async def youtube_login(self, account, password):
                         if  'This browser or app may not be secure' in hint:
                             self.log.debug(f"you have detect insecure browser")
 
-                            self.close()
+                            self.quit()
                         else:
                             pass
 

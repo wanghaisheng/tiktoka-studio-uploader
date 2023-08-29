@@ -145,7 +145,7 @@ async def set_channel_language_english(self, localPage):
         )
 
     try:
-        print("detect your account profile icon .")
+        self.log.debug("detect your account profile icon .")
 
         if await localPage.get_by_label("Account").is_visible():
             await localPage.get_by_label("Account").click()
@@ -155,11 +155,11 @@ async def set_channel_language_english(self, localPage):
                 await localPage.locator(avatarButtonSelector).click()
 
     except Exception:
-        print("Avatar/Profile picture button not found : ")
+        self.log.debug("Avatar/Profile picture button not found : ")
     truelangMenuItemSelector = ""
 
     try:
-        print("detect language setting .")
+        self.log.debug("detect language setting .")
 
         if await localPage.locator(langMenuItemSelector).is_visible():
             await localPage.locator(langMenuItemSelector).click()
@@ -171,17 +171,17 @@ async def set_channel_language_english(self, localPage):
                 truelangMenuItemSelector = langMenuItemSelector2
 
     except:
-        print('Language menu item selector/button(">") not found : ')
+        self.log.debug('Language menu item selector/button(">") not found : ')
 
         if (
             not "English"
             in await localPage.locator(truelangMenuItemSelector).text_content()
         ):
-            print("choose the language or location you like to use.")
+            self.log.debug("choose the language or location you like to use.")
             if await localPage.locator(selector_en_path):
                 await localPage.locator(selector_en_path).click()
         else:
-            print("your youtube homepage language setting is already in English")
+            self.log.debug("your youtube homepage language setting is already in English")
 
 
 # fix google account verifys

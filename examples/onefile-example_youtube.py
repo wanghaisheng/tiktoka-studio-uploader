@@ -9,7 +9,7 @@ from tsup.utils.webdriver.setupPL import checkRequirments
 profilepath = (
     r"D:\Download\audio-visual\make-text-video\reddit-to-video\assets\profile\fastlane"
 )
-channel_cookie_path = r"D:\Download\audio-visual\saas\tiktoka\tiktoka-studio-uploader\fastlane-cookie.json"
+channel_cookie_path = r"D:\Download\audio-visual\saas\tiktoka\tiktoka-studio-uploader\offloaddogsboner-cookie.json"
 
 videopath = r"D:\Download\audio-visual\saas\tiktoka\tiktoka-studio-uploader\tests\1.mp4"
 tags = ["ba,baaa,bababa"]
@@ -27,6 +27,10 @@ invalid_thumbnail = r"D:\Download\audio-visual\make-reddit-video\reddit-to-video
 thumbnail = r"D:\Download\audio-visual\saas\tiktoka\ytb-up\tests\1\sp\1-001.jpg"
 
 
+wait = 0
+# 0-wait uploading done
+# 1-wait Processing done
+# 2-wait Checking done
 
 
 # auto install requirments for user

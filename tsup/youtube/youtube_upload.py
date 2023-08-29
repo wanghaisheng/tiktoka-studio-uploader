@@ -119,7 +119,7 @@ class YoutubeUpload:
         """Uploads a video to YouTube.
         Returns if the video was uploaded and the video id.
         """
-        print(f"default wait_policy:{self.wait_policy}")
+        self.log.debug(f"default wait_policy:{self.wait_policy}")
         video_id = None
         if release_date_hour is None:
             release_date_hour="10:15"
@@ -143,7 +143,7 @@ class YoutubeUpload:
             )
             publish_policy = 0
         else:
-            print(f"publish_policy:{publish_policy}")
+            self.log.debug(f"publish_policy:{publish_policy}")
         if video_language is not None:
             if video_language and video_language not in VideoLanguageOptions:
                 self.log.debug(
@@ -151,7 +151,7 @@ class YoutubeUpload:
                 )
                 video_language = None
             else:
-                print(f"video_language:{video_language}")
+                self.log.debug(f"video_language:{video_language}")
 
         if (
             captions_certification
@@ -162,7 +162,7 @@ class YoutubeUpload:
             )
             captions_certification = 0
         else:
-            print(f"captions_certification:{captions_certification}")
+            self.log.debug(f"captions_certification:{captions_certification}")
 
         if license_type and license_type not in LicenceTypeOptions:
             self.log.debug(
@@ -170,7 +170,7 @@ class YoutubeUpload:
             )
             license_type = 0
         else:
-            print(f"license_type:{license_type}")
+            self.log.debug(f"license_type:{license_type}")
 
         if shorts_remixing_type and shorts_remixing_type not in ShortsremixingTypeOptions:
             self.log.debug(
@@ -178,7 +178,7 @@ class YoutubeUpload:
             )
             shorts_remixing_type = 0
         else:
-            print(f"shorts_remixing_type:{shorts_remixing_type}")
+            self.log.debug(f"shorts_remixing_type:{shorts_remixing_type}")
 
         if categories is not None:
             if categories and categories not in CategoryOptions:
@@ -187,7 +187,7 @@ class YoutubeUpload:
                 )
                 categories = None
             else:
-                print(f"categories:{categories}")
+                self.log.debug(f"categories:{categories}")
         if (
             comments_ratings_policy
             and comments_ratings_policy not in CommentsRatingsPolicyOptions
@@ -197,7 +197,7 @@ class YoutubeUpload:
             )
             comments_ratings_policy = 1
         else:
-            print(f"comments_ratings_policy:{comments_ratings_policy}")
+            self.log.debug(f"comments_ratings_policy:{comments_ratings_policy}")
 
         # proxy_option = "socks5://127.0.0.1:1080"
 
@@ -248,8 +248,8 @@ class YoutubeUpload:
             #     await botcheck(self.pl)
 
 
-        if not videopath:
-            raise FileNotFoundError(f'Could not find file with path: "{videopath}"')
+        if not video_path:
+            raise FileNotFoundError(f'Could not find file with path: "{video_path}"')
 
         if not self.channel_cookie_path is None:
             self.log.debug(f"Try to load specified cookie file:{self.channel_cookie_path}")
@@ -271,15 +271,15 @@ class YoutubeUpload:
                 self.log.debug(f"your should provide a valid cookie file:{self.channel_cookie_path} is not found or broken")
 
                 if self.proxy_option:
-                    print(f'you use proxy:{self.proxy_option}, first run a botcheck')
+                    self.log.debug(f'you use proxy:{self.proxy_option}, first run a botcheck')
                     await botcheck(self.pl)
                 else:
-                    print(f'you dont use any proxy {self.proxy_option}')
+                    self.log.debug(f'you dont use any proxy {self.proxy_option}')
                 # await passwordlogin(self, page)
 
                 login=await youtube_login(self,self.username, self.password)
                 if login:
-                    print('we need save cookie to future usage')
+                    self.log.debug('we need save cookie to future usage')
                 # save cookie
                 else:
                     self.log.debug(
@@ -355,19 +355,19 @@ class YoutubeUpload:
         #     self.log.debug("Details failed to load")
         self.log.debug("Found YouTube upload Dialog Modal")
 
-        self.log.debug(f'Trying to upload "{videopath}" to YouTube...')
-        if os.path.exists(get_path(videopath)):
+        self.log.debug(f'Trying to upload "{video_path}" to YouTube...')
+        if os.path.exists(get_path(video_path)):
             page.locator(INPUT_FILE_VIDEO)
-            await page.set_input_files(INPUT_FILE_VIDEO, get_path(videopath))
-            self.log.debug(f'Trying to upload "{get_path(videopath)}" to YouTube...')
+            await page.set_input_files(INPUT_FILE_VIDEO, get_path(video_path))
+            self.log.debug(f'Trying to upload "{get_path(video_path)}" to YouTube...')
 
         else:
-            if os.path.exists(videopath.encode("utf-8")):
-                self.log.debug(f"file found: {videopath}")
+            if os.path.exists(video_path.encode("utf-8")):
+                self.log.debug(f"file found: {video_path}")
                 page.locator(INPUT_FILE_VIDEO)
-                await page.set_input_files(INPUT_FILE_VIDEO, videopath.encode("utf-8"))
+                await page.set_input_files(INPUT_FILE_VIDEO, video_path.encode("utf-8"))
             self.log.debug(
-                f'Trying to upload "{videopath.encode("utf-8")}" to YouTube...'
+                f'Trying to upload "{video_path.encode("utf-8")}" to YouTube...'
             )
 
         #     <h1 slot="primary-header" id="dialog-title" class="style-scope ytcp-confirmation-dialog">
@@ -438,8 +438,8 @@ class YoutubeUpload:
                 description = description[:4888]
         try:
             self.log.debug("click description container to input")
-            # print('1',await page.get_by_label("Tell viewers about your video (type @ to mention a channel)").is_visible())
-            # print('2',await page.locator("html body#html-body ytcp-uploads-dialog tp-yt-paper-dialog#dialog.style-scope.ytcp-uploads-dialog div.dialog-content.style-scope.ytcp-uploads-dialog ytcp-animatable#scrollable-content.metadata-fade-in-section.style-scope.ytcp-uploads-dialog ytcp-ve.style-scope.ytcp-uploads-dialog ytcp-video-metadata-editor#details.style-scope.ytcp-uploads-dialog div.left-col.style-scope.ytcp-video-metadata-editor ytcp-video-metadata-editor-basics#basics.style-scope.ytcp-video-metadata-editor div#description-container.input-container.description.style-scope.ytcp-video-metadata-editor-basics ytcp-video-description#description-wrapper.style-scope.ytcp-video-metadata-editor-basics div#description-container.input-container.description.style-scope.ytcp-video-description ytcp-social-suggestions-textbox#description-textarea.style-scope.ytcp-video-description ytcp-form-input-container#container.fill-height.style-scope.ytcp-social-suggestions-textbox div#outer.style-scope.ytcp-form-input-container div#child-input.style-scope.ytcp-form-input-container div#container-content.style-scope.ytcp-social-suggestions-textbox ytcp-social-suggestion-input#input.fill-height.style-scope.ytcp-social-suggestions-textbox div#textbox.style-scope.ytcp-social-suggestions-textbox").is_visible())
+            # self.log.debug('1',await page.get_by_label("Tell viewers about your video (type @ to mention a channel)").is_visible())
+            # self.log.debug('2',await page.locator("html body#html-body ytcp-uploads-dialog tp-yt-paper-dialog#dialog.style-scope.ytcp-uploads-dialog div.dialog-content.style-scope.ytcp-uploads-dialog ytcp-animatable#scrollable-content.metadata-fade-in-section.style-scope.ytcp-uploads-dialog ytcp-ve.style-scope.ytcp-uploads-dialog ytcp-video-metadata-editor#details.style-scope.ytcp-uploads-dialog div.left-col.style-scope.ytcp-video-metadata-editor ytcp-video-metadata-editor-basics#basics.style-scope.ytcp-video-metadata-editor div#description-container.input-container.description.style-scope.ytcp-video-metadata-editor-basics ytcp-video-description#description-wrapper.style-scope.ytcp-video-metadata-editor-basics div#description-container.input-container.description.style-scope.ytcp-video-description ytcp-social-suggestions-textbox#description-textarea.style-scope.ytcp-video-description ytcp-form-input-container#container.fill-height.style-scope.ytcp-social-suggestions-textbox div#outer.style-scope.ytcp-form-input-container div#child-input.style-scope.ytcp-form-input-container div#container-content.style-scope.ytcp-social-suggestions-textbox ytcp-social-suggestion-input#input.fill-height.style-scope.ytcp-social-suggestions-textbox div#textbox.style-scope.ytcp-social-suggestions-textbox").is_visible())
 
             await page.locator(DESCRIPTION_CONTAINER).is_visible()
             # await page.get_by_label("Tell viewers about your video (type @ to mention a channel)").click().fill(description)
@@ -630,9 +630,9 @@ class YoutubeUpload:
             self.log.debug(f" find show more button get_by_role")
 
             if await page.get_by_role("button", name="Show more").is_visible():
-                print("click more get_by_role")
+                self.log.debug("click more get_by_role")
                 await page.get_by_role("button", name="Show more").click()
-                print("click more locator")
+                self.log.debug("click more locator")
 
         except:
             if await page.locator(MORE_OPTIONS_CONTAINER).is_visible():
@@ -794,7 +794,7 @@ class YoutubeUpload:
                 pass
         #
         # if video_language is None:
-        #     print('you should manually set your video language first to upload default subtitle for default video language')
+        #     self.log.debug('you should manually set your video language first to upload default subtitle for default video language')
         # if await page.locator('#subtitles-button > div:nth-child(2)').is_enabled():
 
         # if there is issue in Copyright check, mandate publish_policy to 0
@@ -817,40 +817,40 @@ class YoutubeUpload:
             publish = "public"
             try:
                 if publish == "unlisted":
-                    print(
+                    self.log.debug(
                         f"detect getbyrole unlisted button visible:",
                         await page.get_by_role("radio", name="Public").is_visible(),
                     )
 
-                    # print(f'detect public button visible{PUBLIC_BUTTON}:',await page.locator(PUBLIC_BUTTON).is_visible())
-                    # print(f'detect public button visible:{PUBLIC_RADIO_LABEL}',await page.locator(PUBLIC_RADIO_LABEL).is_visible())
+                    # self.log.debug(f'detect public button visible{PUBLIC_BUTTON}:',await page.locator(PUBLIC_BUTTON).is_visible())
+                    # self.log.debug(f'detect public button visible:{PUBLIC_RADIO_LABEL}',await page.locator(PUBLIC_RADIO_LABEL).is_visible())
                     await page.get_by_role("radio", name="Unlisted").click()
-                    print("Unlisted radio button clicked")
+                    self.log.debug("Unlisted radio button clicked")
                     # await page.locator(PUBLIC_BUTTON).click()
                 elif publish == "public":
-                    print("switch case to public")
+                    self.log.debug("switch case to public")
                     try:
-                        print(
+                        self.log.debug(
                             f"detect getbyrole public button visible:",
                             await page.get_by_role("radio", name="Public").is_visible(),
                         )
 
-                        # print(f'detect public button visible{PUBLIC_BUTTON}:',await page.locator(PUBLIC_BUTTON).is_visible())
-                        # print(f'detect public button visible:{PUBLIC_RADIO_LABEL}',await page.locator(PUBLIC_RADIO_LABEL).is_visible())
+                        # self.log.debug(f'detect public button visible{PUBLIC_BUTTON}:',await page.locator(PUBLIC_BUTTON).is_visible())
+                        # self.log.debug(f'detect public button visible:{PUBLIC_RADIO_LABEL}',await page.locator(PUBLIC_RADIO_LABEL).is_visible())
                         await page.get_by_role("radio", name="Public").click()
-                        print("public radio button clicked")
+                        self.log.debug("public radio button clicked")
                         # await page.locator(PUBLIC_BUTTON).click()
                     except:
                         self.log.debug("we could not find the public buttton...")
 
                 elif publish == "public&premiere":
                     try:
-                        print(
+                        self.log.debug(
                             f"detect getbyrole public button visible:",
                             await page.get_by_role("radio", name="Public").is_visible(),
                         )
                         await page.get_by_role("radio", name="Public").click()
-                        print("public radio button clicked")
+                        self.log.debug("public radio button clicked")
                     except:
                         self.log.debug("we could not find the public buttton...")
                     try:
@@ -908,7 +908,7 @@ class YoutubeUpload:
 
         # await expect(page.locator(DONE_BUTTON_CSS_SELECTOR)).to_be_visible()
         # done_button = page.locator(DONE_BUTTON_CSS_SELECTOR)
-        # print(done_button)
+        # self.log.debug(done_button)
 
         # if await done_button.get_attribute("aria-disabled") == "true":
         #     error_message = await page.locator(ERROR_CONTAINER).text_content()
@@ -928,15 +928,15 @@ class YoutubeUpload:
             self.log.debug("Failed to locate done button")
 
             if publish_policy == 2:
-                print(await page.get_by_role("button", name="Schedule").is_visible())
+                self.log.debug(await page.get_by_role("button", name="Schedule").is_visible())
 
                 await page.get_by_role("button", name="Schedule").click()
             else:
-                print(await page.get_by_role("button", name="Save").is_visible())
+                self.log.debug(await page.get_by_role("button", name="Save").is_visible())
 
                 await page.get_by_role("radio", name="Save").click()
-            print("click done button")
-        self.log.debug(f"{videopath} is upload process is done")
+            self.log.debug("click done button")
+        self.log.debug(f"{video_path} is upload process is done")
 
         sleep(5)
         logging.info("Upload is complete")
