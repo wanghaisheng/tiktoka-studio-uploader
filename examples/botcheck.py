@@ -8,6 +8,9 @@ from playwright.async_api import (
 from tsup.utils.webdriver.playwright_driver_async_stealth import (
     PlaywrightAsyncDriverStealth,
 )
+from tsup.utils.webdriver.playwright_driver_async_undetected import (
+    PlaywrightAsyncDriverUndetected,
+)
 
 from tsup.utils.webdriver.playwright_driver_async import (
     PlaywrightAsyncDriver,
@@ -511,6 +514,24 @@ async def main():
         "https://jsonip.com/",
         "https://api64.ipify.org/",
     ]
+    for url in ipchecklist:
+
+        pl = await PlaywrightAsyncDriverUndetected.create(
+            proxy=proxy_option,
+            driver_type="firefox",
+            timeout=300,
+            use_stealth_js=False,
+    #         for github action
+            headless=False,
+            
+        )
+        freshpage=pl.page        
+        await pl.page.goto(url)
+        await pl.page.screenshot(path=f"result/{url.split('//')[-1]}.png", full_page=True)        
+        print('PlaywrightAsyncDriverUndetected raw pl',url)
+        
+        botcheck = Botcheck(freshpage)    
+        await pl.quit()
     for url in ipchecklist:
 
         pl = await PlaywrightAsyncDriver.create(
