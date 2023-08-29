@@ -114,8 +114,7 @@ class YoutubeUpload:
         isShowHowManyLikes: Optional[bool] = True,
         tags: list = [],
         firstComment:Optional[str]=None,
-        subtitle:Optional[str]=None,
-        alternateSubs:Optional[list[alternateSub]]=None
+        subtitle:Optional[str]=None
     ) -> Tuple[bool, Optional[str]]:
         """Uploads a video to YouTube.
         Returns if the video was uploaded and the video id.
