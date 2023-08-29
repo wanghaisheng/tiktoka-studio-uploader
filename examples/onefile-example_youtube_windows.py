@@ -2,7 +2,7 @@ from tsup.youtube.youtube_upload import YoutubeUpload
 from datetime import datetime, date, timedelta
 import asyncio
 from tsup.utils.webdriver.setupPL import checkRequirments
-
+import os 
 
 # If it is the first time you've run the utility, a browser window should popup and prompt you to provide Youtube credentials. A token will be created and stored in request.token file in the local directory for subsequent use.
 
@@ -114,7 +114,17 @@ def scheduletopublish_tomorrow():
         )
     )
 
-
+def checkfilebroken(path):
+    print(f"check whether file exist{path}")
+    if (os.path.exists(path)
+        and os.path.getsize(path) > 0
+    ):
+        print(f'{path} is exist')
+        return True
+    else:
+        print(f'{path} is not  exist')
+        
+        return False
 def scheduletopublish_every7days():
     # mode a:release_offset exist,publishdate exist will take date value as a starting date to schedule videos
     # mode b:release_offset not exist, publishdate exist , schedule to this specific date
@@ -182,7 +192,9 @@ def scheduletopublish_at_specific_date():
     #             else:
     #                 date_to_publish += offset
 
-
+checkfilebroken(channel_cookie_path)
+checkfilebroken(thumbnail)
+checkfilebroken(videopath)
 scheduletopublish_tomorrow()
 scheduletopublish_at_specific_date()
 scheduletopublish_every7days()

@@ -162,6 +162,7 @@ async def passwordlogin(self, page):
     except:
         self.log.debug("could not find email or phone input textbox")
     await page.get_by_role("button", name="Next").click()
+    sleep(random.uniform(5, 6))
 
     try:
         self.log.debug(f"Trying to detect insecure browser...")         
@@ -193,7 +194,8 @@ async def passwordlogin(self, page):
 
     await page.get_by_role("button", name="Next").click()
     self.log.debug("detected  Next button")
-    
+    sleep(random.uniform(5, 6))
+ 
     try:
         await page.locator("#headingText").get_by_text("2-Step Verification").click()
         await page.get_by_text("Google Authenticator").click()

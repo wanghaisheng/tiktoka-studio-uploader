@@ -34,6 +34,7 @@ closewhen100percent = 0
 # 1-wait Processing done
 # 2-wait Checking done
 def checkfilebroken(path):
+    print(f"check whether file exist{path}")
     if (os.path.exists(path)
         and os.path.getsize(path) > 0
     ):
