@@ -25,21 +25,21 @@ class YoutubeUpload:
         root_profile_directory: str,
         proxy_option: str = "",
         timeout: int = 200 * 1000,
-        headless: bool = True,
+        is_open_browser: bool = True,
         debug: bool = True,
         username: str = "",
         password: str = "",
-        recoveryemail: str = "",
+        recovery_email: str = "",
         use_stealth_js:bool = False,
-        browserType: Literal["chromium", "firefox", "webkit"] = "firefox",
+        browser_type: Literal["chromium", "firefox", "webkit"] = "firefox",
         # 'chromium', 'firefox', or 'webkit'
-        CHANNEL_COOKIES: str = "",
-        closewhen100percent: Literal[
+        channel_cookie_path: str = "",
+        wait_policy: Literal[
             "go next after uploading success",
             "go next after processing success",
             "go next after copyright check success",
         ] = "go next after copyright check success",
-        recordvideo: bool = False,
+        is_record_video: bool = False,
     ) -> None:
         self.timeout = timeout
         self.log = Log(debug)
@@ -47,18 +47,18 @@ class YoutubeUpload:
         self.username = username
         self.password = password
         self.use_stealth_js=use_stealth_js
-        self.CHANNEL_COOKIES = CHANNEL_COOKIES
+        self.channel_cookie_path = channel_cookie_path
         self.root_profile_directory = root_profile_directory
         self.proxy_option = proxy_option
-        self.headless = headless
-        self.browserType = browserType
+        self.is_open_browser = is_open_browser
+        self.browser_type = browser_type
 
         self.pl: Playwright = None
         self.browser: Browser = None
         self.context: BrowserContext = None
         self.page: Page = None
-        self.closewhen100percent = closewhen100percent
-        self.recordvideo = recordvideo
+        self.wait_policy = wait_policy
+        self.is_record_video = is_record_video
 
     def send(self, element, text: str) -> None:
         element.clear()
@@ -84,7 +84,7 @@ class YoutubeUpload:
 
     async def upload(
         self,
-        videopath: str = "",
+        video_path: str = "",
         title: str = "",
         description: str = "",
         thumbnail: str = "",
@@ -119,7 +119,7 @@ class YoutubeUpload:
         """Uploads a video to YouTube.
         Returns if the video was uploaded and the video id.
         """
-        print(f"default closewhen100percent:{self.closewhen100percent}")
+        print(f"default wait_policy:{self.wait_policy}")
         video_id = None
         if release_date_hour is None:
             release_date_hour="10:15"
@@ -129,13 +129,13 @@ class YoutubeUpload:
             )
             release_date_hour = "10:15"
         if (
-            self.closewhen100percent
-            and self.closewhen100percent not in closewhen100percentOptions
+            self.wait_policy
+            and self.wait_policy not in WaitPolicyOptions
         ):
             self.log.debug(
-                f"you give a invalid closewhen100percent:{self.closewhen100percent}, ,try to choose one of them{closewhen100percentOptions},we change it to  default 2"
+                f"you give a invalid wait_policy:{self.wait_policy}, ,try to choose one of them{wait_policyOptions},we change it to  default 2"
             )
-            self.closewhen100percent = "go next after copyright check success"
+            self.wait_policy = "go next after copyright check success"
 
         if publish_policy and publish_policy not in PublishpolicyOptions:
             self.log.debug(
@@ -201,16 +201,16 @@ class YoutubeUpload:
 
         # proxy_option = "socks5://127.0.0.1:1080"
 
-        if self.headless is None:
-            self.headless = True
+        if self.is_open_browser is None:
+            self.is_open_browser = True
 
-        self.log.debug(f"whether run in view mode:{self.headless}")
+        self.log.debug(f"whether run in view mode:{self.is_open_browser}")
         if self.proxy_option == "":
             self.log.debug(f"start web page without proxy:{self.proxy_option}")
 
             pl = await PlaywrightAsyncDriver.create(
                 proxy=None,
-                driver_type=self.browserType,
+                driver_type=self.browser_type,
                 timeout=3000,
                 use_stealth_js=False,
             )
@@ -219,7 +219,7 @@ class YoutubeUpload:
             self._browser = pl.browser
             self.context = pl.context
             self.log.debug(
-                f"{self.browserType} is now running without proxy:{self.proxy_option}"
+                f"{self.browser_type} is now running without proxy:{self.proxy_option}"
             )
 
         else:
@@ -227,7 +227,7 @@ class YoutubeUpload:
             
             pl = await PlaywrightAsyncDriver.create(
                 proxy=self.proxy_option,
-                driver_type=self.browserType,
+                driver_type=self.browser_type,
                 timeout=3000,
                 use_stealth_js=self.use_stealth_js,
                 url=YOUTUBE_URL,
@@ -239,7 +239,7 @@ class YoutubeUpload:
             self.context = pl.context
 
             self.log.debug(
-                f"{self.browserType} is now running with proxy:{self.proxy_option}"
+                f"{self.browser_type} is now running with proxy:{self.proxy_option}"
             )
 
             # self.page = await self.context.new_page()
@@ -251,24 +251,24 @@ class YoutubeUpload:
         if not videopath:
             raise FileNotFoundError(f'Could not find file with path: "{videopath}"')
 
-        if not self.CHANNEL_COOKIES is None:
-            self.log.debug(f"Try to load specified cookie file:{self.CHANNEL_COOKIES}")
+        if not self.channel_cookie_path is None:
+            self.log.debug(f"Try to load specified cookie file:{self.channel_cookie_path}")
 
-            if (os.path.exists(self.CHANNEL_COOKIES)
-                and os.path.getsize(self.CHANNEL_COOKIES) > 0
+            if (os.path.exists(self.channel_cookie_path)
+                and os.path.getsize(self.channel_cookie_path) > 0
             ):
-                self.log.debug(f"cookies existing:{self.CHANNEL_COOKIES}")
+                self.log.debug(f"cookies existing:{self.channel_cookie_path}")
 
                 await self.context.clear_cookies()
 
                 await self.context.add_cookies(
-                    json.load(open(self.CHANNEL_COOKIES, "r"))["cookies"]
+                    json.load(open(self.channel_cookie_path, "r"))["cookies"]
                 )
-                self.log.debug(f"cookies file load success:{self.CHANNEL_COOKIES}")
+                self.log.debug(f"cookies file load success:{self.channel_cookie_path}")
                
             else:         
                 
-                self.log.debug(f"your should provide a valid cookie file:{self.CHANNEL_COOKIES} is not found or broken")
+                self.log.debug(f"your should provide a valid cookie file:{self.channel_cookie_path} is not found or broken")
 
                 if self.proxy_option:
                     print(f'you use proxy:{self.proxy_option}, first run a botcheck')
@@ -293,7 +293,7 @@ class YoutubeUpload:
             return 
 
             # save cookie to later import
-            # login_using_cookie_file(self,self.CHANNEL_COOKIES,page)
+            # login_using_cookie_file(self,self.channel_cookie_path,page)
         await self.page.goto(YoutubeHomePageURL, timeout=self.timeout)
 
         page = self.page
@@ -458,8 +458,8 @@ class YoutubeUpload:
             self.log.debug("failed to set description")
         await VerifyDialog(self, page)
 
-        if self.closewhen100percent in closewhen100percentOptions:
-            if self.closewhen100percent == "go next after uploading success":
+        if self.wait_policy in WaitPolicyOptions:
+            if self.wait_policy == "go next after uploading success":
                 self.log.debug("we choose to skip processing and check steps")
                 self.log.debug("start to check whether upload is finished")
                 while await self.not_uploaded(page):
@@ -467,7 +467,7 @@ class YoutubeUpload:
                     sleep(1)
                 self.log.debug("upload is finished")
 
-            elif self.closewhen100percent == "go next after processing success":
+            elif self.wait_policy == "go next after processing success":
                 self.log.debug("start to check whether upload is finished")
                 while await self.not_uploaded(page):
                     self.log.debug("Still uploading...")
