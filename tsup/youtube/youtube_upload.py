@@ -133,7 +133,7 @@ class YoutubeUpload:
             and self.wait_policy not in WaitPolicyOptions
         ):
             self.log.debug(
-                f"you give a invalid wait_policy:{self.wait_policy}, ,try to choose one of them{wait_policyOptions},we change it to  default 2"
+                f"you give a invalid wait_policy:{self.wait_policy}, ,try to choose one of them{WaitPolicyOptions},we change it to  default 2"
             )
             self.wait_policy = "go next after copyright check success"
 
@@ -147,7 +147,7 @@ class YoutubeUpload:
         if video_language is not None:
             if video_language and video_language not in VideoLanguageOptions:
                 self.log.debug(
-                    f"you give a invalid video_language:{video_language} ,try to choose one of them{video_languageOptions},we change it to  default None"
+                    f"you give a invalid video_language:{video_language} ,try to choose one of them{VideoLanguageOptions},we change it to  default None"
                 )
                 video_language = None
             else:
@@ -158,7 +158,7 @@ class YoutubeUpload:
             and captions_certification not in CaptionsCertificationOptions
         ):
             self.log.debug(
-                f"you give a invalid publish_policy:{captions_certification} ,try to choose one of them{captions_certificationOptions},we change it to  default 0"
+                f"you give a invalid publish_policy:{captions_certification} ,try to choose one of them{CaptionsCertificationOptions},we change it to  default 0"
             )
             captions_certification = 0
         else:
@@ -174,7 +174,7 @@ class YoutubeUpload:
 
         if shorts_remixing_type and shorts_remixing_type not in ShortsremixingTypeOptions:
             self.log.debug(
-                f"you give a invalid shorts_remixing_type:{shorts_remixing_type} ,try to choose one of them{shorts_remixing_typeOptions},we change it to  default 0"
+                f"you give a invalid shorts_remixing_type:{shorts_remixing_type} ,try to choose one of them{ShortsremixingTypeOptions},we change it to  default 0"
             )
             shorts_remixing_type = 0
         else:
