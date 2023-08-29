@@ -248,13 +248,16 @@ class YoutubeVideo(BaseModel):
     video_language: Optional[VideoLanguageType] = None
     captions_certification: Optional[CaptionsCertificationType] = None
     is_automatic_chapters: Optional[str] = None
-    is_publish_to_subscriptions_feed_notify: Optional[str] = None
     shorts_remixing_type: Optional[ShortsremixingType] = None
     comments_ratings_policy: Optional[CommentsRatingsPolicyType] = None
     is_show_howmany_likes: Optional[str] = None
     is_automatic_chapters: Optional[str] = None
-    first_comment: Optional[str] = None
+    is_allow_embedding: Optional[bool] = None
+    is_publish_to_subscriptions_feed_notify: Optional[bool] = None
 
+
+    first_comment: Optional[str] = None
+    subtitles:Optional[altMeta]=None
 
 
     # isAgeRestriction: Optional[bool] = False,
@@ -325,7 +328,7 @@ class YoutubeVideo(BaseModel):
     categories: Optional[CategoryType] = None
     playable_in_embed: Optional[str] = None
     tags: list[str] = ['tiktoka studio']
-    license: Optional[LicenceType] = 0
+    license_type: Optional[LicenceType] = 0
     video_film_date: Optional[datetime] = None
     video_film_date_string: Optional[str] = None
     
@@ -346,7 +349,7 @@ class YoutubeVideo(BaseModel):
     release_timestamp: Optional[int] = None
     release_date: Optional[datetime] = None
     release_date_string: Optional[str] = None
-    release_date_hour_to_publish: Optional[availableScheduleTimeSlotType] = None
+    release_date_hour: Optional[availableScheduleTimeSlotType] = None
 
     modified_timestamp: Optional[int] = None
     modified_date: Optional[datetime] = None
