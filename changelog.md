@@ -5,6 +5,16 @@ for tiktok
 for youtube
 >test-youtube-windows.sh
 
+1. add test-youtube-windows.sh to help tiktokers 
+
+2. add test-tiktok-manual-sessionId.sh to help youtubers 
+
+3. examples\save-tiktok-sessionId.py to auto export sessionid
+
+4. examples\save-youtube-Cookie.py to auto export youtube cookie files
+
+
+
 
 **Update 2023-08-03**
 

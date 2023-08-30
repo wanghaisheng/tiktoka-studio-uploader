@@ -25,21 +25,21 @@ class YoutubeUpload:
         root_profile_directory: str,
         proxy_option: str = "",
         timeout: int = 200 * 1000,
-        headless: bool = True,
+        is_open_browser: bool = True,
         debug: bool = True,
         username: str = "",
         password: str = "",
-        recoveryemail: str = "",
+        recovery_email: str = "",
         use_stealth_js:bool = False,
-        browserType: Literal["chromium", "firefox", "webkit"] = "firefox",
+        browser_type: Literal["chromium", "firefox", "webkit"] = "firefox",
         # 'chromium', 'firefox', or 'webkit'
-        CHANNEL_COOKIES: str = "",
-        closewhen100percent: Literal[
+        channel_cookie_path: str = "",
+        wait_policy: Literal[
             "go next after uploading success",
             "go next after processing success",
             "go next after copyright check success",
         ] = "go next after copyright check success",
-        recordvideo: bool = False,
+        is_record_video: bool = False,
     ) -> None:
         self.timeout = timeout
         self.log = Log(debug)
@@ -47,18 +47,18 @@ class YoutubeUpload:
         self.username = username
         self.password = password
         self.use_stealth_js=use_stealth_js
-        self.CHANNEL_COOKIES = CHANNEL_COOKIES
+        self.channel_cookie_path = channel_cookie_path
         self.root_profile_directory = root_profile_directory
         self.proxy_option = proxy_option
-        self.headless = headless
-        self.browserType = browserType
+        self.is_open_browser = is_open_browser
+        self.browser_type = browser_type
 
         self.pl: Playwright = None
         self.browser: Browser = None
         self.context: BrowserContext = None
         self.page: Page = None
-        self.closewhen100percent = closewhen100percent
-        self.recordvideo = recordvideo
+        self.wait_policy = wait_policy
+        self.is_record_video = is_record_video
 
     def send(self, element, text: str) -> None:
         element.clear()
@@ -84,134 +84,133 @@ class YoutubeUpload:
 
     async def upload(
         self,
-        videopath: str = "",
+        video_path: str = "",
         title: str = "",
         description: str = "",
         thumbnail: str = "",
-        publishpolicy: Optional[int] = 0,
-        date_to_publish: Optional[datetime] = datetime(
+        publish_policy: Optional[int] = 0,
+        release_date: Optional[datetime] = datetime(
             date.today().year, date.today().month, date.today().day
         ),
-        hour_to_publish: Optional[str] = "10:15",
+        release_date_hour: Optional[str] = "10:15",
         playlist: Optional[str] = None,
-        isAgeRestriction: Optional[bool] = False,
-        isNotForKid: Optional[bool] = False,
-        isPaidpromotion: Optional[bool] = False,
-        isAutomaticChapters: Optional[bool] = True,
-        isFeaturedPlace: Optional[bool] = True,
-        VideoLanguage: Optional[str] = None,
+        is_age_restriction: Optional[bool] = False,
+        is_not_for_kid: Optional[bool] = False,
+        is_paid_promotion: Optional[bool] = False,
+        is_automatic_chapters: Optional[bool] = True,
+        is_featured_place: Optional[bool] = True,
+        video_language: Optional[str] = None,
         # input language str and get index in the availableLanguages list
-        CaptionsCertification: Optional[int] = 0,
+        captions_certification: Optional[int] = 0,
         # parse from video metadata  using ffmpeg
-        VideoRecordingdate: Optional[str] = None,
-        VideoRecordinglocation: Optional[str] = None,
-        LicenceType: Optional[int] = 0,
-        isAllowEmbedding: Optional[bool] = True,
-        isPublishToSubscriptionsFeedNotify: Optional[bool] = True,
-        ShortsremixingType: Optional[int] = 0,
-        Category: Optional[str] = None,
-        CommentsRatingsPolicy: Optional[int] = 1,
-        isShowHowManyLikes: Optional[bool] = True,
+        video_film_date: Optional[str] = None,
+        video_film_location: Optional[str] = None,
+        license_type: Optional[int] = 0,
+        is_allow_embedding: Optional[bool] = True,
+        is_publish_to_subscriptions_feed_notify: Optional[bool] = True,
+        shorts_remixing_type: Optional[int] = 0,
+        categories: Optional[str] = None,
+        comments_ratings_policy: Optional[int] = 1,
+        is_show_howmany_likes: Optional[bool] = True,
         tags: list = [],
-        firstComment:Optional[str]=None,
-        subtitle:Optional[str]=None,
-        alternateSubs:Optional[list[alternateSub]]=None
+        first_comment:Optional[str]=None,
+        subtitles:Optional[str]=None
     ) -> Tuple[bool, Optional[str]]:
         """Uploads a video to YouTube.
         Returns if the video was uploaded and the video id.
         """
-        print(f"default closewhen100percent:{self.closewhen100percent}")
+        self.log.debug(f"default wait_policy:{self.wait_policy}")
         video_id = None
-        if hour_to_publish is None:
-            hour_to_publish="10:15"
-        elif hour_to_publish and hour_to_publish not in availableScheduleTimes:
+        if release_date_hour is None:
+            release_date_hour="10:15"
+        elif release_date_hour and release_date_hour not in availableScheduleTimes:
             self.log.debug(
-                f"you give a invalid hour_to_publish:{self.hour_to_publish}, ,try to choose one of them{availableScheduleTimes},we change it to  default 10:15"
+                f"you give a invalid release_date_hour:{self.release_date_hour}, ,try to choose one of them{availableScheduleTimes},we change it to  default 10:15"
             )
-            hour_to_publish = "10:15"
+            release_date_hour = "10:15"
         if (
-            self.closewhen100percent
-            and self.closewhen100percent not in closewhen100percentOptions
+            self.wait_policy
+            and self.wait_policy not in WaitPolicyOptions
         ):
             self.log.debug(
-                f"you give a invalid closewhen100percent:{self.closewhen100percent}, ,try to choose one of them{closewhen100percentOptions},we change it to  default 2"
+                f"you give a invalid wait_policy:{self.wait_policy}, ,try to choose one of them{WaitPolicyOptions},we change it to  default 2"
             )
-            self.closewhen100percent = "go next after copyright check success"
+            self.wait_policy = "go next after copyright check success"
 
-        if publishpolicy and publishpolicy not in PublishpolicyOptions:
+        if publish_policy and publish_policy not in PublishpolicyOptions:
             self.log.debug(
-                f"you give a invalid publishpolicy:{publishpolicy} ,try to choose one of them{PublishpolicyOptions},we change it to  default 0"
+                f"you give a invalid publish_policy:{publish_policy} ,try to choose one of them{PublishpolicyOptions},we change it to  default 0"
             )
-            publishpolicy = 0
+            publish_policy = 0
         else:
-            print(f"publishpolicy:{publishpolicy}")
-        if VideoLanguage is not None:
-            if VideoLanguage and VideoLanguage not in VideoLanguageOptions:
+            self.log.debug(f"publish_policy:{publish_policy}")
+        if video_language is not None:
+            if video_language and video_language not in VideoLanguageOptions:
                 self.log.debug(
-                    f"you give a invalid VideoLanguage:{VideoLanguage} ,try to choose one of them{VideoLanguageOptions},we change it to  default None"
+                    f"you give a invalid video_language:{video_language} ,try to choose one of them{VideoLanguageOptions},we change it to  default None"
                 )
-                VideoLanguage = None
+                video_language = None
             else:
-                print(f"VideoLanguage:{VideoLanguage}")
+                self.log.debug(f"video_language:{video_language}")
 
         if (
-            CaptionsCertification
-            and CaptionsCertification not in CaptionsCertificationOptions
+            captions_certification
+            and captions_certification not in CaptionsCertificationOptions
         ):
             self.log.debug(
-                f"you give a invalid publishpolicy:{CaptionsCertification} ,try to choose one of them{CaptionsCertificationOptions},we change it to  default 0"
+                f"you give a invalid publish_policy:{captions_certification} ,try to choose one of them{CaptionsCertificationOptions},we change it to  default 0"
             )
-            CaptionsCertification = 0
+            captions_certification = 0
         else:
-            print(f"CaptionsCertification:{CaptionsCertification}")
+            self.log.debug(f"captions_certification:{captions_certification}")
 
-        if LicenceType and LicenceType not in LicenceTypeOptions:
+        if license_type and license_type not in LicenceTypeOptions:
             self.log.debug(
-                f"you give a invalid LicenceType:{LicenceType} ,try to choose one of them{LicenceTypeOptions},we change it to  default 0"
+                f"you give a invalid license_type:{license_type} ,try to choose one of them{license_typeOptions},we change it to  default 0"
             )
-            LicenceType = 0
+            license_type = 0
         else:
-            print(f"LicenceType:{LicenceType}")
+            self.log.debug(f"license_type:{license_type}")
 
-        if ShortsremixingType and ShortsremixingType not in ShortsremixingTypeOptions:
+        if shorts_remixing_type and shorts_remixing_type not in ShortsremixingTypeOptions:
             self.log.debug(
-                f"you give a invalid ShortsremixingType:{ShortsremixingType} ,try to choose one of them{ShortsremixingTypeOptions},we change it to  default 0"
+                f"you give a invalid shorts_remixing_type:{shorts_remixing_type} ,try to choose one of them{ShortsremixingTypeOptions},we change it to  default 0"
             )
-            ShortsremixingType = 0
+            shorts_remixing_type = 0
         else:
-            print(f"ShortsremixingType:{ShortsremixingType}")
+            self.log.debug(f"shorts_remixing_type:{shorts_remixing_type}")
 
-        if Category is not None:
-            if Category and Category not in CategoryOptions:
+        if categories is not None:
+            if categories and categories not in CategoryOptions:
                 self.log.debug(
-                    f"you give a invalid Category:{Category} ,try to choose one of them{CategoryOptions},we change it to  default None"
+                    f"you give a invalid categories:{categories} ,try to choose one of them{CategoryOptions},we change it to  default None"
                 )
-                Category = None
+                categories = None
             else:
-                print(f"Category:{Category}")
+                self.log.debug(f"categories:{categories}")
         if (
-            CommentsRatingsPolicy
-            and CommentsRatingsPolicy not in CommentsRatingsPolicyOptions
+            comments_ratings_policy
+            and comments_ratings_policy not in CommentsRatingsPolicyOptions
         ):
             self.log.debug(
-                f"you give a invalid CommentsRatingsPolicy:{CommentsRatingsPolicy} ,try to choose one of them{CommentsRatingsPolicyOptions},we change it to  default 1"
+                f"you give a invalid comments_ratings_policy:{comments_ratings_policy} ,try to choose one of them{CommentsRatingsPolicyOptions},we change it to  default 1"
             )
-            CommentsRatingsPolicy = 1
+            comments_ratings_policy = 1
         else:
-            print(f"CommentsRatingsPolicy:{CommentsRatingsPolicy}")
+            self.log.debug(f"comments_ratings_policy:{comments_ratings_policy}")
 
         # proxy_option = "socks5://127.0.0.1:1080"
 
-        if self.headless is None:
-            self.headless = True
+        if self.is_open_browser is None:
+            self.is_open_browser = True
 
-        self.log.debug(f"whether run in view mode:{self.headless}")
+        self.log.debug(f"whether run in view mode:{self.is_open_browser}")
         if self.proxy_option == "":
             self.log.debug(f"start web page without proxy:{self.proxy_option}")
 
             pl = await PlaywrightAsyncDriver.create(
                 proxy=None,
-                driver_type=self.browserType,
+                driver_type=self.browser_type,
                 timeout=3000,
                 use_stealth_js=False,
             )
@@ -220,7 +219,7 @@ class YoutubeUpload:
             self._browser = pl.browser
             self.context = pl.context
             self.log.debug(
-                f"{self.browserType} is now running without proxy:{self.proxy_option}"
+                f"{self.browser_type} is now running without proxy:{self.proxy_option}"
             )
 
         else:
@@ -228,7 +227,7 @@ class YoutubeUpload:
             
             pl = await PlaywrightAsyncDriver.create(
                 proxy=self.proxy_option,
-                driver_type=self.browserType,
+                driver_type=self.browser_type,
                 timeout=3000,
                 use_stealth_js=self.use_stealth_js,
                 url=YOUTUBE_URL,
@@ -240,7 +239,7 @@ class YoutubeUpload:
             self.context = pl.context
 
             self.log.debug(
-                f"{self.browserType} is now running with proxy:{self.proxy_option}"
+                f"{self.browser_type} is now running with proxy:{self.proxy_option}"
             )
 
             # self.page = await self.context.new_page()
@@ -249,38 +248,38 @@ class YoutubeUpload:
             #     await botcheck(self.pl)
 
 
-        if not videopath:
-            raise FileNotFoundError(f'Could not find file with path: "{videopath}"')
+        if not video_path:
+            raise FileNotFoundError(f'Could not find file with path: "{video_path}"')
 
-        if not self.CHANNEL_COOKIES is None:
-            self.log.debug(f"Try to load specified cookie file:{self.CHANNEL_COOKIES}")
+        if not self.channel_cookie_path is None:
+            self.log.debug(f"Try to load specified cookie file:{self.channel_cookie_path}")
 
-            if (os.path.exists(self.CHANNEL_COOKIES)
-                and os.path.getsize(self.CHANNEL_COOKIES) > 0
+            if (os.path.exists(self.channel_cookie_path)
+                and os.path.getsize(self.channel_cookie_path) > 0
             ):
-                self.log.debug(f"cookies existing:{self.CHANNEL_COOKIES}")
+                self.log.debug(f"cookies existing:{self.channel_cookie_path}")
 
                 await self.context.clear_cookies()
 
                 await self.context.add_cookies(
-                    json.load(open(self.CHANNEL_COOKIES, "r"))["cookies"]
+                    json.load(open(self.channel_cookie_path, "r"))["cookies"]
                 )
-                self.log.debug(f"cookies file load success:{self.CHANNEL_COOKIES}")
+                self.log.debug(f"cookies file load success:{self.channel_cookie_path}")
                
             else:         
                 
-                self.log.debug(f"your should provide a valid cookie file:{self.CHANNEL_COOKIES} is not found or broken")
+                self.log.debug(f"your should provide a valid cookie file:{self.channel_cookie_path} is not found or broken")
 
                 if self.proxy_option:
-                    print(f'you use proxy:{self.proxy_option}, first run a botcheck')
+                    self.log.debug(f'you use proxy:{self.proxy_option}, first run a botcheck')
                     await botcheck(self.pl)
                 else:
-                    print(f'you dont use any proxy {self.proxy_option}')
+                    self.log.debug(f'you dont use any proxy {self.proxy_option}')
                 # await passwordlogin(self, page)
 
                 login=await youtube_login(self,self.username, self.password)
                 if login:
-                    print('we need save cookie to future usage')
+                    self.log.debug('we need save cookie to future usage')
                 # save cookie
                 else:
                     self.log.debug(
@@ -294,7 +293,7 @@ class YoutubeUpload:
             return 
 
             # save cookie to later import
-            # login_using_cookie_file(self,self.CHANNEL_COOKIES,page)
+            # login_using_cookie_file(self,self.channel_cookie_path,page)
         await self.page.goto(YoutubeHomePageURL, timeout=self.timeout)
 
         page = self.page
@@ -356,19 +355,19 @@ class YoutubeUpload:
         #     self.log.debug("Details failed to load")
         self.log.debug("Found YouTube upload Dialog Modal")
 
-        self.log.debug(f'Trying to upload "{videopath}" to YouTube...')
-        if os.path.exists(get_path(videopath)):
+        self.log.debug(f'Trying to upload "{video_path}" to YouTube...')
+        if os.path.exists(get_path(video_path)):
             page.locator(INPUT_FILE_VIDEO)
-            await page.set_input_files(INPUT_FILE_VIDEO, get_path(videopath))
-            self.log.debug(f'Trying to upload "{get_path(videopath)}" to YouTube...')
+            await page.set_input_files(INPUT_FILE_VIDEO, get_path(video_path))
+            self.log.debug(f'Trying to upload "{get_path(video_path)}" to YouTube...')
 
         else:
-            if os.path.exists(videopath.encode("utf-8")):
-                self.log.debug(f"file found: {videopath}")
+            if os.path.exists(video_path.encode("utf-8")):
+                self.log.debug(f"file found: {video_path}")
                 page.locator(INPUT_FILE_VIDEO)
-                await page.set_input_files(INPUT_FILE_VIDEO, videopath.encode("utf-8"))
+                await page.set_input_files(INPUT_FILE_VIDEO, video_path.encode("utf-8"))
             self.log.debug(
-                f'Trying to upload "{videopath.encode("utf-8")}" to YouTube...'
+                f'Trying to upload "{video_path.encode("utf-8")}" to YouTube...'
             )
 
         #     <h1 slot="primary-header" id="dialog-title" class="style-scope ytcp-confirmation-dialog">
@@ -439,8 +438,8 @@ class YoutubeUpload:
                 description = description[:4888]
         try:
             self.log.debug("click description container to input")
-            # print('1',await page.get_by_label("Tell viewers about your video (type @ to mention a channel)").is_visible())
-            # print('2',await page.locator("html body#html-body ytcp-uploads-dialog tp-yt-paper-dialog#dialog.style-scope.ytcp-uploads-dialog div.dialog-content.style-scope.ytcp-uploads-dialog ytcp-animatable#scrollable-content.metadata-fade-in-section.style-scope.ytcp-uploads-dialog ytcp-ve.style-scope.ytcp-uploads-dialog ytcp-video-metadata-editor#details.style-scope.ytcp-uploads-dialog div.left-col.style-scope.ytcp-video-metadata-editor ytcp-video-metadata-editor-basics#basics.style-scope.ytcp-video-metadata-editor div#description-container.input-container.description.style-scope.ytcp-video-metadata-editor-basics ytcp-video-description#description-wrapper.style-scope.ytcp-video-metadata-editor-basics div#description-container.input-container.description.style-scope.ytcp-video-description ytcp-social-suggestions-textbox#description-textarea.style-scope.ytcp-video-description ytcp-form-input-container#container.fill-height.style-scope.ytcp-social-suggestions-textbox div#outer.style-scope.ytcp-form-input-container div#child-input.style-scope.ytcp-form-input-container div#container-content.style-scope.ytcp-social-suggestions-textbox ytcp-social-suggestion-input#input.fill-height.style-scope.ytcp-social-suggestions-textbox div#textbox.style-scope.ytcp-social-suggestions-textbox").is_visible())
+            # self.log.debug('1',await page.get_by_label("Tell viewers about your video (type @ to mention a channel)").is_visible())
+            # self.log.debug('2',await page.locator("html body#html-body ytcp-uploads-dialog tp-yt-paper-dialog#dialog.style-scope.ytcp-uploads-dialog div.dialog-content.style-scope.ytcp-uploads-dialog ytcp-animatable#scrollable-content.metadata-fade-in-section.style-scope.ytcp-uploads-dialog ytcp-ve.style-scope.ytcp-uploads-dialog ytcp-video-metadata-editor#details.style-scope.ytcp-uploads-dialog div.left-col.style-scope.ytcp-video-metadata-editor ytcp-video-metadata-editor-basics#basics.style-scope.ytcp-video-metadata-editor div#description-container.input-container.description.style-scope.ytcp-video-metadata-editor-basics ytcp-video-description#description-wrapper.style-scope.ytcp-video-metadata-editor-basics div#description-container.input-container.description.style-scope.ytcp-video-description ytcp-social-suggestions-textbox#description-textarea.style-scope.ytcp-video-description ytcp-form-input-container#container.fill-height.style-scope.ytcp-social-suggestions-textbox div#outer.style-scope.ytcp-form-input-container div#child-input.style-scope.ytcp-form-input-container div#container-content.style-scope.ytcp-social-suggestions-textbox ytcp-social-suggestion-input#input.fill-height.style-scope.ytcp-social-suggestions-textbox div#textbox.style-scope.ytcp-social-suggestions-textbox").is_visible())
 
             await page.locator(DESCRIPTION_CONTAINER).is_visible()
             # await page.get_by_label("Tell viewers about your video (type @ to mention a channel)").click().fill(description)
@@ -459,8 +458,8 @@ class YoutubeUpload:
             self.log.debug("failed to set description")
         await VerifyDialog(self, page)
 
-        if self.closewhen100percent in closewhen100percentOptions:
-            if self.closewhen100percent == "go next after uploading success":
+        if self.wait_policy in WaitPolicyOptions:
+            if self.wait_policy == "go next after uploading success":
                 self.log.debug("we choose to skip processing and check steps")
                 self.log.debug("start to check whether upload is finished")
                 while await self.not_uploaded(page):
@@ -468,7 +467,7 @@ class YoutubeUpload:
                     sleep(1)
                 self.log.debug("upload is finished")
 
-            elif self.closewhen100percent == "go next after processing success":
+            elif self.wait_policy == "go next after processing success":
                 self.log.debug("start to check whether upload is finished")
                 while await self.not_uploaded(page):
                     self.log.debug("Still uploading...")
@@ -503,8 +502,8 @@ class YoutubeUpload:
                 if not "Checks complete. No issues found" in s:
                     self.log.debug("copyright issue exist")
 
-                    # force publishpolicy to private if there is any copyright issues
-                    publishpolicy = 0
+                    # force publish_policy to private if there is any copyright issues
+                    publish_policy = 0
                 else:
                     self.log.debug("There is no copyright issue exist")
         # get video id
@@ -589,7 +588,7 @@ class YoutubeUpload:
         self.log.debug('Trying to set video to "Not made for kids"...')
 
         try:
-            if isNotForKid:
+            if is_not_for_kid:
                 await page.get_by_role(
                     "radio",
                     name="Yes, it's made for kids . Features like personalized ads and notifications won’t be available on videos made for kids. Videos that are set as made for kids by you are more likely to be recommended alongside other kids’ videos. Learn more",
@@ -610,7 +609,7 @@ class YoutubeUpload:
         self.log.debug("Trying to set video AgeRestriction...")
 
         try:
-            if isAgeRestriction:
+            if is_age_restriction:
                 await page.get_by_role(
                     "radio", name="Yes, restrict my video to viewers over 18"
                 ).click()
@@ -631,9 +630,9 @@ class YoutubeUpload:
             self.log.debug(f" find show more button get_by_role")
 
             if await page.get_by_role("button", name="Show more").is_visible():
-                print("click more get_by_role")
+                self.log.debug("click more get_by_role")
                 await page.get_by_role("button", name="Show more").click()
-                print("click more locator")
+                self.log.debug("click more locator")
 
         except:
             if await page.locator(MORE_OPTIONS_CONTAINER).is_visible():
@@ -647,7 +646,7 @@ class YoutubeUpload:
         self.log.debug("finish clicking show more button")
 
         # Paid promotion
-        if isPaidpromotion:
+        if is_paid_promotion:
             self.log.debug("Trying to set video Paid promotion...")
 
             await page.get_by_text("Paid promotion", exact=True).is_visible()
@@ -658,7 +657,7 @@ class YoutubeUpload:
             ).click()
             self.log.debug("Trying to set video Paid promotion done")
 
-        if isAutomaticChapters == False:
+        if is_automatic_chapters == False:
             self.log.debug("Trying to set video Automatic chapters...")
 
             await page.get_by_role(
@@ -667,7 +666,7 @@ class YoutubeUpload:
 
             self.log.debug("Trying to set video Automatic chapters done")
         # Featured places
-        if isFeaturedPlace == False:
+        if is_featured_place == False:
             self.log.debug("Trying to set video Featured places...")
 
             await page.get_by_text("Featured places").click()
@@ -707,11 +706,11 @@ class YoutubeUpload:
                 self.log.debug("failed to set tags")
 
         # input language str and get index in the availableLanguages list
-        if VideoLanguage is not None:
+        if video_language is not None:
             await page.get_by_text("Language and captions certification").click()
             await page.locator("#language-input tp-yt-iron-icon").click()
 
-        if CaptionsCertification is not None and not CaptionsCertification == 0:
+        if captions_certification is not None and not captions_certification == 0:
             if await page.locator(
                 "#uncaptioned-reason > ytcp-select:nth-child(1) > ytcp-text-dropdown-trigger:nth-child(1) > ytcp-dropdown-trigger:nth-child(1) > div:nth-child(2)"
             ).is_visible():
@@ -719,68 +718,68 @@ class YoutubeUpload:
                     "#uncaptioned-reason > ytcp-select:nth-child(1) > ytcp-text-dropdown-trigger:nth-child(1) > ytcp-dropdown-trigger:nth-child(1) > div:nth-child(2)"
                 ).click()
                 await page.get_by_role(
-                    "option", name=CaptionsCertificationOptions[CaptionsCertification]
-                ).locator("div").nth(1 + int(CaptionsCertification)).click()
+                    "option", name=CaptionsCertificationOptions[captions_certification]
+                ).locator("div").nth(1 + int(captions_certification)).click()
 
-        if VideoRecordingdate is not None:
+        if video_film_date is not None:
             # parse from video metadata  using ffmpeg
             # if none, set to uploading day
-            VideoRecordingdate = (
+            video_film_date = (
                 datetime(date.today().year, date.today().month, date.today().day),
             )
-            VideoRecordingdate = VideoRecordingdate.strftime("%b %d, %Y")
+            video_film_date = video_film_date.strftime("%b %d, %Y")
 
             await page.locator("#recorded-date tp-yt-iron-icon").click()
             await page.locator("#input-1").get_by_role("textbox").is_visible()
             await page.locator("#input-1").get_by_role("textbox").fill(
-                VideoRecordingdate
+                video_film_date
             )
-        if VideoRecordinglocation is not None:
+        if video_film_location is not None:
             await page.get_by_text("Video location").click()
             await page.get_by_placeholder("Search", exact=True).click()
             await page.get_by_placeholder("Search", exact=True).dblclick()
             await page.get_by_placeholder("Search", exact=True).fill(
-                VideoRecordinglocation
+                video_film_location
             )
 
-        if LicenceType == 1:
+        if license_type == 1:
             await page.locator("#license tp-yt-iron-icon").click()
             await page.get_by_text("Creative Commons - Attribution").click()
-        if isAllowEmbedding == False:
+        if is_allow_embedding == False:
             await page.get_by_role("checkbox", name="Allow embedding").click()
-        if isPublishToSubscriptionsFeedNotify == False:
+        if is_publish_to_subscriptions_feed_notify == False:
             await page.get_by_role(
                 "checkbox", name="Publish to subscriptions feed and notify subscribers"
             ).click()
 
-        if ShortsremixingType is None:
-            ShortsremixingType = 0
-        if ShortsremixingType == 0:
+        if shorts_remixing_type is None:
+            shorts_remixing_type = 0
+        if shorts_remixing_type == 0:
             pass
-        elif ShortsremixingType == 1:
+        elif shorts_remixing_type == 1:
             await page.get_by_role("radio", name="Allow only audio remixing").click()
-        elif ShortsremixingType == 2:
+        elif shorts_remixing_type == 2:
             await page.get_by_role("radio", name="Don’t allow remixing").click()
 
-        if Category:
+        if categories:
             await page.get_by_text("Category", exact=True).click()
             await page.locator("#category tp-yt-iron-icon").click()
-            await page.get_by_role("option", name=Category).locator("div").nth(
+            await page.get_by_role("option", name=categories).locator("div").nth(
                 1
             ).click()
-        if CommentsRatingsPolicy == 0:
+        if comments_ratings_policy == 0:
             await page.get_by_role("radio", name="Allow all comments").click()
 
-        elif CommentsRatingsPolicy == 1:
+        elif comments_ratings_policy == 1:
             pass
-        elif CommentsRatingsPolicy == 2:
+        elif comments_ratings_policy == 2:
             await page.get_by_role("checkbox", name="Increase strictness").click()
 
-        elif CommentsRatingsPolicy == 3:
+        elif comments_ratings_policy == 3:
             await page.get_by_role("radio", name="Hold all comments for review").click()
-        elif CommentsRatingsPolicy == 4:
+        elif comments_ratings_policy == 4:
             await page.get_by_role("radio", name="Disable comments").click()
-        if isShowHowManyLikes == False:
+        if is_show_howmany_likes == False:
             await page.get_by_role(
                 "radio", name="Show how many viewers like this video"
             ).click()
@@ -794,19 +793,19 @@ class YoutubeUpload:
             except:
                 pass
         #
-        # if VideoLanguage is None:
-        #     print('you should manually set your video language first to upload default subtitle for default video language')
+        # if video_language is None:
+        #     self.log.debug('you should manually set your video language first to upload default subtitle for default video language')
         # if await page.locator('#subtitles-button > div:nth-child(2)').is_enabled():
 
-        # if there is issue in Copyright check, mandate publishpolicy to 0
+        # if there is issue in Copyright check, mandate publish_policy to 0
 
-        if not int(publishpolicy) in PublishpolicyOptions:
-            publishpolicy = 0
-        if int(publishpolicy) == 0:
+        if not int(publish_policy) in PublishpolicyOptions:
+            publish_policy = 0
+        if int(publish_policy) == 0:
             self.log.debug("Trying to set video visibility to private...")
 
             await page.locator(PRIVATE_RADIO_LABEL).click()
-        elif int(publishpolicy) == 1:
+        elif int(publish_policy) == 1:
             self.log.debug("Trying to set video visibility to public...")
             await page.locator(
                 "#first-container > tp-yt-paper-radio-button:nth-child(1)"
@@ -818,40 +817,40 @@ class YoutubeUpload:
             publish = "public"
             try:
                 if publish == "unlisted":
-                    print(
+                    self.log.debug(
                         f"detect getbyrole unlisted button visible:",
                         await page.get_by_role("radio", name="Public").is_visible(),
                     )
 
-                    # print(f'detect public button visible{PUBLIC_BUTTON}:',await page.locator(PUBLIC_BUTTON).is_visible())
-                    # print(f'detect public button visible:{PUBLIC_RADIO_LABEL}',await page.locator(PUBLIC_RADIO_LABEL).is_visible())
+                    # self.log.debug(f'detect public button visible{PUBLIC_BUTTON}:',await page.locator(PUBLIC_BUTTON).is_visible())
+                    # self.log.debug(f'detect public button visible:{PUBLIC_RADIO_LABEL}',await page.locator(PUBLIC_RADIO_LABEL).is_visible())
                     await page.get_by_role("radio", name="Unlisted").click()
-                    print("Unlisted radio button clicked")
+                    self.log.debug("Unlisted radio button clicked")
                     # await page.locator(PUBLIC_BUTTON).click()
                 elif publish == "public":
-                    print("switch case to public")
+                    self.log.debug("switch case to public")
                     try:
-                        print(
+                        self.log.debug(
                             f"detect getbyrole public button visible:",
                             await page.get_by_role("radio", name="Public").is_visible(),
                         )
 
-                        # print(f'detect public button visible{PUBLIC_BUTTON}:',await page.locator(PUBLIC_BUTTON).is_visible())
-                        # print(f'detect public button visible:{PUBLIC_RADIO_LABEL}',await page.locator(PUBLIC_RADIO_LABEL).is_visible())
+                        # self.log.debug(f'detect public button visible{PUBLIC_BUTTON}:',await page.locator(PUBLIC_BUTTON).is_visible())
+                        # self.log.debug(f'detect public button visible:{PUBLIC_RADIO_LABEL}',await page.locator(PUBLIC_RADIO_LABEL).is_visible())
                         await page.get_by_role("radio", name="Public").click()
-                        print("public radio button clicked")
+                        self.log.debug("public radio button clicked")
                         # await page.locator(PUBLIC_BUTTON).click()
                     except:
                         self.log.debug("we could not find the public buttton...")
 
                 elif publish == "public&premiere":
                     try:
-                        print(
+                        self.log.debug(
                             f"detect getbyrole public button visible:",
                             await page.get_by_role("radio", name="Public").is_visible(),
                         )
                         await page.get_by_role("radio", name="Public").click()
-                        print("public radio button clicked")
+                        self.log.debug("public radio button clicked")
                     except:
                         self.log.debug("we could not find the public buttton...")
                     try:
@@ -871,27 +870,27 @@ class YoutubeUpload:
                 pass
 
         else:
-            if date_to_publish is None:
-                date_to_publish = datetime(
+            if release_date is None:
+                release_date = datetime(
                     date.today().year, date.today().month, date.today().day
                 )
             else:
-                date_to_publish = date_to_publish
+                release_date = release_date
 
-            if hour_to_publish and hour_to_publish in availableScheduleTimes:
-                hour_to_publish = datetime.strptime(hour_to_publish, "%H:%M")
-                hour_to_publish = hour_to_publish.strftime("%I:%M %p")
+            if release_date_hour and release_date_hour in availableScheduleTimes:
+                release_date_hour = datetime.strptime(release_date_hour, "%H:%M")
+                release_date_hour = release_date_hour.strftime("%I:%M %p")
             else:
                 self.log.debug(
-                    f"your specified schedule time is not supported by youtube yet{hour_to_publish}"
+                    f"your specified schedule time is not supported by youtube yet{release_date_hour}"
                 )
-                hour_to_publish = hour_to_publish.strftime("%I:%M %p")
+                release_date_hour = release_date_hour.strftime("%I:%M %p")
 
             self.log.debug(
-                f"Trying to set video schedule time...{date_to_publish}...{hour_to_publish}"
+                f"Trying to set video schedule time...{release_date}...{release_date_hour}"
             )
 
-            await setscheduletime(page, date_to_publish, hour_to_publish)
+            await setscheduletime(page, release_date, release_date_hour)
         self.log.debug("publish setting task done")
 
         if video_id is None:
@@ -909,7 +908,7 @@ class YoutubeUpload:
 
         # await expect(page.locator(DONE_BUTTON_CSS_SELECTOR)).to_be_visible()
         # done_button = page.locator(DONE_BUTTON_CSS_SELECTOR)
-        # print(done_button)
+        # self.log.debug(done_button)
 
         # if await done_button.get_attribute("aria-disabled") == "true":
         #     error_message = await page.locator(ERROR_CONTAINER).text_content()
@@ -928,16 +927,16 @@ class YoutubeUpload:
         except:
             self.log.debug("Failed to locate done button")
 
-            if publishpolicy == 2:
-                print(await page.get_by_role("button", name="Schedule").is_visible())
+            if publish_policy == 2:
+                self.log.debug(await page.get_by_role("button", name="Schedule").is_visible())
 
                 await page.get_by_role("button", name="Schedule").click()
             else:
-                print(await page.get_by_role("button", name="Save").is_visible())
+                self.log.debug(await page.get_by_role("button", name="Save").is_visible())
 
                 await page.get_by_role("radio", name="Save").click()
-            print("click done button")
-        self.log.debug(f"{videopath} is upload process is done")
+            self.log.debug("click done button")
+        self.log.debug(f"{video_path} is upload process is done")
 
         sleep(5)
         logging.info("Upload is complete")

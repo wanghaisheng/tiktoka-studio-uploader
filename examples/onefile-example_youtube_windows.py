@@ -2,14 +2,14 @@ from tsup.youtube.youtube_upload import YoutubeUpload
 from datetime import datetime, date, timedelta
 import asyncio
 from tsup.utils.webdriver.setupPL import checkRequirments
-
+import os 
 
 # If it is the first time you've run the utility, a browser window should popup and prompt you to provide Youtube credentials. A token will be created and stored in request.token file in the local directory for subsequent use.
 
 profilepath = (
     r"D:\Download\audio-visual\make-text-video\reddit-to-video\assets\profile\fastlane"
 )
-CHANNEL_COOKIES = r"D:\Download\audio-visual\saas\tiktoka\tiktoka-studio-uploader\fastlane-cookie.json"
+channel_cookie_path = r"D:\Download\audio-visual\saas\tiktoka\tiktoka-studio-uploader\offloaddogsboner-cookie.json"
 
 videopath = r"D:\Download\audio-visual\saas\tiktoka\tiktoka-studio-uploader\tests\1.mp4"
 tags = ["ba,baaa,bababa"]
@@ -25,106 +25,9 @@ password = "U437P8Is9prmNquVerHJ9%R00bn"
 description = "========================balabala"
 invalid_thumbnail = r"D:\Download\audio-visual\make-reddit-video\reddit-to-video\assets\ace\ace-attorney_feature.jpg"
 thumbnail = r"D:\Download\audio-visual\saas\tiktoka\ytb-up\tests\1\sp\1-001.jpg"
-scheduleTimeSlots = [
-    "00:00",
-    "00:15",
-    "00:30",
-    "00:45",
-    "01:00",
-    "01:15",
-    "01:30",
-    "01:45",
-    "02:00",
-    "02:15",
-    "02:30",
-    "02:45",
-    "03:00",
-    "03:15",
-    "03:30",
-    "03:45",
-    "04:00",
-    "04:15",
-    "04:30",
-    "04:45",
-    "05:00",
-    "05:15",
-    "05:30",
-    "05:45",
-    "06:00",
-    "06:15",
-    "06:30",
-    "06:45",
-    "07:00",
-    "07:15",
-    "07:30",
-    "07:45",
-    "08:00",
-    "08:15",
-    "08:30",
-    "08:45",
-    "09:00",
-    "09:15",
-    "09:30",
-    "09:45",
-    "10:00",
-    "10:15",
-    "10:30",
-    "10:45",
-    "11:00",
-    "11:15",
-    "11:30",
-    "11:45",
-    "12:00",
-    "12:15",
-    "12:30",
-    "12:45",
-    "13:00",
-    "13:15",
-    "13:30",
-    "13:45",
-    "14:00",
-    "14:15",
-    "14:30",
-    "14:45",
-    "15:00",
-    "15:15",
-    "15:30",
-    "15:45",
-    "16:00",
-    "16:15",
-    "16:30",
-    "16:45",
-    "17:00",
-    "17:15",
-    "17:30",
-    "17:45",
-    "18:00",
-    "18:15",
-    "18:30",
-    "18:45",
-    "19:00",
-    "19:15",
-    "19:30",
-    "19:45",
-    "20:00",
-    "20:15",
-    "20:30",
-    "20:45",
-    "21:00",
-    "21:15",
-    "21:30",
-    "21:45",
-    "22:00",
-    "22:15",
-    "22:30",
-    "22:45",
-    "23:00",
-    "23:15",
-    "23:30",
-    "23:45",
-]
 
-closewhen100percent = 0
+
+wait = 0
 # 0-wait uploading done
 # 1-wait Processing done
 # 2-wait Checking done
@@ -136,16 +39,16 @@ upload = YoutubeUpload(
     # use r"" for paths, this will not give formatting errors e.g. "\n"
     root_profile_directory="",
     proxy_option=proxy_option,
-    headless=False,
+    is_open_browser=False,
     debug=True,
     use_stealth_js=False,
     # if you want to silent background running, set watcheveryuploadstep false
-    CHANNEL_COOKIES=CHANNEL_COOKIES,
+    channel_cookie_path=channel_cookie_path,
     username=username,
-    browserType="firefox",
-    closewhen100percent="go next after copyright check success",
+    browser_type="firefox",
+    wait_policy="go next after copyright check success",
     password=password,
-    recordvideo=True
+    is_record_video=True
     # for test purpose we need to check the video step by step ,
 )
 today = date.today()
@@ -154,12 +57,12 @@ today = date.today()
 def instantpublish():
     asyncio.run(
         upload.upload(
-            videopath=videopath,
+            video_path=videopath,
             title="instant publish-test-005",
             description=description,
             thumbnail=thumbnail,
             tags=tags,
-            publishpolicy=1,
+            publish_policy=1,
         )
     )
 
@@ -167,12 +70,12 @@ def instantpublish():
 def saveasprivatedraft():
     asyncio.run(
         upload.upload(
-            videopath=videopath,
+            video_path=videopath,
             title="private draft-test-004",
             description=description,
             thumbnail=thumbnail,
             tags=tags,
-            publishpolicy=0,
+            publish_policy=0,
         )
     )
 
@@ -200,18 +103,28 @@ def scheduletopublish_tomorrow():
     # )
     asyncio.run(
         upload.upload(
-            videopath=videopath,
+            video_path=videopath,
             title="tomorrow-test-001",
             description=description,
             thumbnail=thumbnail,
             tags=tags,
-            publishpolicy=2,
-            date_to_publish=date_to_publish,
-            hour_to_publish=hour_to_publish,
+            publish_policy=2,
+            release_date=date_to_publish,
+            release_date_hour=hour_to_publish,
         )
     )
 
-
+def checkfilebroken(path):
+    print(f"check whether file exist{path}")
+    if (os.path.exists(path)
+        and os.path.getsize(path) > 0
+    ):
+        print(f'{path} is exist')
+        return True
+    else:
+        print(f'{path} is not  exist')
+        
+        return False
 def scheduletopublish_every7days():
     # mode a:release_offset exist,publishdate exist will take date value as a starting date to schedule videos
     # mode b:release_offset not exist, publishdate exist , schedule to this specific date
@@ -227,14 +140,14 @@ def scheduletopublish_every7days():
 
     asyncio.run(
         upload.upload(
-            videopath=videopath,
+            video_path=videopath,
             title="7days later-test-003",
             description=description,
             thumbnail=thumbnail,
             tags=tags,
-            publishpolicy=2,
-            date_to_publish=date_to_publish,
-            hour_to_publish=hour_to_publish,
+            publish_policy=2,
+            release_date=date_to_publish,
+            release_date_hour=hour_to_publish,
         )
     )
 
@@ -251,14 +164,14 @@ def scheduletopublish_at_specific_date():
     # date_to_publish = datetime.strftime(date_to_publish, "%Y-%m-%d %H:%M:%S")
     asyncio.run(
         upload.upload(
-            videopath=videopath,
+            video_path=videopath,
             title="four days later-test-002",
             description=description,
             thumbnail=thumbnail,
             tags=tags,
-            publishpolicy=2,
-            date_to_publish=date_to_publish,
-            hour_to_publish=hour_to_publish,
+            publish_policy=2,
+            release_date=date_to_publish,
+            release_date_hour=hour_to_publish,
         )
     )
     # mode a:release_offset exist,publish_data exist will take date value as a starting date to schedule videos
@@ -279,7 +192,9 @@ def scheduletopublish_at_specific_date():
     #             else:
     #                 date_to_publish += offset
 
-
+checkfilebroken(channel_cookie_path)
+checkfilebroken(thumbnail)
+checkfilebroken(videopath)
 scheduletopublish_tomorrow()
 scheduletopublish_at_specific_date()
 scheduletopublish_every7days()

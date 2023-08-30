@@ -2,7 +2,7 @@ from typing import Tuple, Optional, Union, Literal
 
 # URLS
 invalidCharacters = ["<", ">"]
-closewhen100percentOptions = [
+WaitPolicyOptions = [
     "go next after uploading success",
     "go next after processing success",
     "go next after copyright check success",
