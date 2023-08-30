@@ -1,13 +1,14 @@
-**Update 2023-08-25**
+**Update 2023-08-30**
 
-1. add test-youtube-windows.sh to help tiktokers 
+1. add undetected-playwright support to use as embed anti-detect browser
 
-2. add test-tiktok-manual-sessionId.sh to help youtubers 
+2. add very its you and insecure browser detection during sigin in
 
-3. examples\save-tiktok-sessionId.py to auto export sessionid
+3. add youtube models for later gui development
 
-4. examples\save-youtube-Cookie.py to auto export youtube cookie files
+4. change previous camel variable in youtube upload to underscore
 
+5. fix other issues
 
 ## USAGE
 

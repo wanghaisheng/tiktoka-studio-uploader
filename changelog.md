@@ -1,3 +1,16 @@
+**Update 2023-08-30**
+
+1. add undetected-playwright support to use as embed anti-detect browser
+
+2. add very its you and insecure browser detection during sigin in
+
+3. add youtube models for later gui development
+
+4. change previous camel variable in youtube upload to underscore
+
+5. fix other issues
+
+
 **Update 2023-08-25**
 1. we add all in one bash script for newbee to have a try.
 for tiktok

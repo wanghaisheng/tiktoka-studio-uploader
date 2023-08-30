@@ -17,7 +17,12 @@ https://docs.python.org/3.9/using/index.html
 https://github.com/wanghaisheng/tiktoka-studio-uploader/archive/refs/heads/playwright.zip
 ```
 
-4. unzip this into anywhere you like，open terminal:
+4. unzip this into anywhere you like，open terminal,type:
+```
+bash test-youtube-windows.sh
+```
+
+if you dig this bash script, you can find it run the following:
 
 ```
 pip install -r requirements.txt
@@ -25,17 +30,20 @@ pip install -r requirements.txt
 python setup.py install
 ```
 
-4. get cookies for your youtube channel without any efforts,for those proxy setting, adjust the code as you wish.
+4.1. get cookies for your youtube channel without any efforts,for those proxy setting, adjust the code as you wish.
    If given user's account have only onedefault video channel. Many users (myself included) manage multiple channels under the same youtube account,so after login in, you need switch to the channel you want video uploading to save different cookie.json for each channel. then you can close the openning browser.
 
 ```
 python examples/save-youtube-Cookie.py
 ```
 
-5. run upload demo
+4.2. run upload demo for different operation systems as you like.
 
 ```
 python examples/onefile-example_youtube.py
+python examples/onefile-example_youtube-windows.py
+python examples/onefile-example_youtube-mac.py
+
 ```
 
 ### for those tech guy
