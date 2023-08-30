@@ -16,7 +16,7 @@ if there's anything you don't understand, submit an issue or cantact me
 
 ### for those beginner
 
-checkout the GUI version.
+checkout the [GUI version](https://github.com/wanghaisheng/tiktoka-studio-uploader-app).
 
 ### youtube
 
