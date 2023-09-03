@@ -84,10 +84,10 @@ class YoutubeUpload:
 
     async def upload(
         self,
-        local_path: str = "",
+        video_local_path: str = "",
         video_title: str = "",
         video_description: str = "",
-        thumbnail_locapath: str = "",
+        thumbnail_local_path: str = "",
         publish_policy: Optional[int] = 0,
         release_date: Optional[datetime] = datetime(
             date.today().year, date.today().month, date.today().day
@@ -248,8 +248,8 @@ class YoutubeUpload:
             #     await botcheck(self.pl)
 
 
-        if not local_path:
-            raise FileNotFoundError(f'Could not find file with path: "{local_path}"')
+        if not video_local_path:
+            raise FileNotFoundError(f'Could not find file with path: "{video_local_path}"')
 
         if not self.channel_cookie_path is None:
             self.log.debug(f"Try to load specified cookie file:{self.channel_cookie_path}")
@@ -355,19 +355,19 @@ class YoutubeUpload:
         #     self.log.debug("Details failed to load")
         self.log.debug("Found YouTube upload Dialog Modal")
 
-        self.log.debug(f'Trying to upload "{local_path}" to YouTube...')
-        if os.path.exists(get_path(local_path)):
+        self.log.debug(f'Trying to upload "{video_local_path}" to YouTube...')
+        if os.path.exists(get_path(video_local_path)):
             page.locator(INPUT_FILE_VIDEO)
-            await page.set_input_files(INPUT_FILE_VIDEO, get_path(local_path))
-            self.log.debug(f'Trying to upload "{get_path(local_path)}" to YouTube...')
+            await page.set_input_files(INPUT_FILE_VIDEO, get_path(video_local_path))
+            self.log.debug(f'Trying to upload "{get_path(video_local_path)}" to YouTube...')
 
         else:
-            if os.path.exists(local_path.encode("utf-8")):
-                self.log.debug(f"file found: {local_path}")
+            if os.path.exists(video_local_path.encode("utf-8")):
+                self.log.debug(f"file found: {video_local_path}")
                 page.locator(INPUT_FILE_VIDEO)
-                await page.set_input_files(INPUT_FILE_VIDEO, local_path.encode("utf-8"))
+                await page.set_input_files(INPUT_FILE_VIDEO, video_local_path.encode("utf-8"))
             self.log.debug(
-                f'Trying to upload "{local_path.encode("utf-8")}" to YouTube...'
+                f'Trying to upload "{video_local_path.encode("utf-8")}" to YouTube...'
             )
 
         #     <h1 slot="primary-header" id="dialog-title" class="style-scope ytcp-confirmation-dialog">
@@ -518,16 +518,16 @@ class YoutubeUpload:
             self.log.debug(
                 f"can not identify video id in the upload detail page,try to grab in schedule page"
             )
-        if thumbnail_locapath:
-            self.log.debug(f'Trying to set "{thumbnail_locapath}" as thumbnail...')
+        if thumbnail_local_path:
+            self.log.debug(f'Trying to set "{thumbnail_local_path}" as thumbnail...')
             try:
                 # await page.get_by_role("button", name="Upload thumbnail").set_input_files(get_path(thumbnail))
 
                 await page.locator(INPUT_FILE_THUMBNAIL).set_input_files(
-                    get_path(thumbnail_locapath)
+                    get_path(thumbnail_local_path)
                 )
             except:
-                if os.path.exists(get_path(thumbnail_locapath)):
+                if os.path.exists(get_path(thumbnail_local_path)):
                     if await page.get_by_role(
                         "button", name="Upload thumbnail"
                     ).is_visible():
@@ -537,11 +537,11 @@ class YoutubeUpload:
 
                         await page.get_by_role(
                             "button", name="Upload thumbnail"
-                        ).set_input_files(get_path(thumbnail_locapath))
+                        ).set_input_files(get_path(thumbnail_local_path))
 
                 else:
-                    if os.path.exists(thumbnail_locapath.encode("utf-8")):
-                        self.log.debug("thumbnail found", thumbnail_locapath)
+                    if os.path.exists(thumbnail_local_path.encode("utf-8")):
+                        self.log.debug("thumbnail found", thumbnail_local_path)
                         if await page.get_by_role(
                             "button", name="Upload thumbnail"
                         ).is_visible():
@@ -550,13 +550,13 @@ class YoutubeUpload:
                             ).click()
                             await page.get_by_role(
                                 "button", name="Upload thumbnail"
-                            ).set_input_files(thumbnail_locapath.encode("utf-8"))
+                            ).set_input_files(thumbnail_local_path.encode("utf-8"))
 
                     else:
                         self.log.debug(
-                            f'you should provide a valid file path: "{thumbnail_locapath}"'
+                            f'you should provide a valid file path: "{thumbnail_local_path}"'
                         )
-            self.log.debug(f'finishing to set "{thumbnail_locapath}" as thumbnail...')
+            self.log.debug(f'finishing to set "{thumbnail_local_path}" as thumbnail...')
 
         await VerifyDialog(self, page)
 
@@ -942,7 +942,7 @@ class YoutubeUpload:
 
                 await page.get_by_role("radio", name="Save").click()
             self.log.debug("click done button")
-        self.log.debug(f"{local_path} is upload process is done")
+        self.log.debug(f"{video_local_path} is upload process is done")
 
         sleep(5)
         logging.info("Upload is complete")
