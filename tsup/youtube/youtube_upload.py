@@ -866,9 +866,8 @@ class YoutubeUpload:
                 await page.get_by_role(
                     "checkbox", name="Set as instant Premiere"
                 ).is_visible()
-                await page.get_by_role(
-                    "checkbox", name="Set as instant Premiere"
-                ).click()
+
+                await  page.get_by_role("checkbox", name="Set as instant Premiere").click()
 
             except:
                 self.log.debug(
