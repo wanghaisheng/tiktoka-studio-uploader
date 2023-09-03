@@ -79,6 +79,30 @@ def instantpublish():
         )
     )
 
+def unlistedpublish():
+    asyncio.run(
+        upload.upload(
+            video_path=videopath,
+            title="unlisted public publish-test-005",
+            description=description,
+            thumbnail=thumbnail,
+            tags=tags,
+            publish_policy=3,
+        )
+    )
+
+def premierepublish():
+    asyncio.run(
+        upload.upload(
+            video_path=videopath,
+            title="premiere public publish-test-005",
+            description=description,
+            thumbnail=thumbnail,
+            tags=tags,
+            publish_policy=4,
+        )
+    )
+
 
 def saveasprivatedraft():
     asyncio.run(
@@ -201,9 +225,12 @@ checkfilebroken(videopath)
 
 
 checkRequirments()
-scheduletopublish_tomorrow()
-scheduletopublish_at_specific_date()
-scheduletopublish_every7days()
-saveasprivatedraft()
-instantpublish()
+unlistedpublish()
+premierepublish()
+
+# scheduletopublish_tomorrow()
+# scheduletopublish_at_specific_date()
+# scheduletopublish_every7days()
+# saveasprivatedraft()
+# instantpublish()
 # friststart()

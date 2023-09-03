@@ -139,7 +139,7 @@ class YoutubeUpload:
 
         if publish_policy and publish_policy not in PublishpolicyOptions:
             self.log.debug(
-                f"you give a invalid publish_policy:{publish_policy} ,try to choose one of them{PublishpolicyOptions},we change it to  default 0"
+                f"you give a invalid publish_policy:{publish_policy} ,try to choose one of them{PublishpolicyOptions},0 -private 1-publish 2-schedule 3-Unlisted 4-public&premiere we change it to  default 0"
             )
             publish_policy = 0
         else:
@@ -166,7 +166,7 @@ class YoutubeUpload:
 
         if license_type and license_type not in LicenceTypeOptions:
             self.log.debug(
-                f"you give a invalid license_type:{license_type} ,try to choose one of them{license_typeOptions},we change it to  default 0"
+                f"you give a invalid license_type:{license_type} ,try to choose one of them{LicenceTypeOptions},we change it to  default 0"
             )
             license_type = 0
         else:
@@ -805,8 +805,9 @@ class YoutubeUpload:
             self.log.debug("Trying to set video visibility to private...")
 
             await page.locator(PRIVATE_RADIO_LABEL).click()
+            
         elif int(publish_policy) == 1:
-            self.log.debug("Trying to set video visibility to public...")
+            self.log.debug("Trying to set video visibility to unlisted...")
             await page.locator(
                 "#first-container > tp-yt-paper-radio-button:nth-child(1)"
             ).is_visible()
@@ -814,62 +815,67 @@ class YoutubeUpload:
                 "#first-container > tp-yt-paper-radio-button:nth-child(1)"
             ).click()
 
-            publish = "public"
             try:
-                if publish == "unlisted":
+                self.log.debug("Trying to set video visibility to public...")
+                try:
                     self.log.debug(
-                        f"detect getbyrole unlisted button visible:",
+                        f"detect getbyrole public button visible:",
                         await page.get_by_role("radio", name="Public").is_visible(),
                     )
 
                     # self.log.debug(f'detect public button visible{PUBLIC_BUTTON}:',await page.locator(PUBLIC_BUTTON).is_visible())
                     # self.log.debug(f'detect public button visible:{PUBLIC_RADIO_LABEL}',await page.locator(PUBLIC_RADIO_LABEL).is_visible())
-                    await page.get_by_role("radio", name="Unlisted").click()
-                    self.log.debug("Unlisted radio button clicked")
+                    await page.get_by_role("radio", name="Public").click()
+                    self.log.debug("public radio button clicked")
                     # await page.locator(PUBLIC_BUTTON).click()
-                elif publish == "public":
-                    self.log.debug("switch case to public")
-                    try:
-                        self.log.debug(
-                            f"detect getbyrole public button visible:",
-                            await page.get_by_role("radio", name="Public").is_visible(),
-                        )
-
-                        # self.log.debug(f'detect public button visible{PUBLIC_BUTTON}:',await page.locator(PUBLIC_BUTTON).is_visible())
-                        # self.log.debug(f'detect public button visible:{PUBLIC_RADIO_LABEL}',await page.locator(PUBLIC_RADIO_LABEL).is_visible())
-                        await page.get_by_role("radio", name="Public").click()
-                        self.log.debug("public radio button clicked")
-                        # await page.locator(PUBLIC_BUTTON).click()
-                    except:
-                        self.log.debug("we could not find the public buttton...")
-
-                elif publish == "public&premiere":
-                    try:
-                        self.log.debug(
-                            f"detect getbyrole public button visible:",
-                            await page.get_by_role("radio", name="Public").is_visible(),
-                        )
-                        await page.get_by_role("radio", name="Public").click()
-                        self.log.debug("public radio button clicked")
-                    except:
-                        self.log.debug("we could not find the public buttton...")
-                    try:
-                        await page.get_by_role(
-                            "checkbox", name="Set as instant Premiere"
-                        ).is_visible()
-                        await page.get_by_role(
-                            "checkbox", name="Set as instant Premiere"
-                        ).click()
-
-                    except:
-                        self.log.debug(
-                            "we could not find the Set as instant Premiere checkbox..."
-                        )
+                except:
+                    self.log.debug("we could not find the public buttton...")
 
             except:
-                pass
+                pass            
+        elif int(publish_policy) == 3:
+            self.log.debug("Trying to set video visibility to Unlisted...")
+            await page.locator(
+                "#first-container > tp-yt-paper-radio-button:nth-child(1)"
+            ).is_visible()
+            await page.locator(
+                "#first-container > tp-yt-paper-radio-button:nth-child(1)"
+            ).click()
 
-        else:
+            try:
+                await page.get_by_role("radio", name="Unlisted").click()
+                self.log.debug("Unlisted radio button clicked")
+                # await page.locator(PUBLIC_BUTTON).click()
+                # await page.locator(PUBLIC_BUTTON).click()
+            except:
+                self.log.debug("we could not find the public buttton...")
+
+
+            
+        elif int(publish_policy) == 4:
+            self.log.debug("Trying to set video visibility to public&premiere...")
+            await page.locator(
+                "#first-container > tp-yt-paper-radio-button:nth-child(1)"
+            ).is_visible()
+            await page.locator(
+                "#first-container > tp-yt-paper-radio-button:nth-child(1)"
+            ).click()
+
+
+            try:
+                await page.get_by_role(
+                    "checkbox", name="Set as instant Premiere"
+                ).is_visible()
+                await page.get_by_role(
+                    "checkbox", name="Set as instant Premiere"
+                ).click()
+
+            except:
+                self.log.debug(
+                    "we could not find the Set as instant Premiere checkbox..."
+                        )
+
+        elif int(publish_policy) == 2:
             if release_date is None:
                 release_date = datetime(
                     date.today().year, date.today().month, date.today().day
@@ -891,6 +897,8 @@ class YoutubeUpload:
             )
 
             await setscheduletime(page, release_date, release_date_hour)
+        else:
+            self.log.debug(f'you should choose a valid publish_policy from {PublishpolicyOptions}')
         self.log.debug("publish setting task done")
 
         if video_id is None:

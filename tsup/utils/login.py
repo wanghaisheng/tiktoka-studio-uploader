@@ -147,50 +147,70 @@ async def passwordlogin(self, page):
                 self.log.debug(f"To help keep your account secure, Google needs to verify it’s you. Please sign in again to continue to YouTube.")
                 self.log.debug(f"for this situation you need a fresh new cookie file")
 
-                self.quit()
+                await self.quit()
             else:
                 pass
 
         except:
             self.log.debug(f"Finishing detect insecure browser...")
-
+    self.log.debug("start to detect  Email or phone textbox")
     try:
         await page.get_by_role("textbox", name="Email or phone").is_visible()
-        await page.get_by_role("textbox", name="Email or phone").fill(self.username)
         self.log.debug("detected  Email or phone textbox")
-        
+        self.log.debug("start to fill in   Email or phone textbox")
+
+        await page.get_by_role("textbox", name="Email or phone").fill(self.username)
+
     except:
         self.log.debug("could not find email or phone input textbox")
+    self.log.debug("start to detect Next button")
+        
     await page.get_by_role("button", name="Next").click()
-    sleep(random.uniform(5, 6))
+    # sleep(random.uniform(5, 6))
+    self.log.debug("detected  Next button")
 
-    try:
-        self.log.debug(f"Trying to detect insecure browser...")         
-        hint = await self.page.locator(".tCpFMc > form").all_text_contents()
-        hint = "".join(hint)
-        print(f'hints:{hint}')
 
-        if  'This browser or app may not be secure' in hint:
-            self.log.debug(f"you have detect insecure browser")
-
-            self.quit()
-        else:
-            pass
-
-    except:
-        self.log.debug(f"Finishing detect insecure browser...")
-
+    self.log.debug("start to detect  password textbox")
 
     try:
         await page.get_by_role("textbox", name="Enter your password").is_visible()
+
+        self.log.debug("detected  password textbox")
+        self.log.debug("start to fill in password textbox")
+        
         await page.get_by_role("textbox", name="Enter your password").fill(
             self.password
         )
-        self.log.debug("detected  password textbox")
-        
     except:
         self.log.debug("could not find password input textbox")
     #     page.get_by_text("We noticed unusual activity in your Google Account. To keep your account safe, y").click()
+    
+    
+        try:
+            self.log.debug(f"Trying to detect insecure browser...")         
+            hint = await self.page.locator(".tCpFMc > form").all_text_contents()
+            hint = "".join(hint)
+            print(f'hints:{hint}')
+
+            if  'This browser or app may not be secure' in hint:
+                self.log.debug(f"you have detect insecure browser")
+
+                if self.page:
+                    await self.page.close()
+                if self.context:
+                    await self.context.close()
+                if self.browser:
+                    await self.browser.close()
+                if self.driver:
+                    await self.driver.stop()
+
+            else:
+                pass
+
+        except:
+            self.log.debug(f"Finishing detect insecure browser...")
+    self.log.debug("start to detect Next button")
+   
 
     await page.get_by_role("button", name="Next").click()
     self.log.debug("detected  Next button")
@@ -443,72 +463,74 @@ async def youtube_login(self, account, password):
                     try:
                         
                         await self.page.locator('#identifierId').is_visible()
-                        sleep(random.uniform(1, 2))
+                        sleep(random.uniform(5, 6))
+                        self.log.debug("detected  Email or phone textbox")
 
                         await self.page.locator('#identifierId').fill(self.username)
-                        self.log.debug("detected  Email or phone textbox")
                         
                     except:
                         self.log.debug("could not find email or phone input textbox")
                     
                     await self.page.get_by_role("button", name="Next").click()
-                    
-                    self.log.debug("detected  Next button")
                     sleep(random.uniform(5, 6))
-                    try:
-                        self.log.debug(f"Trying to detect insecure browser...{self.page.url}")         
-                        hint = await self.page.locator(".tCpFMc > form").all_text_contents()
-                        hint = "".join(hint)
-                        print(f'hints:{hint}')
 
-                        if  'This browser or app may not be secure' in hint:
-                            self.log.debug(f"you have detect insecure browser")
-                            print(
-                                f"被检测, 重新初始化chrome... ",
-                                datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                            )
-                            await self.quit()
-                            # sleep(1)
-                            # for i in range(3):
-                            #     port = f"{random.randint(6, 9)}{random.randint(1, 9)}{random.randint(1, 9)}{random.randint(1, 9)}"
-                            #     print(f"第 {i + 1} 次初始化chrome, 端口为:{port} ")
-                            #     try:
-                            #         chrome, wait = await self.init_broswer_popen(url=url, port=port)
-                            #         if "accounts" in chrome.current_url:
-                            #             print(
-                            #                 "chrome 正常状态...",
-                            #                 datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                            #             )
-                            #             break
-                            #         else:
-                            #             if chrome:
-                            #                 await chrome.quit()
-                            #             continue
-                            #     except Exception as e:
-                            #         print(f"初始化chrome异常: {e}")
-                            #         if chrome:
-                            #             await chrome.quit()
-                            #         continue
-                            # # sleep(random.uniform(1, 2))
-                            # continue
+                    self.log.debug("detected  Next button")
 
-                        else:
-                            pass
-
-                    except:
-                        self.log.debug(f"Finishing detect insecure browser...")
 
                     try:
                         await self.page.get_by_role("textbox", name="Enter your password").is_visible()
-                        sleep(random.uniform(1, 2))
-                       
+                        sleep(random.uniform(5, 6))
+                        self.log.debug("detected  password textbox")
+
                         await self.page.get_by_role("textbox", name="Enter your password").fill(
                             self.password
                         )
-                        self.log.debug("detected  password textbox")
                         
                     except:
                         self.log.debug("could not find password input textbox")
+                        try:
+                            self.log.debug(f"Trying to detect insecure browser...{self.page.url}")         
+                            hint = await self.page.locator(".tCpFMc > form").all_text_contents()
+                            hint = "".join(hint)
+                            print(f'hints:{hint}')
+
+                            if  'This browser or app may not be secure' in hint:
+                                self.log.debug(f"you have detect insecure browser")
+                                print(
+                                    f"被检测, 重新初始化chrome... ",
+                                    datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                                )
+                                await self.quit()
+                                # sleep(1)
+                                # for i in range(3):
+                                #     port = f"{random.randint(6, 9)}{random.randint(1, 9)}{random.randint(1, 9)}{random.randint(1, 9)}"
+                                #     print(f"第 {i + 1} 次初始化chrome, 端口为:{port} ")
+                                #     try:
+                                #         chrome, wait = await self.init_broswer_popen(url=url, port=port)
+                                #         if "accounts" in chrome.current_url:
+                                #             print(
+                                #                 "chrome 正常状态...",
+                                #                 datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                                #             )
+                                #             break
+                                #         else:
+                                #             if chrome:
+                                #                 await chrome.quit()
+                                #             continue
+                                #     except Exception as e:
+                                #         print(f"初始化chrome异常: {e}")
+                                #         if chrome:
+                                #             await chrome.quit()
+                                #         continue
+                                # # sleep(random.uniform(1, 2))
+                                # continue
+
+                            else:
+                                pass
+
+                        except:
+                            self.log.debug(f"Finishing detect insecure browser...")
+                        
                     #     page.get_by_text("We noticed unusual activity in your Google Account. To keep your account safe, y").click()
                     sleep(random.uniform(5, 6))
                     try:
@@ -520,7 +542,7 @@ async def youtube_login(self, account, password):
                         if  'This browser or app may not be secure' in hint:
                             self.log.debug(f"you have detect insecure browser")
 
-                            self.quit()
+                            await self.quit()
                         else:
                             pass
 
