@@ -84,10 +84,10 @@ class YoutubeUpload:
 
     async def upload(
         self,
-        video_path: str = "",
-        title: str = "",
-        description: str = "",
-        thumbnail: str = "",
+        local_path: str = "",
+        video_title: str = "",
+        video_description: str = "",
+        thumbnail_locapath: str = "",
         publish_policy: Optional[int] = 0,
         release_date: Optional[datetime] = datetime(
             date.today().year, date.today().month, date.today().day
@@ -248,8 +248,8 @@ class YoutubeUpload:
             #     await botcheck(self.pl)
 
 
-        if not video_path:
-            raise FileNotFoundError(f'Could not find file with path: "{video_path}"')
+        if not local_path:
+            raise FileNotFoundError(f'Could not find file with path: "{local_path}"')
 
         if not self.channel_cookie_path is None:
             self.log.debug(f"Try to load specified cookie file:{self.channel_cookie_path}")
@@ -355,19 +355,19 @@ class YoutubeUpload:
         #     self.log.debug("Details failed to load")
         self.log.debug("Found YouTube upload Dialog Modal")
 
-        self.log.debug(f'Trying to upload "{video_path}" to YouTube...')
-        if os.path.exists(get_path(video_path)):
+        self.log.debug(f'Trying to upload "{local_path}" to YouTube...')
+        if os.path.exists(get_path(local_path)):
             page.locator(INPUT_FILE_VIDEO)
-            await page.set_input_files(INPUT_FILE_VIDEO, get_path(video_path))
-            self.log.debug(f'Trying to upload "{get_path(video_path)}" to YouTube...')
+            await page.set_input_files(INPUT_FILE_VIDEO, get_path(local_path))
+            self.log.debug(f'Trying to upload "{get_path(local_path)}" to YouTube...')
 
         else:
-            if os.path.exists(video_path.encode("utf-8")):
-                self.log.debug(f"file found: {video_path}")
+            if os.path.exists(local_path.encode("utf-8")):
+                self.log.debug(f"file found: {local_path}")
                 page.locator(INPUT_FILE_VIDEO)
-                await page.set_input_files(INPUT_FILE_VIDEO, video_path.encode("utf-8"))
+                await page.set_input_files(INPUT_FILE_VIDEO, local_path.encode("utf-8"))
             self.log.debug(
-                f'Trying to upload "{video_path.encode("utf-8")}" to YouTube...'
+                f'Trying to upload "{local_path.encode("utf-8")}" to YouTube...'
             )
 
         #     <h1 slot="primary-header" id="dialog-title" class="style-scope ytcp-confirmation-dialog">
@@ -399,18 +399,17 @@ class YoutubeUpload:
         # detect video id during uploading done in the title description page
         # .row
 
-        self.log.debug(f'Trying to set "{title}" as title...')
 
         await VerifyDialog(self, page)
 
-        if len(title) > TITLE_COUNTER:
+        if len(video_title) > TITLE_COUNTER:
             self.log.debug(
-                f"Title was not set due to exceeding the maximum allowed characters ({len(title)}/{TITLE_COUNTER})"
+                f"Title was not set due to exceeding the maximum allowed characters ({len(video_title)}/{TITLE_COUNTER})"
             )
-            title = title[: TITLE_COUNTER - 1]
+            video_title = video_title[: TITLE_COUNTER - 1]
 
             # TITLE
-        self.log.debug(f'Trying to set "{title}" as title...')
+        self.log.debug(f'Trying to set "{video_title}" as title...')
         try:
             await page.locator(TITLE_CONTAINER).is_visible()
             # await page.get_by_label("Tell viewers about your video (type @ to mention a channel)").click().fill(description)
@@ -421,21 +420,21 @@ class YoutubeUpload:
             await page.keyboard.press("Backspace")
             await page.keyboard.press("Control+KeyA")
             await page.keyboard.press("Delete")
-            await page.keyboard.type(title)
+            await page.keyboard.type(video_title)
             # 很可能就是这个没有确认输入，导致悬浮窗口，无法获取提交按钮
             await page.keyboard.press("Enter")
             self.log.debug("filling new  title")
         except:
             self.log.debug("failed to set title")
 
-        self.log.debug(f'Trying to set "{description}" as description...')
+        self.log.debug(f'Trying to set "{video_description}" as description...')
 
-        if description:
-            if len(description) > DESCRIPTION_COUNTER:
+        if video_description:
+            if len(video_description) > DESCRIPTION_COUNTER:
                 self.log.debug(
-                    f"Description was not set due to exceeding the maximum allowed characters ({len(description)}/{DESCRIPTION_COUNTER})"
+                    f"Description was not set due to exceeding the maximum allowed characters ({len(video_description)}/{DESCRIPTION_COUNTER})"
                 )
-                description = description[:4888]
+                video_description = video_description[:4888]
         try:
             self.log.debug("click description container to input")
             # self.log.debug('1',await page.get_by_label("Tell viewers about your video (type @ to mention a channel)").is_visible())
@@ -450,7 +449,7 @@ class YoutubeUpload:
             await page.keyboard.press("Backspace")
             await page.keyboard.press("Control+KeyA")
             await page.keyboard.press("Delete")
-            await page.keyboard.type(description)
+            await page.keyboard.type(video_description)
             await page.keyboard.press("Enter")
 
             self.log.debug("filling new  description")
@@ -519,16 +518,16 @@ class YoutubeUpload:
             self.log.debug(
                 f"can not identify video id in the upload detail page,try to grab in schedule page"
             )
-        if thumbnail:
-            self.log.debug(f'Trying to set "{thumbnail}" as thumbnail...')
+        if thumbnail_locapath:
+            self.log.debug(f'Trying to set "{thumbnail_locapath}" as thumbnail...')
             try:
                 # await page.get_by_role("button", name="Upload thumbnail").set_input_files(get_path(thumbnail))
 
                 await page.locator(INPUT_FILE_THUMBNAIL).set_input_files(
-                    get_path(thumbnail)
+                    get_path(thumbnail_locapath)
                 )
             except:
-                if os.path.exists(get_path(thumbnail)):
+                if os.path.exists(get_path(thumbnail_locapath)):
                     if await page.get_by_role(
                         "button", name="Upload thumbnail"
                     ).is_visible():
@@ -538,11 +537,11 @@ class YoutubeUpload:
 
                         await page.get_by_role(
                             "button", name="Upload thumbnail"
-                        ).set_input_files(get_path(thumbnail))
+                        ).set_input_files(get_path(thumbnail_locapath))
 
                 else:
-                    if os.path.exists(thumbnail.encode("utf-8")):
-                        self.log.debug("thumbnail found", thumbnail)
+                    if os.path.exists(thumbnail_locapath.encode("utf-8")):
+                        self.log.debug("thumbnail found", thumbnail_locapath)
                         if await page.get_by_role(
                             "button", name="Upload thumbnail"
                         ).is_visible():
@@ -551,13 +550,13 @@ class YoutubeUpload:
                             ).click()
                             await page.get_by_role(
                                 "button", name="Upload thumbnail"
-                            ).set_input_files(thumbnail.encode("utf-8"))
+                            ).set_input_files(thumbnail_locapath.encode("utf-8"))
 
                     else:
                         self.log.debug(
-                            f'you should provide a valid file path: "{thumbnail}"'
+                            f'you should provide a valid file path: "{thumbnail_locapath}"'
                         )
-            self.log.debug(f'finishing to set "{thumbnail}" as thumbnail...')
+            self.log.debug(f'finishing to set "{thumbnail_locapath}" as thumbnail...')
 
         await VerifyDialog(self, page)
 
@@ -943,7 +942,7 @@ class YoutubeUpload:
 
                 await page.get_by_role("radio", name="Save").click()
             self.log.debug("click done button")
-        self.log.debug(f"{video_path} is upload process is done")
+        self.log.debug(f"{local_path} is upload process is done")
 
         sleep(5)
         logging.info("Upload is complete")
