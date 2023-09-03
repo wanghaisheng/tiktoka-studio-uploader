@@ -112,6 +112,7 @@ class YoutubeUpload:
         categories: Optional[str] = None,
         comments_ratings_policy: Optional[int] = 1,
         is_show_howmany_likes: Optional[bool] = True,
+        is_monetization_allowed: Optional[bool] = True,
         tags: list = [],
         first_comment:Optional[str]=None,
         subtitles:Optional[str]=None
