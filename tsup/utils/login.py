@@ -162,15 +162,16 @@ async def passwordlogin(self, page):
         await page.get_by_role("textbox", name="Email or phone").fill(self.username)
 
     except:
-        self.log.debug("could not find email or phone input textbox")
-    self.log.debug("start to detect Next button")
+        self.log.debug(f"could not find email or phone input textbox {page.url}")
         
+    self.log.debug("start to detect Next button")
+    sleep(random.uniform(5, 6))
     await page.get_by_role("button", name="Next").click()
     # sleep(random.uniform(5, 6))
     self.log.debug("detected  Next button")
 
-
-    self.log.debug("start to detect  password textbox")
+    sleep(random.uniform(5, 6))
+    self.log.debug(f"start to detect  password textbox {page.url}")
 
     try:
         await page.get_by_role("textbox", name="Enter your password").is_visible()
@@ -182,33 +183,35 @@ async def passwordlogin(self, page):
             self.password
         )
     except:
-        self.log.debug("could not find password input textbox")
+        self.log.debug(f"could not find password input textbox {page.url}")
     #     page.get_by_text("We noticed unusual activity in your Google Account. To keep your account safe, y").click()
-    
-    
-        try:
-            self.log.debug(f"Trying to detect insecure browser...")         
-            hint = await self.page.locator(".tCpFMc > form").all_text_contents()
-            hint = "".join(hint)
-            print(f'hints:{hint}')
+        if 'rejected' in page.url:
+            await self.pl.quit()
+                
+        # sleep(random.uniform(5, 6))
+        # try:
+        #     self.log.debug(f"Trying to detect insecure browser...")         
+        #     hint = await self.page.locator(".tCpFMc > form").all_text_contents()
+        #     hint = "".join(hint)
+        #     print(f'hints:{hint}')
 
-            if  'This browser or app may not be secure' in hint:
-                self.log.debug(f"you have detect insecure browser")
+        #     if  'This browser or app may not be secure' in hint:
+        #         self.log.debug(f"you have detect insecure browser")
 
-                if self.page:
-                    await self.page.close()
-                if self.context:
-                    await self.context.close()
-                if self.browser:
-                    await self.browser.close()
-                if self.driver:
-                    await self.driver.stop()
+        #         if self.page:
+        #             await self.page.close()
+        #         if self.context:
+        #             await self.context.close()
+        #         if self.browser:
+        #             await self.browser.close()
+        #         if self.driver:
+        #             await self.driver.stop()
 
-            else:
-                pass
+        #     else:
+        #         pass
 
-        except:
-            self.log.debug(f"Finishing detect insecure browser...")
+        # except:
+        #     self.log.debug(f"Finishing detect insecure browser...")
     self.log.debug("start to detect Next button")
    
 
@@ -233,7 +236,7 @@ async def passwordlogin(self, page):
     # await page.locator("ytd-identity-prompt-footer-renderer").click()
     # await page.locator("ytd-simple-menu-header-renderer").click()
 
-    current_url = self.page.url
+    current_url = page.url
     if "/studio.youtube.com/" in current_url:
         print(f"studio.youtube.com in current_url: {current_url}")
 
@@ -246,9 +249,10 @@ async def passwordlogin(self, page):
         state = self.context.storage_state(path=self.CHANNEL_COOKIES)
         self.log.debug("we auto save your channel cookies to file:", self.CHANNEL_COOKIES)
 
-        if self.page:
+        if self.pl.page:
             try:
-                await self.page.close()
+                await self.pl.quit()
+
             except:
                 pass
         return True
@@ -500,7 +504,7 @@ async def youtube_login(self, account, password):
                                     f"被检测, 重新初始化chrome... ",
                                     datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                                 )
-                                await self.quit()
+                                await self.pl.quit()
                                 # sleep(1)
                                 # for i in range(3):
                                 #     port = f"{random.randint(6, 9)}{random.randint(1, 9)}{random.randint(1, 9)}{random.randint(1, 9)}"
@@ -542,7 +546,7 @@ async def youtube_login(self, account, password):
                         if  'This browser or app may not be secure' in hint:
                             self.log.debug(f"you have detect insecure browser")
 
-                            await self.quit()
+                            await self.pl.quit()
                         else:
                             pass
 
