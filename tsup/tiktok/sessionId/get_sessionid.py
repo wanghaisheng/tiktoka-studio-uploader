@@ -1,16 +1,13 @@
 import requests , time , os
 from colorama import Fore , init
 class ExtractSessionid:
-    def __init__(self):
+    def __init__(self,proxy=None):
         self.count = 0
         init(autoreset=True)
         self.green = Fore.LIGHTGREEN_EX
         self.red = Fore.LIGHTRED_EX
         self.reset = Fore.RESET
-        self.proxy = {
-            'http' : "socks5://127.0.0.1:1080",
-            'https' : "socks5://127.0.0.1:1080"
-        }
+        self.proxy = proxy
 
     def choice(self):
         print(f'[{self.green}+{self.reset}] 1 - Extract Sessionid From File ( account.txt )\n[{self.green}+{self.reset}] 2 - Extract Sessionid From Input\n[{self.green}+{self.reset}] Number : ', end='')

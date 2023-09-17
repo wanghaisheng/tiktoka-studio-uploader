@@ -53,12 +53,14 @@ def videoMetaString():
     users = ["amazing dear"]
     url_server='us'
     
-    print(f'start to upload video:{path} to tiktok')
+    print(f'start to upload video:{path} to tiktok {url_server}')
     
     isupload=upload2TiktokSessionId(session_id, path, title, tags, users, url_server, schedule_time)
     if isupload==False:
         
         url_server='www'
+        print(f'another try to start to upload video:{path} to tiktok {url_server}')
+        
         isupload=upload2TiktokSessionId(session_id, path, title, tags, users, url_server, schedule_time)    
     
 def videoMetaJson():

@@ -7,19 +7,13 @@ import json
 def more():
 
     # add the following for each video
-    videometa='examples/tiktok-videos.xlsx'
-    if videometa and os.path.exists(videometa):
-        my_dic = pd.read_excel(videometa, engine="openpyxl", index_col=None)
+    videojson='examples/tiktok-videos.json'
+    if videojson and os.path.exists(videojson):
+        videos=json.load(open(videojson, 'r', encoding='utf-8')) ['videos']
+        print(f'start to load videos in json file, found {len(videos)} videos there')
 
-        for name in my_dic.iterrows():
-            print(name)
-            
-            item = name[1].to_dict()        
+        for item in videos:
             print(item)
-
-            # print(f'start to load videos in json file, found {len(videos)} videos there')
-
-        # for item in videos:
             print(f"start to process {item['path']}")
             url_server='www'
 
@@ -43,16 +37,14 @@ def more():
 
 
             print(f'start to upload video:{path} to tiktok {url_server}')
-            try:
+
+            isupload=upload2TiktokSessionId(session_id, path, title, tags, users, url_server, schedule_time)
+            if isupload==False:
+
+                url_server='us'
+                print(f'another try to start to upload video:{path} to tiktok {url_server}')
+
                 isupload=upload2TiktokSessionId(session_id, path, title, tags, users, url_server, schedule_time)
-                if isupload==False:
-
-                    url_server='us'
-                    print(f'another try to start to upload video:{path} to tiktok {url_server}')
-
-                    isupload=upload2TiktokSessionId(session_id, path, title, tags, users, url_server, schedule_time)
-            except Exception as e:
-                print(f'you may double check sessionid is ok :\n {e}')
     else:
         print('videos.json file not found')    
 if __name__ == '__main__':

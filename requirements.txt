@@ -30,3 +30,4 @@ httpx
 numpy
 colorama==0.4.6
 undetected-playwright
+openpyxl
