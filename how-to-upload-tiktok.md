@@ -11,7 +11,7 @@ Log into Tiktok on any desktop web browser, then open your browser's developer t
 get cookies for your tiktok accounts without any efforts,for those proxy setting, adjust the code as you wish.
 
 ```
-python examples/saveCookie.py
+python examples/save-tiktok-Cookie.py
 ```
 
 or
@@ -56,6 +56,18 @@ how to call this lib in your own project
 
 ```
 python examples/onefile-example_tiktok_sessionid.py
+```
+
+
+```
+python examples/batch_files_in_excel_tiktok.py
+
+```
+
+
+```
+python examples/batch_files_in_json_youtube.py
+
 ```
 
 ### for those tech guy

@@ -1,7 +1,13 @@
 from tsup.tiktok.sessionId.get_sessionid import  ExtractSessionid
 
 if __name__ == '__main__':
-    E = ExtractSessionid()
+    proxy={
+            'http' : "socks5://127.0.0.1:1080",
+            'https' : "socks5://127.0.0.1:1080"
+        }
+    # if not use proxy, comment out the next line
+    #proxy=None
+    E = ExtractSessionid(proxy=proxy)
 # console
 #     E.choice()
 # 
