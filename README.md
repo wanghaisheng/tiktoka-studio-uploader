@@ -213,6 +213,10 @@ you can submit an issue too
 
 ## community/Support
 
+Join discord     
+
+https://discord.gg/mSCMS3jv5V
+
 Join lark for debugging your issues with me
 
 <img src="https://raw.githubusercontent.com/wanghaisheng/youtube-auto-upload/playwright/assets/feishu-chatgroup.jpg" alt="" data-canonical-src="https://github.com/wanghaisheng/tiktoka-studio-uploader/blob/playwright/assets/feishu-chatgroup.jpg" width="250" height="250" />

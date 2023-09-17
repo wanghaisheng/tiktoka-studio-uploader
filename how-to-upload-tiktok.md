@@ -19,6 +19,25 @@ or
 python examples/save-tiktok-sessionId.py
 ```
 
+
+### for those not that tech savy
+
+just open shell, run according to whether you use proxy to access tiktok
+
+
+```
+bash  test-tiktok-manual-sessionId-proxy.sh
+
+```
+
+or 
+
+```
+bash  test-tiktok-manual-sessionId.sh
+
+```
+
+
 ### for those not that tech savy
 
 1. install python on your computer. if you do not know how ,check here
