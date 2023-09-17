@@ -8,11 +8,17 @@ Log into Tiktok on any desktop web browser, then open your browser's developer t
 
 ### automatically get cookies or sessionId
 
+edit  saveCookie.py with your own account name, line 106
+
+**getCookie(browserType='firefox',proxyserver='socks5://127.0.0.1:1080',channelname='fastlane',url=sites[0])**
+
 get cookies for your tiktok accounts without any efforts,for those proxy setting, adjust the code as you wish.
 
 ```
 python examples/saveCookie.py
 ```
+
+find out sessionid in the output json file.
 
 or
 ```
