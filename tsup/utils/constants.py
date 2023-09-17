@@ -112,10 +112,12 @@ availableScheduleTimes = [
     "23:30",
     "23:45",
 ]
-PublishpolicyOptions = [0, 1, 2]
+PublishpolicyOptions = [0, 1, 2,3,4]
 # 0 -private
 # 1-publish
 # 2-schedule
+#3-Unlisted
+#4-public&premiere
 VideoLanguageOptions = [
     "Not applicable",
     "Abkhazian",

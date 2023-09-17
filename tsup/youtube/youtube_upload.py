@@ -84,10 +84,10 @@ class YoutubeUpload:
 
     async def upload(
         self,
-        video_path: str = "",
-        title: str = "",
-        description: str = "",
-        thumbnail: str = "",
+        video_local_path: str = "",
+        video_title: str = "",
+        video_description: str = "",
+        thumbnail_local_path: str = "",
         publish_policy: Optional[int] = 0,
         release_date: Optional[datetime] = datetime(
             date.today().year, date.today().month, date.today().day
@@ -112,6 +112,7 @@ class YoutubeUpload:
         categories: Optional[str] = None,
         comments_ratings_policy: Optional[int] = 1,
         is_show_howmany_likes: Optional[bool] = True,
+        is_monetization_allowed: Optional[bool] = True,
         tags: list = [],
         first_comment:Optional[str]=None,
         subtitles:Optional[str]=None
@@ -139,7 +140,7 @@ class YoutubeUpload:
 
         if publish_policy and publish_policy not in PublishpolicyOptions:
             self.log.debug(
-                f"you give a invalid publish_policy:{publish_policy} ,try to choose one of them{PublishpolicyOptions},we change it to  default 0"
+                f"you give a invalid publish_policy:{publish_policy} ,try to choose one of them{PublishpolicyOptions},0 -private 1-publish 2-schedule 3-Unlisted 4-public&premiere we change it to  default 0"
             )
             publish_policy = 0
         else:
@@ -166,7 +167,7 @@ class YoutubeUpload:
 
         if license_type and license_type not in LicenceTypeOptions:
             self.log.debug(
-                f"you give a invalid license_type:{license_type} ,try to choose one of them{license_typeOptions},we change it to  default 0"
+                f"you give a invalid license_type:{license_type} ,try to choose one of them{LicenceTypeOptions},we change it to  default 0"
             )
             license_type = 0
         else:
@@ -248,8 +249,8 @@ class YoutubeUpload:
             #     await botcheck(self.pl)
 
 
-        if not video_path:
-            raise FileNotFoundError(f'Could not find file with path: "{video_path}"')
+        if not video_local_path:
+            raise FileNotFoundError(f'Could not find file with path: "{video_local_path}"')
 
         if not self.channel_cookie_path is None:
             self.log.debug(f"Try to load specified cookie file:{self.channel_cookie_path}")
@@ -355,19 +356,19 @@ class YoutubeUpload:
         #     self.log.debug("Details failed to load")
         self.log.debug("Found YouTube upload Dialog Modal")
 
-        self.log.debug(f'Trying to upload "{video_path}" to YouTube...')
-        if os.path.exists(get_path(video_path)):
+        self.log.debug(f'Trying to upload "{video_local_path}" to YouTube...')
+        if os.path.exists(get_path(video_local_path)):
             page.locator(INPUT_FILE_VIDEO)
-            await page.set_input_files(INPUT_FILE_VIDEO, get_path(video_path))
-            self.log.debug(f'Trying to upload "{get_path(video_path)}" to YouTube...')
+            await page.set_input_files(INPUT_FILE_VIDEO, get_path(video_local_path))
+            self.log.debug(f'Trying to upload "{get_path(video_local_path)}" to YouTube...')
 
         else:
-            if os.path.exists(video_path.encode("utf-8")):
-                self.log.debug(f"file found: {video_path}")
+            if os.path.exists(video_local_path.encode("utf-8")):
+                self.log.debug(f"file found: {video_local_path}")
                 page.locator(INPUT_FILE_VIDEO)
-                await page.set_input_files(INPUT_FILE_VIDEO, video_path.encode("utf-8"))
+                await page.set_input_files(INPUT_FILE_VIDEO, video_local_path.encode("utf-8"))
             self.log.debug(
-                f'Trying to upload "{video_path.encode("utf-8")}" to YouTube...'
+                f'Trying to upload "{video_local_path.encode("utf-8")}" to YouTube...'
             )
 
         #     <h1 slot="primary-header" id="dialog-title" class="style-scope ytcp-confirmation-dialog">
@@ -399,18 +400,17 @@ class YoutubeUpload:
         # detect video id during uploading done in the title description page
         # .row
 
-        self.log.debug(f'Trying to set "{title}" as title...')
 
         await VerifyDialog(self, page)
 
-        if len(title) > TITLE_COUNTER:
+        if len(video_title) > TITLE_COUNTER:
             self.log.debug(
-                f"Title was not set due to exceeding the maximum allowed characters ({len(title)}/{TITLE_COUNTER})"
+                f"Title was not set due to exceeding the maximum allowed characters ({len(video_title)}/{TITLE_COUNTER})"
             )
-            title = title[: TITLE_COUNTER - 1]
+            video_title = video_title[: TITLE_COUNTER - 1]
 
             # TITLE
-        self.log.debug(f'Trying to set "{title}" as title...')
+        self.log.debug(f'Trying to set "{video_title}" as title...')
         try:
             await page.locator(TITLE_CONTAINER).is_visible()
             # await page.get_by_label("Tell viewers about your video (type @ to mention a channel)").click().fill(description)
@@ -421,21 +421,21 @@ class YoutubeUpload:
             await page.keyboard.press("Backspace")
             await page.keyboard.press("Control+KeyA")
             await page.keyboard.press("Delete")
-            await page.keyboard.type(title)
+            await page.keyboard.type(video_title)
             # 很可能就是这个没有确认输入，导致悬浮窗口，无法获取提交按钮
             await page.keyboard.press("Enter")
             self.log.debug("filling new  title")
         except:
             self.log.debug("failed to set title")
 
-        self.log.debug(f'Trying to set "{description}" as description...')
+        self.log.debug(f'Trying to set "{video_description}" as description...')
 
-        if description:
-            if len(description) > DESCRIPTION_COUNTER:
+        if video_description:
+            if len(video_description) > DESCRIPTION_COUNTER:
                 self.log.debug(
-                    f"Description was not set due to exceeding the maximum allowed characters ({len(description)}/{DESCRIPTION_COUNTER})"
+                    f"Description was not set due to exceeding the maximum allowed characters ({len(video_description)}/{DESCRIPTION_COUNTER})"
                 )
-                description = description[:4888]
+                video_description = video_description[:4888]
         try:
             self.log.debug("click description container to input")
             # self.log.debug('1',await page.get_by_label("Tell viewers about your video (type @ to mention a channel)").is_visible())
@@ -450,7 +450,7 @@ class YoutubeUpload:
             await page.keyboard.press("Backspace")
             await page.keyboard.press("Control+KeyA")
             await page.keyboard.press("Delete")
-            await page.keyboard.type(description)
+            await page.keyboard.type(video_description)
             await page.keyboard.press("Enter")
 
             self.log.debug("filling new  description")
@@ -519,16 +519,16 @@ class YoutubeUpload:
             self.log.debug(
                 f"can not identify video id in the upload detail page,try to grab in schedule page"
             )
-        if thumbnail:
-            self.log.debug(f'Trying to set "{thumbnail}" as thumbnail...')
+        if thumbnail_local_path:
+            self.log.debug(f'Trying to set "{thumbnail_local_path}" as thumbnail...')
             try:
                 # await page.get_by_role("button", name="Upload thumbnail").set_input_files(get_path(thumbnail))
 
                 await page.locator(INPUT_FILE_THUMBNAIL).set_input_files(
-                    get_path(thumbnail)
+                    get_path(thumbnail_local_path)
                 )
             except:
-                if os.path.exists(get_path(thumbnail)):
+                if os.path.exists(get_path(thumbnail_local_path)):
                     if await page.get_by_role(
                         "button", name="Upload thumbnail"
                     ).is_visible():
@@ -538,11 +538,11 @@ class YoutubeUpload:
 
                         await page.get_by_role(
                             "button", name="Upload thumbnail"
-                        ).set_input_files(get_path(thumbnail))
+                        ).set_input_files(get_path(thumbnail_local_path))
 
                 else:
-                    if os.path.exists(thumbnail.encode("utf-8")):
-                        self.log.debug("thumbnail found", thumbnail)
+                    if os.path.exists(thumbnail_local_path.encode("utf-8")):
+                        self.log.debug("thumbnail found", thumbnail_local_path)
                         if await page.get_by_role(
                             "button", name="Upload thumbnail"
                         ).is_visible():
@@ -551,13 +551,13 @@ class YoutubeUpload:
                             ).click()
                             await page.get_by_role(
                                 "button", name="Upload thumbnail"
-                            ).set_input_files(thumbnail.encode("utf-8"))
+                            ).set_input_files(thumbnail_local_path.encode("utf-8"))
 
                     else:
                         self.log.debug(
-                            f'you should provide a valid file path: "{thumbnail}"'
+                            f'you should provide a valid file path: "{thumbnail_local_path}"'
                         )
-            self.log.debug(f'finishing to set "{thumbnail}" as thumbnail...')
+            self.log.debug(f'finishing to set "{thumbnail_local_path}" as thumbnail...')
 
         await VerifyDialog(self, page)
 
@@ -805,8 +805,9 @@ class YoutubeUpload:
             self.log.debug("Trying to set video visibility to private...")
 
             await page.locator(PRIVATE_RADIO_LABEL).click()
+            
         elif int(publish_policy) == 1:
-            self.log.debug("Trying to set video visibility to public...")
+            self.log.debug("Trying to set video visibility to unlisted...")
             await page.locator(
                 "#first-container > tp-yt-paper-radio-button:nth-child(1)"
             ).is_visible()
@@ -814,62 +815,66 @@ class YoutubeUpload:
                 "#first-container > tp-yt-paper-radio-button:nth-child(1)"
             ).click()
 
-            publish = "public"
             try:
-                if publish == "unlisted":
+                self.log.debug("Trying to set video visibility to public...")
+                try:
                     self.log.debug(
-                        f"detect getbyrole unlisted button visible:",
+                        f"detect getbyrole public button visible:",
                         await page.get_by_role("radio", name="Public").is_visible(),
                     )
 
                     # self.log.debug(f'detect public button visible{PUBLIC_BUTTON}:',await page.locator(PUBLIC_BUTTON).is_visible())
                     # self.log.debug(f'detect public button visible:{PUBLIC_RADIO_LABEL}',await page.locator(PUBLIC_RADIO_LABEL).is_visible())
-                    await page.get_by_role("radio", name="Unlisted").click()
-                    self.log.debug("Unlisted radio button clicked")
+                    await page.get_by_role("radio", name="Public").click()
+                    self.log.debug("public radio button clicked")
                     # await page.locator(PUBLIC_BUTTON).click()
-                elif publish == "public":
-                    self.log.debug("switch case to public")
-                    try:
-                        self.log.debug(
-                            f"detect getbyrole public button visible:",
-                            await page.get_by_role("radio", name="Public").is_visible(),
-                        )
-
-                        # self.log.debug(f'detect public button visible{PUBLIC_BUTTON}:',await page.locator(PUBLIC_BUTTON).is_visible())
-                        # self.log.debug(f'detect public button visible:{PUBLIC_RADIO_LABEL}',await page.locator(PUBLIC_RADIO_LABEL).is_visible())
-                        await page.get_by_role("radio", name="Public").click()
-                        self.log.debug("public radio button clicked")
-                        # await page.locator(PUBLIC_BUTTON).click()
-                    except:
-                        self.log.debug("we could not find the public buttton...")
-
-                elif publish == "public&premiere":
-                    try:
-                        self.log.debug(
-                            f"detect getbyrole public button visible:",
-                            await page.get_by_role("radio", name="Public").is_visible(),
-                        )
-                        await page.get_by_role("radio", name="Public").click()
-                        self.log.debug("public radio button clicked")
-                    except:
-                        self.log.debug("we could not find the public buttton...")
-                    try:
-                        await page.get_by_role(
-                            "checkbox", name="Set as instant Premiere"
-                        ).is_visible()
-                        await page.get_by_role(
-                            "checkbox", name="Set as instant Premiere"
-                        ).click()
-
-                    except:
-                        self.log.debug(
-                            "we could not find the Set as instant Premiere checkbox..."
-                        )
+                except:
+                    self.log.debug("we could not find the public buttton...")
 
             except:
-                pass
+                pass            
+        elif int(publish_policy) == 3:
+            self.log.debug("Trying to set video visibility to Unlisted...")
+            await page.locator(
+                "#first-container > tp-yt-paper-radio-button:nth-child(1)"
+            ).is_visible()
+            await page.locator(
+                "#first-container > tp-yt-paper-radio-button:nth-child(1)"
+            ).click()
 
-        else:
+            try:
+                await page.get_by_role("radio", name="Unlisted").click()
+                self.log.debug("Unlisted radio button clicked")
+                # await page.locator(PUBLIC_BUTTON).click()
+                # await page.locator(PUBLIC_BUTTON).click()
+            except:
+                self.log.debug("we could not find the public buttton...")
+
+
+            
+        elif int(publish_policy) == 4:
+            self.log.debug("Trying to set video visibility to public&premiere...")
+            await page.locator(
+                "#first-container > tp-yt-paper-radio-button:nth-child(1)"
+            ).is_visible()
+            await page.locator(
+                "#first-container > tp-yt-paper-radio-button:nth-child(1)"
+            ).click()
+
+
+            try:
+                await page.get_by_role(
+                    "checkbox", name="Set as instant Premiere"
+                ).is_visible()
+
+                await  page.get_by_role("checkbox", name="Set as instant Premiere").click()
+
+            except:
+                self.log.debug(
+                    "we could not find the Set as instant Premiere checkbox..."
+                        )
+
+        elif int(publish_policy) == 2:
             if release_date is None:
                 release_date = datetime(
                     date.today().year, date.today().month, date.today().day
@@ -891,6 +896,8 @@ class YoutubeUpload:
             )
 
             await setscheduletime(page, release_date, release_date_hour)
+        else:
+            self.log.debug(f'you should choose a valid publish_policy from {PublishpolicyOptions}')
         self.log.debug("publish setting task done")
 
         if video_id is None:
@@ -936,7 +943,7 @@ class YoutubeUpload:
 
                 await page.get_by_role("radio", name="Save").click()
             self.log.debug("click done button")
-        self.log.debug(f"{video_path} is upload process is done")
+        self.log.debug(f"{video_local_path} is upload process is done")
 
         sleep(5)
         logging.info("Upload is complete")
