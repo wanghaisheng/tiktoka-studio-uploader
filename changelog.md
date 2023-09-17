@@ -1,3 +1,17 @@
+
+
+
+**Update 2023-09-17**
+
+1. add batch file process for tiktok 
+
+python examples/batch_files_in_excel_tiktok.py
+
+python examples/batch_files_in_json_youtube.py
+
+2. fix other issues
+
+
 **Update 2023-08-30**
 
 1. add undetected-playwright support to use as embed anti-detect browser

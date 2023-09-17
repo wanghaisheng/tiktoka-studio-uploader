@@ -1,14 +1,13 @@
-**Update 2023-08-30**
+**Update 2023-09-17**
 
-1. add undetected-playwright support to use as embed anti-detect browser
+1. add batch file process for tiktok 
 
-2. add very its you and insecure browser detection during sigin in
+python examples/batch_files_in_excel_tiktok.py
 
-3. add youtube models for later gui development
+python examples/batch_files_in_json_youtube.py
 
-4. change previous camel variable in youtube upload to underscore
+2. fix other issues
 
-5. fix other issues
 
 ## USAGE
 
