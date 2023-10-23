@@ -818,10 +818,11 @@ class YoutubeUpload:
             try:
                 self.log.debug("Trying to set video visibility to public...")
                 try:
-                    self.log.debug(
-                        f"detect getbyrole public button visible:",
-                        await page.get_by_role("radio", name="Public").is_visible(),
-                    )
+                    self.log.debug("detect getbyrole public button visible:")
+                    await page.get_by_role(
+                        "radio", name="Public"
+                    ).is_visible()
+                    
 
                     # self.log.debug(f'detect public button visible{PUBLIC_BUTTON}:',await page.locator(PUBLIC_BUTTON).is_visible())
                     # self.log.debug(f'detect public button visible:{PUBLIC_RADIO_LABEL}',await page.locator(PUBLIC_RADIO_LABEL).is_visible())
