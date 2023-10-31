@@ -29,6 +29,7 @@ class YoutubeUpload:
         debug: bool = True,
         username: str = "",
         password: str = "",
+        platform: Literal["youtube", "tiktok", "douyin"] = "youtube",
         recovery_email: str = "",
         use_stealth_js:bool = False,
         browser_type: Literal["chromium", "firefox", "webkit"] = "firefox",
@@ -88,7 +89,8 @@ class YoutubeUpload:
         video_title: str = "",
         video_description: str = "",
         thumbnail_local_path: str = "",
-        publish_policy: Optional[int] = 0,
+        publish_policy: Literal[0,1,2,3,4,5] = 0,
+        tags: list = [],
         release_date: Optional[datetime] = datetime(
             date.today().year, date.today().month, date.today().day
         ),
@@ -100,7 +102,7 @@ class YoutubeUpload:
         is_automatic_chapters: Optional[bool] = True,
         is_featured_place: Optional[bool] = True,
         video_language: Optional[str] = None,
-        # input language str and get index in the availableLanguages list
+        # input language str and get index in the availableLanguages list       
         captions_certification: Optional[int] = 0,
         # parse from video metadata  using ffmpeg
         video_film_date: Optional[str] = None,
@@ -113,7 +115,6 @@ class YoutubeUpload:
         comments_ratings_policy: Optional[int] = 1,
         is_show_howmany_likes: Optional[bool] = True,
         is_monetization_allowed: Optional[bool] = True,
-        tags: list = [],
         first_comment:Optional[str]=None,
         subtitles:Optional[str]=None
     ) -> Tuple[bool, Optional[str]]:
