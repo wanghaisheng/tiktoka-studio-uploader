@@ -4,7 +4,6 @@ taos
 better-exceptions>=0.2.2
 DBUtils>=2.0
 parsel>=1.5.2
-
 requests>=2.22.0
 selenium>=3.141.0
 bs4>=0.0.1

@@ -22,29 +22,28 @@ from playwright.async_api import Playwright, Browser, BrowserContext
 class YoutubeUpload:
     def __init__(
         self,
-        root_profile_directory: str,
-        proxy_option: str = "",
-        timeout: int = 200 * 1000,
-        is_open_browser: bool = True,
-        debug: bool = True,
-        username: str = "",
-        password: str = "",
-        platform: Literal["youtube", "tiktok", "douyin"] = "youtube",
-        recovery_email: str = "",
-        use_stealth_js:bool = False,
-        browser_type: Literal["chromium", "firefox", "webkit"] = "firefox",
+        root_profile_directory: Optional[str] = None,
+        proxy_option: Optional[str] = None,
+
+        timeout: Optional[int]  = 200 * 1000,
+        is_open_browser: Optional[bool] = True,
+        is_debug: Optional[bool]  = True,
+        username: Optional[str] = None,
+        password: Optional[str] = None,
+        recovery_email: Optional[str] = None,
+        channel_cookie_path: Optional[str] = None,
+
+        use_stealth_js:Optional[bool] = False,
+        browser_type: int=BROWSER_TYPE.FIREFOX,
         # 'chromium', 'firefox', or 'webkit'
-        channel_cookie_path: str = "",
-        wait_policy: Literal[
-            "go next after uploading success",
-            "go next after processing success",
-            "go next after copyright check success",
-        ] = "go next after copyright check success",
-        is_record_video: bool = False,
+        wait_policy: Optional[int]=WAIT_POLICY.GO_NEXT_COPYRIGHT_CHECK_SUCCESS,
+        
+        
+        is_record_video: Optional[bool] = True,
     ) -> None:
         self.timeout = timeout
-        self.log = Log(debug)
-        self.debug = debug
+        self.log = Log(is_debug)
+        self.debug = is_debug
         self.username = username
         self.password = password
         self.use_stealth_js=use_stealth_js
@@ -52,7 +51,7 @@ class YoutubeUpload:
         self.root_profile_directory = root_profile_directory
         self.proxy_option = proxy_option
         self.is_open_browser = is_open_browser
-        self.browser_type = browser_type
+        self.browser_type = dict(BROWSER_TYPE.BROWSER_TYPE_TEXT)[browser_type]
 
         self.pl: Playwright = None
         self.browser: Browser = None
@@ -85,10 +84,11 @@ class YoutubeUpload:
 
     async def upload(
         self,
-        video_local_path: str = "",
-        video_title: str = "",
-        video_description: str = "",
-        thumbnail_local_path: str = "",
+        video_id:str=None,
+        video_local_path: str = None,
+        video_title: str = None,
+        video_description: str = None,
+        thumbnail_local_path: str = None,
         publish_policy: Literal[0,1,2,3,4,5] = 0,
         tags: list = [],
         release_date: Optional[datetime] = datetime(
@@ -132,18 +132,18 @@ class YoutubeUpload:
             release_date_hour = "10:15"
         if (
             self.wait_policy
-            and self.wait_policy not in WaitPolicyOptions
+            and self.wait_policy not in dict(WAIT_POLICY.WAIT_POLICY_TEXT).keys()
         ):
             self.log.debug(
-                f"you give a invalid wait_policy:{self.wait_policy}, ,try to choose one of them{WaitPolicyOptions},we change it to  default 2"
+                f"you give a invalid wait_policy:{self.wait_policy}, try to choose one of them{dict(WAIT_POLICY.WAIT_POLICY_TEXT).keys()},we change it to  default 2"
             )
-            self.wait_policy = "go next after copyright check success"
+            self.wait_policy = 1
 
-        if publish_policy and publish_policy not in PublishpolicyOptions:
+        if publish_policy and publish_policy not in dict(PUBLISH_POLICY_TYPE.PUBLISH_POLICY_TYPE_TEXT).keys():
             self.log.debug(
-                f"you give a invalid publish_policy:{publish_policy} ,try to choose one of them{PublishpolicyOptions},0 -private 1-publish 2-schedule 3-Unlisted 4-public&premiere we change it to  default 0"
+                f"you give a invalid publish_policy:{publish_policy} ,try to choose one of them{dict(PUBLISH_POLICY_TYPE.PUBLISH_POLICY_TYPE_TEXT).keys()},0 -private 1-publish 2-schedule 3-Unlisted 4-public&premiere we change it to  default 0"
             )
-            publish_policy = 0
+            publish_policy = 1
         else:
             self.log.debug(f"publish_policy:{publish_policy}")
         if video_language is not None:
@@ -459,7 +459,7 @@ class YoutubeUpload:
             self.log.debug("failed to set description")
         await VerifyDialog(self, page)
 
-        if self.wait_policy in WaitPolicyOptions:
+        if self.wait_policy in dict(WAIT_POLICY.WAIT_POLICY_TEXT).keys():
             if self.wait_policy == "go next after uploading success":
                 self.log.debug("we choose to skip processing and check steps")
                 self.log.debug("start to check whether upload is finished")
@@ -800,7 +800,7 @@ class YoutubeUpload:
 
         # if there is issue in Copyright check, mandate publish_policy to 0
 
-        if not int(publish_policy) in PublishpolicyOptions:
+        if not int(publish_policy) in dict(PUBLISH_POLICY_TYPE.PUBLISH_POLICY_TYPE_TEXT).keys():
             publish_policy = 0
         if int(publish_policy) == 0:
             self.log.debug("Trying to set video visibility to private...")
@@ -810,10 +810,10 @@ class YoutubeUpload:
         elif int(publish_policy) == 1:
             self.log.debug("Trying to set video visibility to unlisted...")
             await page.locator(
-                "#first-container > tp-yt-paper-radio-button:nth-child(1)"
+                "#first-container > tp-yt-paper-radio-group"
             ).is_visible()
             await page.locator(
-                "#first-container > tp-yt-paper-radio-button:nth-child(1)"
+                "#first-container > tp-yt-paper-radio-group"
             ).click()
 
             try:
@@ -832,15 +832,15 @@ class YoutubeUpload:
                 except:
                     self.log.debug("we could not find the public buttton...")
 
-            except:
-                pass            
+            except Exception as e:
+                self.log.debug(f"Trying to set video visibility to public failure due to {e}")
         elif int(publish_policy) == 3:
             self.log.debug("Trying to set video visibility to Unlisted...")
             await page.locator(
-                "#first-container > tp-yt-paper-radio-button:nth-child(1)"
+                "#first-container > tp-yt-paper-radio-group"
             ).is_visible()
             await page.locator(
-                "#first-container > tp-yt-paper-radio-button:nth-child(1)"
+                "#first-container > tp-yt-paper-radio-group"
             ).click()
 
             try:
@@ -856,10 +856,10 @@ class YoutubeUpload:
         elif int(publish_policy) == 4:
             self.log.debug("Trying to set video visibility to public&premiere...")
             await page.locator(
-                "#first-container > tp-yt-paper-radio-button:nth-child(1)"
+                "#first-container > tp-yt-paper-radio-group"
             ).is_visible()
             await page.locator(
-                "#first-container > tp-yt-paper-radio-button:nth-child(1)"
+                "#first-container > tp-yt-paper-radio-group"
             ).click()
 
 
@@ -898,7 +898,7 @@ class YoutubeUpload:
 
             await setscheduletime(page, release_date, release_date_hour)
         else:
-            self.log.debug(f'you should choose a valid publish_policy from {PublishpolicyOptions}')
+            self.log.debug(f'you should choose a valid publish_policy from {dict(PUBLISH_POLICY_TYPE.PUBLISH_POLICY_TYPE_TEXT).keys()}')
         self.log.debug("publish setting task done")
 
         if video_id is None:
