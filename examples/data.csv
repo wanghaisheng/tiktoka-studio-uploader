@@ -1,3 +1,0 @@
-video_id,result_image_size,title,sub_title,extra_text,background_image,title_font_size,sub_title_font_size,extra_text_font_size,title_canvas_start_coordination,subtitle_canvas_start_coordination,extra_text_canvas_start_coordination,title_font,subtitle_font,extra_text_font
-1,1280x720,LunaTranslator,Galgame translate tool, support clipboard / OCR/ HOOK.support 40+ translate engines,16-9.jpg,72,48,36,5,2,8,MSYHMONO.TTF,MSYHMONO.TTF,MSYHMONO.TTF
-2,1280x720, 在线字体编辑器,使用Fonteditor在线编辑、转换、预览字体文件, 支持导入的字体格式有 ttf, woff, woff2, svg font, eot, otf等字体格式，支持ttf, woff, woff2等格式字体导出。,16-9.jpg,72,48,36,5,2,8,chinese.TTF,chinese.TTF,chinese.TTF

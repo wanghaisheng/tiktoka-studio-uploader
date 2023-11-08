@@ -20,13 +20,13 @@ date_to_publish = ""
 proxy_option = "socks5://127.0.0.1:1080"
 
 # for cookie issue,
-title = "bababala"
-title = title[:95]
+video_title = "bababala"
+video_title = video_title[:95]
 username = "edwin.uestc@gmail.com"
 password = "U437P8Is9prmNquVerHJ9%R00bn"
-description = "========================balabala"
+video_description = "========================balabala"
 invalid_thumbnail = r"D:\Download\audio-visual\make-reddit-video\reddit-to-video\assets\ace\ace-attorney_feature.jpg"
-thumbnail = r"/Users/wenke/github/tiktoka-studio-uploader/tests/1/sp/1-001.jpg"
+thumbnail_local_path = r"/Users/wenke/github/tiktoka-studio-uploader/tests/1/sp/1-001.jpg"
 
 
 closewhen100percent = 0
@@ -70,12 +70,36 @@ today = date.today()
 def instantpublish():
     asyncio.run(
         upload.upload(
-            video_path=videopath,
-            title="instant publish-test-005",
-            description=description,
-            thumbnail=thumbnail,
+            video_local_path=videopath,
+            video_title="instant publish-test-005",
+            video_description=video_description,
+            thumbnail_local_path=thumbnail_local_path,
             tags=tags,
             publish_policy=1,
+        )
+    )
+
+def unlistedpublish():
+    asyncio.run(
+        upload.upload(
+            video_local_path=videopath,
+            video_title="unlisted public publish-test-005",
+            video_description=video_description,
+            thumbnail_local_path=thumbnail_local_path,
+            tags=tags,
+            publish_policy=3,
+        )
+    )
+
+def premierepublish():
+    asyncio.run(
+        upload.upload(
+            video_local_path=videopath,
+            video_title="premiere public publish-test-005",
+            video_description=video_description,
+            thumbnail_local_path=thumbnail_local_path,
+            tags=tags,
+            publish_policy=4,
         )
     )
 
@@ -83,10 +107,10 @@ def instantpublish():
 def saveasprivatedraft():
     asyncio.run(
         upload.upload(
-            video_path=videopath,
-            title="private draft-test-004",
-            description=description,
-            thumbnail=thumbnail,
+            video_local_path=videopath,
+            video_title="private draft-test-004",
+            video_description=video_description,
+            thumbnail_local_path=thumbnail_local_path,
             tags=tags,
             publish_policy=0,
         )
@@ -105,9 +129,9 @@ def scheduletopublish_tomorrow():
     # asyncio.get_event_loop().run_until_complete(
     #     upload.upload(
     #         videopath=videopath,
-    #         title="tomorrow-test-001",
-    #         description=description,
-    #         thumbnail=thumbnail,
+    #         video_title="tomorrow-test-001",
+    #         video_description=video_description,
+    #         thumbnail_local_path=thumbnail_local_path,
     #         tags=tags,
     #         publishpolicy=2,
     #         date_to_publish=date_to_publish,
@@ -116,10 +140,10 @@ def scheduletopublish_tomorrow():
     # )
     asyncio.run(
         upload.upload(
-            video_path=videopath,
-            title="tomorrow-test-001",
-            description=description,
-            thumbnail=thumbnail,
+            video_local_path=videopath,
+            video_title="tomorrow-test-001",
+            video_description=video_description,
+            thumbnail_local_path=thumbnail_local_path,
             tags=tags,
             publish_policy=2,
             release_date=date_to_publish,
@@ -143,10 +167,10 @@ def scheduletopublish_every7days():
 
     asyncio.run(
         upload.upload(
-            video_path=videopath,
-            title="7days later-test-003",
-            description=description,
-            thumbnail=thumbnail,
+            video_local_path=videopath,
+            video_title="7days later-test-003",
+            video_description=video_description,
+            thumbnail_local_path=thumbnail_local_path,
             tags=tags,
             publish_policy=2,
             release_date=date_to_publish,
@@ -167,10 +191,10 @@ def scheduletopublish_at_specific_date():
     # date_to_publish = datetime.strftime(date_to_publish, "%Y-%m-%d %H:%M:%S")
     asyncio.run(
         upload.upload(
-            video_path=videopath,
-            title="four days later-test-002",
-            description=description,
-            thumbnail=thumbnail,
+            video_local_path=videopath,
+            video_title="four days later-test-002",
+            video_description=video_description,
+            thumbnail_local_path=thumbnail_local_path,
             tags=tags,
             publish_policy=2,
             release_date=date_to_publish,
@@ -196,14 +220,17 @@ def scheduletopublish_at_specific_date():
     #                 date_to_publish += offset
 
 checkfilebroken(channel_cookie_path)
-checkfilebroken(thumbnail)
+checkfilebroken(thumbnail_local_path)
 checkfilebroken(videopath)
 
 
 checkRequirments()
-scheduletopublish_tomorrow()
-scheduletopublish_at_specific_date()
-scheduletopublish_every7days()
-saveasprivatedraft()
-instantpublish()
+unlistedpublish()
+premierepublish()
+
+# scheduletopublish_tomorrow()
+# scheduletopublish_at_specific_date()
+# scheduletopublish_every7days()
+# saveasprivatedraft()
+# instantpublish()
 # friststart()
