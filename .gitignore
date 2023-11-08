@@ -16,3 +16,4 @@ screen-recording/*
 /output/*
 youtube-stealth-**.json
 *.json
+.DS_Store
