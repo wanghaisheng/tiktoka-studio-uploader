@@ -33,7 +33,6 @@ import requests
 
 from typing import Optional, AsyncIterator
 from contextlib import asynccontextmanager
-from cf_clearance import async_cf_retry, async_stealth
 from datetime import datetime, date, timedelta
 
 
@@ -192,9 +191,7 @@ class PlaywrightAsyncDriver(WebDriver):
             #     "document.body.appendChild(Object.assign(document.createElement('script'), {src: 'https://gitcdn.xyz/repo/berstend/puppeteer-extra/stealth-js/stealth.min.js'}))"
             # )
             self.page = await self.context.new_page()
-            print("we are trying to use async_stealth to bypass cloudflare detection")
             
-            await async_stealth(self.page, pure=True)
             # store the stealth state to reload next time
             # await botcheck(self)
             # if self.debug:
