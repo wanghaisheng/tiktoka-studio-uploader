@@ -1,7 +1,6 @@
 from playwright import async_playwright
 from tsup.utils.webdriver import PlaywrightAsyncDriver
 
-from cf_clearance import async_cf_retry, async_stealth
 
 
 class Botcheck:
@@ -265,7 +264,6 @@ async def main():
     )
 
     botcheck = Botcheck(pl.page)
-    await async_stealth(pl.page, pure=True)
 
     await botcheck.isolatedWorld()
     await botcheck.behaviorMonitor()

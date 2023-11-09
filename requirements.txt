@@ -1,5 +1,4 @@
 playwright>=1.33.0
-cf_clearance
 taos
 better-exceptions>=0.2.2
 DBUtils>=2.0
