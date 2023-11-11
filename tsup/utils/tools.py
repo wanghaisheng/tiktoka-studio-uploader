@@ -41,14 +41,12 @@ from pprint import pprint
 from urllib import request
 from urllib.parse import urljoin
 
-import redis
 import requests
 import six
 from requests.cookies import RequestsCookieJar
 from w3lib.url import canonicalize_url as _canonicalize_url
 
 import tsup.setting as setting
-from tsup.db.redisdb import RedisDB
 from tsup.utils.email_sender import EmailSender
 from tsup.utils.log import log
 
@@ -2729,38 +2727,6 @@ def re_def_supper_class(obj, supper_class):
 ###################
 freq_limit_record = {}
 
-
-def reach_freq_limit(rate_limit, *key):
-    """
-    频率限制
-    :param rate_limit: 限制时间 单位秒
-    :param key: 频率限制的key
-    :return: True / False
-    """
-    if rate_limit == 0:
-        return False
-
-    msg_md5 = get_md5(*key)
-    key = "rate_limit:{}".format(msg_md5)
-    try:
-        if get_redisdb().strget(key):
-            return True
-
-        get_redisdb().strset(key, time.time(), ex=rate_limit)
-    except redis.exceptions.ConnectionError as e:
-        # 使用内存做频率限制
-        global freq_limit_record
-
-        if key not in freq_limit_record:
-            freq_limit_record[key] = time.time()
-            return False
-
-        if time.time() - freq_limit_record.get(key) < rate_limit:
-            return True
-        else:
-            freq_limit_record[key] = time.time()
-
-    return False
 
 
 def dingding_warning(

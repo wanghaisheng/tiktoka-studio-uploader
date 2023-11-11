@@ -25,7 +25,6 @@ from playwright.sync_api import Playwright, Browser
 from playwright.sync_api import Response
 from playwright.sync_api import sync_playwright
 
-from tsup.utils import tools
 from tsup.utils.log import log
 from tsup.utils.webdriver.webdirver import *
 
@@ -178,9 +177,7 @@ class PlaywrightSyncDriver(WebDriver):
         self.browser.close()
         self.driver.stop()
 
-    @property
-    def domain(self):
-        return tools.get_domain(self.url or self.page.url)
+
 
     @property
     def cookies(self):

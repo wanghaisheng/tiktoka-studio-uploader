@@ -25,7 +25,6 @@ from playwright.async_api import Playwright, Browser
 from playwright.async_api import Response
 from playwright.async_api import async_playwright
 
-from tsup.utils import tools
 from tsup.utils.log import log
 from tsup.utils.webdriver.webdirver import *
 import filecmp
@@ -289,9 +288,7 @@ class PlaywrightAsyncDriver(WebDriver):
         if self.driver:
             await self.driver.stop()
 
-    @property
-    def domain(self):
-        return tools.get_domain(self.url or self.page.url)
+
 
     @property
     def cookies(self):

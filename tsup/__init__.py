@@ -31,6 +31,3 @@ from tsup.douyin.douyin_upload import DouyinUpload
 # from tsup.db import *
 # from tsup.tiktok import *
 from tsup.utils.custom_argparse import ArgumentParser
-from tsup.network.request import Request
-from tsup.network.response import Response
-from tsup.network.item import Item, UpdateItem
