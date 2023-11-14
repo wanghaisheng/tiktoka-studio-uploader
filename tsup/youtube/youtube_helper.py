@@ -18,8 +18,9 @@ class BROWSER_TYPE:
     BROWSER_TYPE_TEXT = [
         (CHROMIUM, "chromium"),
         (FIREFOX, "firefox"),
-        (WEBKIT, "webKit"),
+        (WEBKIT, "webkit"),
     ]
+
 class WAIT_POLICY:
     GO_NEXT_UPLOAD_SUCCESS = 1
     GO_NEXT_PROCESSING_SUCCESS = 2
@@ -46,6 +47,45 @@ class PUBLISH_POLICY_TYPE:
         Unlisted:"Unlisted",
         Public_Premiere:"Public & Premiere"
     }
+class VIDEO_CATEGORIES_OPTIONS:
+    AutosVehicles= 15
+    Comedy= 1
+    Education= 2
+    Entertainment= 3
+    FilmAnimation= 4
+    Gaming= 5
+    HowtoStyle= 6
+    Music= 7
+    NewsPolitics= 8
+    NonprofitsActivism= 9
+    PeopleBlogs= 10
+    PetsAnimals= 11
+    ScienceTechnology= 12
+    Sports= 13
+    TravelEvents= 14
+
+    
+    # VIDEO_LANGUAGE_TEXT = {v: k for k, v in VIDEO_LANGUAGE_OPTIONS.items()}
+    VIDEO_CATEGORIES_OPTIONS_TEXT = {
+        AutosVehicles: "Autos & Vehicles",
+        Comedy: "Comedy",
+        Education: "Education",
+        Entertainment: "Entertainment",
+        FilmAnimation: "Film & Animation",
+        Gaming: "Gaming",
+        HowtoStyle: "Howto & Style",
+        Music: "Music",
+        NewsPolitics: "News & Politics",
+        NonprofitsActivism: "Nonprofits & Activism",
+        PeopleBlogs: "People & Blogs",
+        PetsAnimals: "Pets & Animals",
+        ScienceTechnology: "Science & Technology",
+        Sports: "Sports",
+        TravelEvents: "Travel & Events"
+
+
+    }
+    
 class VIDEO_SETTINGS:
     # Wait Policy options
     GO_NEXT_UPLOAD_SUCCESS = 0
@@ -321,29 +361,7 @@ class VIDEO_SETTINGS:
         "Yoruba",
         "Zulu",
     ]
-        # Video Categories Options
-    VIDEO_CATEGORIES_OPTIONS = {
-        "None":0,
-        "Autos & Vehicles": 15,
-        "Comedy": 1,
-        "Education": 2,
-        "Entertainment": 3,
-        "Film & Animation": 4,
-        "Gaming": 5,
-        "Howto & Style": 6,
-        "Music": 7,
-        "News & Politics": 8,
-        "Nonprofits & Activism": 9,
-        "People & Blogs": 10,
-        "Pets & Animals": 11,
-        "Science & Technology": 12,
-        "Sports": 13,
-        "Travel & Events": 14
-    }
 
-    # VIDEO_LANGUAGE_TEXT = {v: k for k, v in VIDEO_LANGUAGE_OPTIONS.items()}
-    VIDEO_CATEGORIES_TEXT = {v: k for k, v in VIDEO_CATEGORIES_OPTIONS.items()}
-    
 
 
 def get_path(file_path: str) -> str:
