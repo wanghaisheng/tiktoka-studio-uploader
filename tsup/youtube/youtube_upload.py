@@ -35,7 +35,7 @@ class YoutubeUpload:
         logger:Optional[Log]=None,
 
         use_stealth_js:Optional[bool] = False,
-        browser_type: int=BROWSER_TYPE.FIREFOX,
+        browser_type: Optional[str]='firefox',
         # 'chromium', 'firefox', or 'webkit'
         wait_policy: Optional[int]=WAIT_POLICY.GO_NEXT_COPYRIGHT_CHECK_SUCCESS,
         
@@ -62,7 +62,10 @@ class YoutubeUpload:
         self.root_profile_directory = root_profile_directory
         self.proxy_option = proxy_option
         self.is_open_browser = is_open_browser
-        self.browser_type = dict(BROWSER_TYPE.BROWSER_TYPE_TEXT)[browser_type]
+        if browser_type not in list(dict(BROWSER_TYPE.BROWSER_TYPE_TEXT).values()):
+            self.browser_type = "firefox"
+        else:
+            self.browser_type = browser_type
 
         self.pl: Playwright = None
         self.browser: Browser = None
