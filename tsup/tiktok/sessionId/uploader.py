@@ -107,8 +107,15 @@ def upload2TiktokSessionId(session_id, video, title, tags, users=[], url_prefix=
 		"video_id": video_id,
 		"creation_id": creationID
 	}
-	if schedule_time and schedule_time - datetime.datetime.now().timestamp() > 900:  # 900s = 15min
+	if schedule_time == 0:
+		pass
+	elif schedule_time > min_schedule_time:
+		# Confirm again because the video upload can be very long
 		data["upload_param"]["schedule_time"] = schedule_time
+	else:
+		log(f"Video schedule time is less than {tiktok_min_margin_schedule_time // 60} minutes in the future, the upload process took more than"
+			f"the {margin_to_upload_video // 60} minutes of margin to upload the video")
+		return False
 	postQuery['X-Bogus'] = get_x_bogus(urlencode(postQuery), json.dumps(data, separators=(',', ':')), UA)
 	url = f'https://{url_prefix}.tiktok.com/api/v1/web/project/post/'
 	headers = {
