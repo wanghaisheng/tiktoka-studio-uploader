@@ -12,9 +12,22 @@ UA = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chr
 
 
 def upload2TiktokSessionId(session_id, video, title, tags, users=[], url_prefix="us", schedule_time: int = 0, proxy: dict = None):
-	if schedule_time - datetime.datetime.now().timestamp() > 864000:  # 864000s = 10 days
-		print("[-] Can not schedule video in more than 10 days")
+	tiktok_min_margin_schedule_time =  900  # 15 minutes
+	tiktok_max_margin_schedule_time = 864000  # 10 days
+	margin_to_upload_video = 300  # 5 minutes
+
+	min_schedule_time = datetime.datetime.utcnow().timestamp() + tiktok_min_margin_schedule_time + margin_to_upload_video
+	max_schedule_time = datetime.datetime.utcnow().timestamp() + tiktok_max_margin_schedule_time
+
+	if schedule_time == 0:
+		pass
+	elif schedule_time < min_schedule_time:
+		print(f"[-] Can not schedule video in less than {(tiktok_min_margin_schedule_time + margin_to_upload_video) // 60} minutes")
 		return False
+	elif schedule_time > max_schedule_time:
+		print(f"[-] Can not schedule video in more than {tiktok_max_margin_schedule_time // 86400} days")
+		return False
+
 
 	session = requests.Session()
 
