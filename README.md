@@ -82,6 +82,11 @@ AS a code dummy, I do accept any advice because my only purpose is to get things
 
 ## features YOU MAY NEED
 
+### profile support 
+
+use firefox profile instead of cookie file can  avoid hints such as your browser is insecure 
+
+
 ### 1. proxy support
 
 auto detect whether need a proxy.
