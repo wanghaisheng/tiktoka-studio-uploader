@@ -20,11 +20,11 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import ElementClickInterceptedException, TimeoutException
 
-from tiktok_uploader.browsers import get_browser
-from tiktok_uploader.auth import AuthBackend
-from tiktok_uploader import config, logger
-from tiktok_uploader.utils import bold, green, red
-from tiktok_uploader.proxy_auth_extension.proxy_auth_extension import proxy_is_working
+from tsup.tiktok.selenium.browsers import get_browser
+from tsup.tiktok.selenium.auth import AuthBackend
+from tsup.tiktok.selenium import config, logger
+from tsup.tiktok.selenium.utils import bold, green, red
+from tsup.tiktok.selenium.proxy_auth_extension.proxy_auth_extension import proxy_is_working
 
 
 def upload_video(filename=None, description='', cookies='', schedule: datetime.datetime = None, username='',

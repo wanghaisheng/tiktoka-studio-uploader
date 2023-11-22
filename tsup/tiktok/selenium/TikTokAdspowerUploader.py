@@ -16,7 +16,7 @@ from tsup.utils.webdriver.AdsChrome import AdsChromeDriver
 logging.basicConfig()
 
 
-class TiktokUploader:
+class AdspowerUploader:
     def __init__(self, pkl_path: str, account: str, video_path: str, title: str, caption: str, description: str, tags: str, title_tags: str, use_file_title:str, finger_web: str) -> None:
         self.account = account
         self.video_path = video_path
@@ -155,5 +155,5 @@ if __name__ == "__main__":
     # parser.add_argument("--meta", help='Path to the JSON file with metadata')
     # args = parser.parse_args()
     # uploader = TiktokUploader(args.video, args.meta, args.thumbnail)
-    uploader = TiktokUploader("jie", "new bag.mp4", "conf.json", None)
+    uploader = AdspowerUploader("jie", "new bag.mp4", "conf.json", None)
     uploader.upload()

@@ -1,12 +1,28 @@
 # -*- coding: utf-8 -*-
 """
-Created on 2023/6/05 12:09 AM
----------
-@summary:
----------
-@author: wanghaisheng
-@email: admin@tiktokastudio.com
-
-
-
+TikTok Uploader Initialization
+https://github.com/wkaisertexas/tiktok-uploader/blob/main/src/tiktok_uploader/__init__.py
 """
+from os.path import abspath, join, dirname
+import logging
+
+import toml
+
+
+## Load Config
+src_dir = abspath(dirname(__file__))
+config = toml.load(join(src_dir, 'config.toml'))
+
+## Setup Logging
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter(
+    '%(asctime)s %(message)s',
+    datefmt='[%H:%M:%S]'
+)
+
+stream_handler = logging.StreamHandler()
+stream_handler.setLevel(logging.DEBUG)
+stream_handler.setFormatter(formatter)
+logger.addHandler(stream_handler)

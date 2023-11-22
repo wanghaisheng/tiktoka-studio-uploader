@@ -1,6 +1,19 @@
 
 
 
+**Update 2023-11-22**
+
+1. add selenium support  for tiktok 
+
+python examples/onefile-example_tiktok_selenium_adspower.py
+
+python examples/onefile-example_tiktok_selenium.py
+
+2. fix other issues
+
+
+
+
 **Update 2023-09-17**
 
 1. add batch file process for tiktok 

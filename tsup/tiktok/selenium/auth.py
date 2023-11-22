@@ -7,9 +7,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-from tiktok_uploader import config, logger
-from tiktok_uploader.browsers import get_browser
-from tiktok_uploader.utils import green
+from tsup.tiktok.selenium import config, logger
+from tsup.tiktok.selenium.browsers import get_browser
+from tsup.tiktok.selenium.utils import green
 
 class AuthBackend:
     """
@@ -20,20 +20,21 @@ class AuthBackend:
     cookies: list
 
     def __init__(self, username: str = '', password: str = '',
-                 cookies_list: list = None, cookies=None, sessionid: str = None):
+                 cookies_list: list = None, cookies=None, cookies_str=None, sessionid: str = None):
         """
-        Creates the authenticaiton backend
+        Creates the authentication backend
 
         Keyword arguments:
         - username -> the accounts's username or email
         - password -> the account's password
 
-        - cookies -> a list of cookie dictionaries of cookies which is Selenium-compatable
+        - cookies -> a list of cookie dictionaries of cookies which is Selenium-compatible
         """
         if (username and not password) or (password and not username):
             raise InsufficientAuth()
 
         self.cookies = self.get_cookies(path=cookies) if cookies else []
+        self.cookies += self.get_cookies(cookies_str=cookies_str) if cookies_str else []
         self.cookies += cookies_list if cookies_list else []
         self.cookies += [{'name': 'sessionid', 'value': sessionid}] if sessionid else []
 
@@ -76,12 +77,15 @@ class AuthBackend:
         return driver
 
 
-    def get_cookies(self, path: str) -> dict:
+    def get_cookies(self, path: str = None, cookies_str: str = None) -> dict:
         """
         Gets cookies from the passed file using the netscape standard
         """
-        with open(path, 'r', encoding='utf-8') as file:
-            lines = file.read().split('\n')
+        if path:
+            with open(path, "r", encoding="utf-8") as file:
+                lines = file.read().split("\n")
+        else:
+            lines = cookies_str.split("\n")
 
         return_cookies = []
         for line in lines:
