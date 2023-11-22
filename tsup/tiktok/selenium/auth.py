@@ -76,14 +76,46 @@ class AuthBackend:
 
         return driver
 
+    
+    def load_json_cookie_file(cookie_file: str):
+        """Restore auth cookies from a file. Does not guarantee that the user is logged in afterwards.
+        Visits the domains specified in the cookies to set them, the previous page is not restored.
+        """
+        domain_cookies: Dict[str, List[object]] = {}
+        # cookie_file=r'D:\Download\audio-visual\make-reddit-video\auddit\assets\cookies\aww.json'
+        with open(cookie_file) as file:
+            cookies: List = json.load(file)
+            # Sort cookies by domain, because we need to visit to domain to add cookies
+            for cookie in cookies:
+                if (
+                    cookie["sameSite"] != "no_restriction"
+                    or cookie["sameSite"].lower() != "no_restriction"
+                ):
+                    cookie.update(sameSite="None")
+                try:
+                    domain_cookies[cookie["domain"]].append(cookie)
+                except KeyError:
+                    domain_cookies[cookie["domain"]] = [cookie]
+        # print(str(domain_cookies).replace(",", ",\n"))
+
+        # cookie.pop("sameSite", None)  # Attribute should be available in Selenium >4
+        # cookie.pop("storeId", None)  # Firefox container attribute
+        # print("add cookies", domain_cookies[cookie["domain"]])
+        # await self.context.add_cookies(cookies)
+        return domain_cookies[cookie["domain"]]    
 
     def get_cookies(self, path: str = None, cookies_str: str = None) -> dict:
         """
         Gets cookies from the passed file using the netscape standard
         """
         if path:
-            with open(path, "r", encoding="utf-8") as file:
-                lines = file.read().split("\n")
+            if '.json' in path:
+                return load_json_cookie_file(path)
+                
+            else:
+                
+                with open(path, "r", encoding="utf-8") as file:
+                    lines = file.read().split("\n")
         else:
             lines = cookies_str.split("\n")
 
