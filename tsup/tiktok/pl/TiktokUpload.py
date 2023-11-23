@@ -117,7 +117,7 @@ class TiktokUpload:
         print(f"default closewhen100percent:{self.closewhen100percent}")
         video_id = None
         if hour_to_publish and hour_to_publish not in availableScheduleTimes:
-            self.log.debug(
+            self.logger.debug(
                 f"you give a invalid hour_to_publish:{self.hour_to_publish}, ,try to choose one of them{availableScheduleTimes},we change it to  default 10:15"
             )
             hour_to_publish = "10:15"
@@ -125,13 +125,13 @@ class TiktokUpload:
             self.closewhen100percent
             and self.closewhen100percent not in closewhen100percentOptions
         ):
-            self.log.debug(
+            self.logger.debug(
                 f"you give a invalid closewhen100percent:{self.closewhen100percent}, ,try to choose one of them{closewhen100percentOptions},we change it to  default 2"
             )
             self.closewhen100percent = 2
 
         if publishpolicy and publishpolicy not in PublishpolicyOptions:
-            self.log.debug(
+            self.logger.debug(
                 f"you give a invalid publishpolicy:{publishpolicy} ,try to choose one of them{PublishpolicyOptions},we change it to  default 0"
             )
             publishpolicy = 0
@@ -139,7 +139,7 @@ class TiktokUpload:
             print(f"publishpolicy:{publishpolicy}")
         if VideoLanguage is not None:
             if VideoLanguage and VideoLanguage not in VideoLanguageOptions:
-                self.log.debug(
+                self.logger.debug(
                     f"you give a invalid VideoLanguage:{VideoLanguage} ,try to choose one of them{VideoLanguageOptions},we change it to  default None"
                 )
                 VideoLanguage = None
@@ -150,7 +150,7 @@ class TiktokUpload:
             CaptionsCertification
             and CaptionsCertification not in CaptionsCertificationOptions
         ):
-            self.log.debug(
+            self.logger.debug(
                 f"you give a invalid publishpolicy:{CaptionsCertification} ,try to choose one of them{CaptionsCertificationOptions},we change it to  default 0"
             )
             CaptionsCertification = 0
@@ -158,7 +158,7 @@ class TiktokUpload:
             print(f"CaptionsCertification:{CaptionsCertification}")
 
         if LicenceType and LicenceType not in LicenceTypeOptions:
-            self.log.debug(
+            self.logger.debug(
                 f"you give a invalid LicenceType:{LicenceType} ,try to choose one of them{LicenceTypeOptions},we change it to  default 0"
             )
             LicenceType = 0
@@ -166,7 +166,7 @@ class TiktokUpload:
             print(f"LicenceType:{LicenceType}")
 
         if ShortsremixingType and ShortsremixingType not in ShortsremixingTypeOptions:
-            self.log.debug(
+            self.logger.debug(
                 f"you give a invalid ShortsremixingType:{ShortsremixingType} ,try to choose one of them{ShortsremixingTypeOptions},we change it to  default 0"
             )
             ShortsremixingType = 0
@@ -175,7 +175,7 @@ class TiktokUpload:
 
         if Category is not None:
             if Category and Category not in CategoryOptions:
-                self.log.debug(
+                self.logger.debug(
                     f"you give a invalid Category:{Category} ,try to choose one of them{CategoryOptions},we change it to  default None"
                 )
                 Category = None
@@ -185,7 +185,7 @@ class TiktokUpload:
             CommentsRatingsPolicy
             and CommentsRatingsPolicy not in CommentsRatingsPolicyOptions
         ):
-            self.log.debug(
+            self.logger.debug(
                 f"you give a invalid CommentsRatingsPolicy:{CommentsRatingsPolicy} ,try to choose one of them{CommentsRatingsPolicyOptions},we change it to  default 1"
             )
             CommentsRatingsPolicy = 1
@@ -199,10 +199,10 @@ class TiktokUpload:
             headless = False
         else:
             headless = True
-        self.log.debug(f"whether run in view mode:{headless}")
+        self.logger.debug(f"whether run in view mode:{headless}")
 
         if self.proxy_option == "":
-            self.log.debug(f"start web page without proxy:{self.proxy_option}")
+            self.logger.debug(f"start web page without proxy:{self.proxy_option}")
 
             with PlaywrightAsyncDriver(
                 proxy=None,
@@ -217,7 +217,7 @@ class TiktokUpload:
                 self._browser = pl.browser
                 self.context = pl.context
                 self.page = pl.page
-            self.log.debug(
+            self.logger.debug(
                 f"{self.browserType} is now running without proxy:{self.proxy_option}"
             )
 
@@ -236,7 +236,7 @@ class TiktokUpload:
                 self.context = pl.context
                 self.page = pl.page
 
-            self.log.debug(
+            self.logger.debug(
                 f"{self.browserType} is now running with proxy:{self.proxy_option}"
             )
 
@@ -272,7 +272,7 @@ class TiktokUpload:
 
             await page.reload()
         else:
-            self.log.debug("Please sign in and then press enter")
+            self.logger.debug("Please sign in and then press enter")
             # input()
             await page.goto(TIKTOK_URL, timeout=300000)
             # Interact with login form
@@ -281,12 +281,12 @@ class TiktokUpload:
             # await page.locator(".login").click()
             # await page.locator(".semi-button-content").click()
             if self.username and self.password:
-                self.log.debug(
+                self.logger.debug(
                     "there is no cookie file,but you give account/pass,try to login automatically"
                 )
                 await tiktok_login(self, self.username, self.password)
             else:
-                self.log.debug(
+                self.logger.debug(
                     "there is no cookie file ,no  account/pass,we need you manually aiding to login in"
                 )
                 if self.login_method == "phone-verify":
@@ -311,7 +311,7 @@ class TiktokUpload:
             # page.click('text=Submit')
             sleep(USER_WAITING_TIME)
             storage = await self.context.storage_state(path=self.username + ".json")
-            self.log.debug(
+            self.logger.debug(
                 f'we save cookies for next time reload:{self.username + ".json"}'
             )
         await self.context.grant_permissions(["geolocation"])
@@ -347,11 +347,11 @@ class TiktokUpload:
 
             # https://github.com/xtekky/google-login-bypass/blob/main/login.py
 
-        self.log.debug("Found douyin upload Dialog Modal")
+        self.logger.debug("Found douyin upload Dialog Modal")
         await page.goto(DOUYIN_UPLOAD_URL, timeout=300000)
         # sleep(self.timeout)
 
-        self.log.debug(f'Trying to upload "{videopath}" to douyin...')
+        self.logger.debug(f'Trying to upload "{videopath}" to douyin...')
         if os.path.exists(get_path(videopath)):
             page.locator(DOUYIN_INPUT_FILE_VIDEO)
             await page.set_input_files(DOUYIN_INPUT_FILE_VIDEO, get_path(videopath))
@@ -370,16 +370,16 @@ class TiktokUpload:
 
         # while True:
         #     check = page.locator('//*[@id="dialog-title"]')
-        #     self.log.debug(f'found to douyin account check')
+        #     self.logger.debug(f'found to douyin account check')
         #     x_path = '//*[@id="textbox"]'
         #     if page.locator(x_path):
-        #         self.log.debug(f'fix  douyin account check')
+        #         self.logger.debug(f'fix  douyin account check')
         #         break
 
         # except:
         # sleep(1)
 
-        self.log.debug(f'Trying to set "{title}" as title...')
+        self.logger.debug(f'Trying to set "{title}" as title...')
 
         # get file name (default) title
         # title=title if title else page.locator(TEXTBOX).text_content()
@@ -405,7 +405,7 @@ class TiktokUpload:
         await page.keyboard.type(title)
 
         if thumbnail:
-            self.log.debug(f'Trying to set "{thumbnail}" as thumbnail...')
+            self.logger.debug(f'Trying to set "{thumbnail}" as thumbnail...')
             await page.locator(DOUYIN_INPUT_FILE_THUMBNAIL_EDIT).click()
             await page.locator(DOUYIN_INPUT_FILE_THUMBNAIL_OPTION_UPLOAD).click()
 
@@ -439,7 +439,7 @@ class TiktokUpload:
 
             sleep(self.timeout)
 
-        self.log.debug("Trying to set {location} to ")
+        self.logger.debug("Trying to set {location} to ")
 
         if location is None or location == "" or len(location) == 0:
             pass
@@ -461,9 +461,9 @@ class TiktokUpload:
                     await page.locator("div.semi-select-option:nth-child(1)").click()
             except:
                 print("no hint for location ", location)
-            self.log.debug(f'Trying to set "{location}" as location...')
+            self.logger.debug(f'Trying to set "{location}" as location...')
 
-        self.log.debug("Trying to set {miniprogram} to ")
+        self.logger.debug("Trying to set {miniprogram} to ")
 
         if miniprogram is None or miniprogram == "" or len(miniprogram) == 0:
             pass
@@ -480,9 +480,9 @@ class TiktokUpload:
             await page.keyboard.type(miniprogram)
             await page.keyboard.press("Enter")
 
-            self.log.debug(f'Trying to set "{miniprogram}" as mini...')
+            self.logger.debug(f'Trying to set "{miniprogram}" as mini...')
 
-        self.log.debug("Trying to set {hottopic} to ")
+        self.logger.debug("Trying to set {hottopic} to ")
 
         if hottopic is None or hottopic == "" or len(hottopic) == 0:
             pass
@@ -507,11 +507,11 @@ class TiktokUpload:
                     ).click()
             except:
                 pass
-            self.log.debug(f'Trying to set "{hottopic}" as hottopic...')
+            self.logger.debug(f'Trying to set "{hottopic}" as hottopic...')
 
-            self.log.debug(f'Trying to set "{hottopic}" as mini...')
+            self.logger.debug(f'Trying to set "{hottopic}" as mini...')
 
-        self.log.debug("Trying to set {heji} to ")
+        self.logger.debug("Trying to set {heji} to ")
 
         if heji is None or heji == "" or len(heji) == 0:
             pass
@@ -551,15 +551,15 @@ class TiktokUpload:
             except:
                 print("暂无合集", heji)
 
-            self.log.debug(f'Trying to set "{heji}" as heji...')
+            self.logger.debug(f'Trying to set "{heji}" as heji...')
 
-        self.log.debug("Trying to set {up2toutiao} to ")
+        self.logger.debug("Trying to set {up2toutiao} to ")
 
         if up2toutiao is None or up2toutiao == False:
             pass
         else:
             await page.locator(".semi-switch-native-control").click()
-        self.log.debug("Trying to set {allow2save} to ")
+        self.logger.debug("Trying to set {allow2save} to ")
 
         if allow2save is None or allow2save == True:
             pass
@@ -568,7 +568,7 @@ class TiktokUpload:
                 ".form--3R0Ka > div:nth-child(14) > div:nth-child(1) > label:nth-child(2)"
             ).click()
 
-        self.log.debug("Trying to set {allow2see} to ")
+        self.logger.debug("Trying to set {allow2see} to ")
         if heji:
             print("添加进合集或专辑的视频，无法设置好友可见或仅自己可见")
         else:
@@ -592,15 +592,15 @@ class TiktokUpload:
         if not publishpolicy in ["立即发布", "定时发布"]:
             publishpolicy = "立即发布"
         if publishpolicy == "立即发布":
-            self.log.debug("Trying to set video visibility to 立即发布...")
+            self.logger.debug("Trying to set video visibility to 立即发布...")
 
         else:
-            self.log.debug("Trying to set video visibility to 定时发布...")
+            self.logger.debug("Trying to set video visibility to 定时发布...")
             # mode a:release_offset exist,publish_data exist will take date value as a starting date to schedule videos
             # mode b:release_offset not exist, publishdate exist , schedule to this specific date
             # mode c:release_offset not exist, publishdate not exist,daily count to increment schedule from tomorrow
             # mode d: offset exist, publish date not exist, daily count to increment with specific offset schedule from tomorrow
-            self.log.debug("Trying to set video schedule time...{publish_date}")
+            self.logger.debug("Trying to set video schedule time...{publish_date}")
             if release_offset and not release_offset == "":
                 if not int(release_offset.split("-")[0]) == 0:
                     offset = timedelta(

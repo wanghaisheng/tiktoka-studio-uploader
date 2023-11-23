@@ -9,6 +9,21 @@ from pathlib import Path
 import os
 from typing import Tuple, Optional, Union, Literal
 
+class LOG_LEVEL:
+    CRITICAL = 50
+    FATAL = CRITICAL
+    ERROR = 40
+    WARNING = 30
+    WARN = WARNING
+    INFO = 20
+    DEBUG = 10
+
+    LOG_LEVEL_TEXT = [
+        (DEBUG, "debug"),
+        (ERROR, "error")
+    ]
+
+
 class BROWSER_TYPE:
 
     CHROMIUM = 0
@@ -378,7 +393,7 @@ def close_browser(self):
 
 async def VerifyDialog(self, page):
     try:
-        self.log.debug(f"Trying to detect verify...")
+        self.logger.debug(f"Trying to detect verify...")
 
         # verifyvisible =await self.page.get_by_text("Verify it's you").is_visible()
         verifyvisible = await page.locator("#confirmation-dialog").is_visible()
@@ -386,7 +401,7 @@ async def VerifyDialog(self, page):
         # verifyvisible =await page.locator("#dialog-title").is_visible()
         if verifyvisible:
             # fix google account verify
-            self.log.debug("verify its you")
+            self.logger.debug("verify its you")
             # await page.click('text=Login')
             # time.sleep(60)
             # await page.locator('#confirm-button > div:nth-child(2)').click()
@@ -394,7 +409,7 @@ async def VerifyDialog(self, page):
                 "https://accounts.google.com/signin/v2/identifier?service=youtube&uilel=3&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Ddesktop%26next%3Dhttps%253A%252F%252Fstudio.youtube.com%252Freauth%26feature%3Dreauth%26authuser%3D3%26pageid%3D106691143538188646876%26skip_identity_prompt%3Dtrue&hl=en&authuser=3&rart=ANgoxcd6AUvx_ynaUmq5M6nROFwTagKglTZqT8c97xb1AEzoDasGeJ14cNlvYfH1_mJsl7us_sFLNGJskNrJyjMaIE2KklrO7Q&flowName=GlifWebSignIn&flowEntry=ServiceLogin"
             )
             page.locator("#identifierId")
-            self.log.debug("input username or email")
+            self.logger.debug("input username or email")
 
             # <div class="rFrNMe N3Hzgf jjwyfe QBQrY zKHdkd sdJrJc Tyc9J" jscontroller="pxq3x" jsaction="clickonly:KjsqPd; focus:Jt1EX; blur:fpfTEe; input:Lg5SV" jsshadow="" jsname="Vsb5Ub"><div class="aCsJod oJeWuf"><div class="aXBtI Wic03c"><div class="Xb9hP"><input type="email" class="whsOnd zHQkBf" jsname="YPqjbf" autocomplete="username" spellcheck="false" tabindex="0" aria-label="Email or phone" name="identifier" autocapitalize="none" id="identifierId" dir="ltr" data-initial-dir="ltr" data-initial-value=""><div jsname="YRMmle" class="AxOyFc snByac" aria-hidden="true">Email or phone</div></div><div class="i9lrp mIZh1c"></div><div jsname="XmnwAc" class="OabDMe cXrdqd Y2Zypf"></div></div></div><div class="LXRPh"><div jsname="ty6ygf" class="ovnfwe Is7Fhb"></div><div jsname="B34EJ" class="dEOOab RxsGPe" aria-atomic="true" aria-live="assertive"></div></div></div>
 
@@ -416,17 +431,17 @@ async def VerifyDialog(self, page):
             Stephint = await page.locator(
                 ".bCAAsb > form:nth-child(1) > span:nth-child(1) > section:nth-child(1) > header:nth-child(1) > div:nth-child(1)"
             ).text_content()
-            self.log.debug(Stephint)
+            self.logger.debug(Stephint)
             if "2-Step Verification" in Stephint:
                 # <div class="L9iFZc" role="presentation" jsname="NjaE2c"><h2 class="kV95Wc TrZEUc"><span jsslot="" jsname="Ud7fr">2-Step Verification</span></h2><div class="yMb59d" jsname="HSrbLb" aria-hidden="true"></div></div>
                 # <span jsslot="" jsname="Ud7fr">2-Step Verification</span>
-                self.log.debug("you need google auth and sms very code")
+                self.logger.debug("you need google auth and sms very code")
                 time.sleep(60)
             # await page.locator('#confirm-button > div:nth-child(2)').click()
 
     except:
-        self.log.debug("there is no verification at all")
-    self.log.debug(f"Finishing detect verification...")
+        self.logger.debug("there is no verification at all")
+    self.logger.debug(f"Finishing detect verification...")
 
 
 async def changeHomePageLangIfNeeded(self, localPage):
@@ -494,12 +509,12 @@ async def set_channel_language_english(self, localPage):
     try:
         await localPage.goto(YoutubeHomePageURL, timeout=self.timeout)
     except:
-        self.log.debug(
+        self.logger.debug(
             "failed to youtube studio home page due to network issue,pls check your speed"
         )
 
     try:
-        self.log.debug("detect your account profile icon .")
+        self.logger.debug("detect your account profile icon .")
 
         if await localPage.get_by_label("Account").is_visible():
             await localPage.get_by_label("Account").click()
@@ -509,11 +524,11 @@ async def set_channel_language_english(self, localPage):
                 await localPage.locator(avatarButtonSelector).click()
 
     except Exception:
-        self.log.debug("Avatar/Profile picture button not found : ")
+        self.logger.debug("Avatar/Profile picture button not found : ")
     truelangMenuItemSelector = ""
 
     try:
-        self.log.debug("detect language setting .")
+        self.logger.debug("detect language setting .")
 
         if await localPage.locator(langMenuItemSelector).is_visible():
             await localPage.locator(langMenuItemSelector).click()
@@ -525,17 +540,17 @@ async def set_channel_language_english(self, localPage):
                 truelangMenuItemSelector = langMenuItemSelector2
 
     except:
-        self.log.debug('Language menu item selector/button(">") not found : ')
+        self.logger.debug('Language menu item selector/button(">") not found : ')
 
         if (
             not "English"
             in await localPage.locator(truelangMenuItemSelector).text_content()
         ):
-            self.log.debug("choose the language or location you like to use.")
+            self.logger.debug("choose the language or location you like to use.")
             if await localPage.locator(selector_en_path):
                 await localPage.locator(selector_en_path).click()
         else:
-            self.log.debug("your youtube homepage language setting is already in English")
+            self.logger.debug("your youtube homepage language setting is already in English")
 
 
 # fix google account verifys
@@ -848,7 +863,7 @@ def _set_endcard(self):
 #    page.close()
 #    page.quit()
 
-#     self.log.debug("Closed Firefox")
+#     self.logger.debug("Closed Firefox")
 
 
 def remove_unwatched_videos(self, page, remove_copyrighted, remove_unwatched_views):

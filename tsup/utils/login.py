@@ -6,7 +6,7 @@ from time import sleep
 import random
 from datetime import datetime, date, timedelta, time
 from playwright.async_api import Page, expect
-
+import sys
 """ Login module """
 
 
@@ -108,22 +108,27 @@ def confirm_logged_in_tiktok(self) -> bool:
 
 
 async def passwordlogin(self, page):
-    await page.goto(YoutubeHomePageURL)
-    self.log.debug("try to login in from youtube homepage")
+    self.logger.debug("try to login in from youtube homepage")
+
+    try:
+        await self.page.goto(YoutubeHomePageURL, timeout=self.timeout)
+    except Exception as e:
+        self.logger.error(f"can not access {YoutubeHomePageURL} due to {e}")
+        sys.exit(1)
 
     try:
         await page.get_by_role("link", name="Sign in").is_visible()
         await page.get_by_role("link", name="Sign in").click()
-        self.log.debug("detected  sign in button")
+        self.logger.debug("detected  sign in button")
 
     except:
-        self.log.debug("could not find sign in button")
+        self.logger.debug("could not find sign in button")
     # change sign in language
     if 'hl=en' in page.url:
-        self.log.debug(" sign in display language is already english")
+        self.logger.debug(" sign in display language is already english")
         
     else:
-        self.log.debug("change sign in display language to english")
+        self.logger.debug("change sign in display language to english")
 
         try:
             await page.get_by_role("combobox").is_visible()
@@ -132,71 +137,71 @@ async def passwordlogin(self, page):
             if not "English" in s:
                 await page.get_by_role("combobox").click()
                 await page.get_by_role("option", name="English (United States)").click()
-            self.log.debug("changed to english display language")
+            self.logger.debug("changed to english display language")
                 
         except:
-            self.log.debug("could not find language option ")
+            self.logger.debug("could not find language option ")
         sleep(random.uniform(5, 6))
         try:
-            self.log.debug(f"Trying to detect Verify it’s you...")         
+            self.logger.debug(f"Trying to detect Verify it’s you...")         
             hint = await self.page.locator(".tCpFMc > form").all_text_contents()
             hint = "".join(hint)
             print(f'hints:{hint}')
 
             if  'Verify it’s you' in hint:
-                self.log.debug(f"To help keep your account secure, Google needs to verify it’s you. Please sign in again to continue to YouTube.")
-                self.log.debug(f"for this situation you need a fresh new cookie file")
+                self.logger.debug(f"To help keep your account secure, Google needs to verify it’s you. Please sign in again to continue to YouTube.")
+                self.logger.debug(f"for this situation you need a fresh new cookie file")
 
                 await self.quit()
             else:
                 pass
 
         except:
-            self.log.debug(f"Finishing detect insecure browser...")
-    self.log.debug("start to detect  Email or phone textbox")
+            self.logger.debug(f"Finishing detect insecure browser...")
+    self.logger.debug("start to detect  Email or phone textbox")
     try:
         await page.get_by_role("textbox", name="Email or phone").is_visible()
-        self.log.debug("detected  Email or phone textbox")
-        self.log.debug("start to fill in   Email or phone textbox")
+        self.logger.debug("detected  Email or phone textbox")
+        self.logger.debug("start to fill in   Email or phone textbox")
 
         await page.get_by_role("textbox", name="Email or phone").fill(self.username)
 
     except:
-        self.log.debug(f"could not find email or phone input textbox {page.url}")
+        self.logger.debug(f"could not find email or phone input textbox {page.url}")
         
-    self.log.debug("start to detect Next button")
+    self.logger.debug("start to detect Next button")
     sleep(random.uniform(5, 6))
     await page.get_by_role("button", name="Next").click()
     # sleep(random.uniform(5, 6))
-    self.log.debug("detected  Next button")
+    self.logger.debug("detected  Next button")
 
     sleep(random.uniform(5, 6))
-    self.log.debug(f"start to detect  password textbox {page.url}")
+    self.logger.debug(f"start to detect  password textbox {page.url}")
 
     try:
         await page.get_by_role("textbox", name="Enter your password").is_visible()
 
-        self.log.debug("detected  password textbox")
-        self.log.debug("start to fill in password textbox")
+        self.logger.debug("detected  password textbox")
+        self.logger.debug("start to fill in password textbox")
         
         await page.get_by_role("textbox", name="Enter your password").fill(
             self.password
         )
     except:
-        self.log.debug(f"could not find password input textbox {page.url}")
+        self.logger.debug(f"could not find password input textbox {page.url}")
     #     page.get_by_text("We noticed unusual activity in your Google Account. To keep your account safe, y").click()
         if 'rejected' in page.url:
             await self.pl.quit()
                 
         # sleep(random.uniform(5, 6))
         # try:
-        #     self.log.debug(f"Trying to detect insecure browser...")         
+        #     self.logger.debug(f"Trying to detect insecure browser...")         
         #     hint = await self.page.locator(".tCpFMc > form").all_text_contents()
         #     hint = "".join(hint)
         #     print(f'hints:{hint}')
 
         #     if  'This browser or app may not be secure' in hint:
-        #         self.log.debug(f"you have detect insecure browser")
+        #         self.logger.debug(f"you have detect insecure browser")
 
         #         if self.page:
         #             await self.page.close()
@@ -211,12 +216,12 @@ async def passwordlogin(self, page):
         #         pass
 
         # except:
-        #     self.log.debug(f"Finishing detect insecure browser...")
-    self.log.debug("start to detect Next button")
+        #     self.logger.debug(f"Finishing detect insecure browser...")
+    self.logger.debug("start to detect Next button")
    
 
     await page.get_by_role("button", name="Next").click()
-    self.log.debug("detected  Next button")
+    self.logger.debug("detected  Next button")
     sleep(random.uniform(5, 6))
  
     try:
@@ -228,7 +233,7 @@ async def passwordlogin(self, page):
         await page.get_by_role("textbox", name="Enter code").click()
         sleep(6000)
     except:
-        self.log.debug("failed to input code")
+        self.logger.debug("failed to input code")
     await page.get_by_role("button", name="Next").click()
 
     # await page.get_by_text("选择频道").click()
@@ -247,7 +252,7 @@ async def passwordlogin(self, page):
         if not self.CHANNEL_COOKIES:
             self.CHANNEL_COOKIES = self.username
         state = self.context.storage_state(path=self.CHANNEL_COOKIES)
-        self.log.debug("we auto save your channel cookies to file:", self.CHANNEL_COOKIES)
+        self.logger.debug("we auto save your channel cookies to file:", self.CHANNEL_COOKIES)
 
         if self.pl.page:
             try:
@@ -441,7 +446,7 @@ async def youtube_login(self, account, password):
                     )
                     break
                 elif "signin/identifier" in current_url:
-                    self.log.debug("signin/identifier in url")
+                    self.logger.debug("signin/identifier in url")
                     # change sign in language
 
                     # en_url="https://accounts.google.com/v3/signin/identifier?ifkv=AXo7B7WV1MWT3cc0y6PGLgNhHIdw6juZErladSFpSPlHDTEu1tUAdj8vSh76tt8VHr3B09rlUlEQ&flowName=GlifWebSignIn&flowEntry=ServiceLogin&dsh=S-889014747%3A1692840349105425&hl=en-US"
@@ -449,7 +454,7 @@ async def youtube_login(self, account, password):
                     #         #  , {'waitUntil': "load"}
                     #          )
                     try:
-                        self.log.debug("detect login page display language")
+                        self.logger.debug("detect login page display language")
                         
                         await self.page.get_by_role("combobox").is_visible()
                         s = await self.page.get_by_role("combobox").all_text_contents()
@@ -457,49 +462,49 @@ async def youtube_login(self, account, password):
                         if not "English" in s:
                             await self.page.get_by_role("combobox").click()
                             await self.page.get_by_role("option", name="English (United States)").click()
-                            self.log.debug("changed to english display language")
+                            self.logger.debug("changed to english display language")
                         else:
-                            self.log.debug("already choose english display language")
+                            self.logger.debug("already choose english display language")
                             
                     except:
-                        self.log.debug("could not find language option ")
+                        self.logger.debug("could not find language option ")
 
                     try:
                         
                         await self.page.locator('#identifierId').is_visible()
                         sleep(random.uniform(5, 6))
-                        self.log.debug("detected  Email or phone textbox")
+                        self.logger.debug("detected  Email or phone textbox")
 
                         await self.page.locator('#identifierId').fill(self.username)
                         
                     except:
-                        self.log.debug("could not find email or phone input textbox")
+                        self.logger.debug("could not find email or phone input textbox")
                     
                     await self.page.get_by_role("button", name="Next").click()
                     sleep(random.uniform(5, 6))
 
-                    self.log.debug("detected  Next button")
+                    self.logger.debug("detected  Next button")
 
 
                     try:
                         await self.page.get_by_role("textbox", name="Enter your password").is_visible()
                         sleep(random.uniform(5, 6))
-                        self.log.debug("detected  password textbox")
+                        self.logger.debug("detected  password textbox")
 
                         await self.page.get_by_role("textbox", name="Enter your password").fill(
                             self.password
                         )
                         
                     except:
-                        self.log.debug("could not find password input textbox")
+                        self.logger.debug("could not find password input textbox")
                         try:
-                            self.log.debug(f"Trying to detect insecure browser...{self.page.url}")         
+                            self.logger.debug(f"Trying to detect insecure browser...{self.page.url}")         
                             hint = await self.page.locator(".tCpFMc > form").all_text_contents()
                             hint = "".join(hint)
                             print(f'hints:{hint}')
 
                             if  'This browser or app may not be secure' in hint:
-                                self.log.debug(f"you have detect insecure browser")
+                                self.logger.debug(f"you have detect insecure browser")
                                 print(
                                     f"被检测, 重新初始化chrome... ",
                                     datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -533,25 +538,25 @@ async def youtube_login(self, account, password):
                                 pass
 
                         except:
-                            self.log.debug(f"Finishing detect insecure browser...")
+                            self.logger.debug(f"Finishing detect insecure browser...")
                         
                     #     page.get_by_text("We noticed unusual activity in your Google Account. To keep your account safe, y").click()
                     sleep(random.uniform(5, 6))
                     try:
-                        self.log.debug(f"Trying to detect insecure browser...{self.page.url}")         
+                        self.logger.debug(f"Trying to detect insecure browser...{self.page.url}")         
                         hint = await self.page.locator(".tCpFMc > form").all_text_contents()
                         hint = "".join(hint)
                         print(f'hints:{hint}')
 
                         if  'This browser or app may not be secure' in hint:
-                            self.log.debug(f"you have detect insecure browser")
+                            self.logger.debug(f"you have detect insecure browser")
 
                             await self.pl.quit()
                         else:
                             pass
 
                     except:
-                        self.log.debug(f"Finishing detect insecure browser...")
+                        self.logger.debug(f"Finishing detect insecure browser...")
 
 
                     try:
@@ -563,12 +568,12 @@ async def youtube_login(self, account, password):
                         await self.page.get_by_role("textbox", name="Enter code").click()
                         sleep(6000)
                     except:
-                        self.log.debug("failed to input code")
+                        self.logger.debug("failed to input code")
                     await self.page.get_by_role("button", name="Next").click()                
                     sleep(2)
                     continue
                 elif "challenge/pwd" in current_url:
-                    self.log.debug("challenge/pwd in url")
+                    self.logger.debug("challenge/pwd in url")
 
                     if self.is_element_exist_wait(self.wait, '//*[@id="selectionc1"]'):
                         await self.page.locator('//input[@type="password"]').send_keys(password)

@@ -1,13 +1,12 @@
 import json
 from tsup.utils.constants import *
-from tsup.utils.logging import Log
+from tsup.utils.log import log,Log
 from tsup.utils.exceptions import *
 from tsup.youtube.youtube_helper import *
 import os
 from tsup.utils.login import *
 from time import sleep
 from datetime import datetime, date, timedelta
-import logging
 import random
 from tsup.utils.webdriver import (
     PlaywrightAsyncDriver,
@@ -25,17 +24,17 @@ class YoutubeUpload:
         root_profile_directory: Optional[str] = None,
         proxy_option: Optional[str] = None,
 
-        timeout: Optional[int]  = 200 * 1000,
+        timeout: int  = 200 * 1000,
         is_open_browser: Optional[bool] = True,
-        is_debug: Optional[bool]  = True,
+        log_level: Optional[int]  = LOG_LEVEL.DEBUG,
         username: Optional[str] = None,
         password: Optional[str] = None,
         recovery_email: Optional[str] = None,
         channel_cookie_path: Optional[str] = None,
-        logger:Optional[Log]=None,
+        logger:Optional[Log]= None,
 
         use_stealth_js:Optional[bool] = False,
-        browser_type: Optional[str]='firefox',
+        browser_type: Optional[int]=BROWSER_TYPE.FIREFOX,
         # 'chromium', 'firefox', or 'webkit'
         wait_policy: Optional[int]=WAIT_POLICY.GO_NEXT_COPYRIGHT_CHECK_SUCCESS,
         
@@ -43,22 +42,24 @@ class YoutubeUpload:
         is_record_video: Optional[bool] = True,
     ) -> None:
         self.timeout = timeout
-        self.logger=logger
-
-        if is_debug is None:
-            is_debug=True
-        self.debug = is_debug
-        if self.debug:
-            if logger is None:
-                self.logger = Log(is_debug)
-            else:
-                self.logger=logger
+        if logger is None:
+            self.logger=log
+        if log_level is None:
+            pass
+        else:
+            self.logger.setLevel(log_level)
 
 
         self.username = username
         self.password = password
         self.use_stealth_js=use_stealth_js
         self.channel_cookie_path = channel_cookie_path
+        if self.channelname is None:
+
+            self.channelname=username
+
+        else:
+            self.channelname=os.path.splitext(self.channel_cookie_path)[0]
         self.root_profile_directory = root_profile_directory
         self.proxy_option = proxy_option
         self.is_open_browser = is_open_browser
@@ -67,10 +68,10 @@ class YoutubeUpload:
         else:
             self.browser_type = browser_type
 
-        self.pl: Playwright = None
-        self.browser: Browser = None
-        self.context: BrowserContext = None
-        self.page: Page = None
+        # self.pl: Playwright
+        # self.browser: Browser 
+        # self.context: BrowserContext 
+        # self.page: Page = None
         self.wait_policy = wait_policy
         self.is_record_video = is_record_video
 
@@ -82,7 +83,7 @@ class YoutubeUpload:
 
     async def click_next(self, page) -> None:
         await page.locator(NEXT_BUTTON).click()
-        sleep(random(5 * 1000, self.timeout))
+        sleep(self.timeout)
 
     async def not_uploaded(self, page) -> bool:
         s = await page.locator(STATUS_CONTAINER).text_content()
@@ -98,11 +99,11 @@ class YoutubeUpload:
 
     async def upload(
         self,
-        video_id:str=None,
-        video_local_path: str = None,
-        video_title: str = None,
-        video_description: str = None,
-        thumbnail_local_path: str = None,
+        video_id:str,
+        video_local_path: str ,
+        video_title: str ,
+        video_description: str ,
+        thumbnail_local_path: str ,
         publish_policy: Literal[0,1,2,3,4,5] = 0,
         tags: list = [],
         release_date: Optional[datetime] = datetime(
@@ -136,12 +137,11 @@ class YoutubeUpload:
         Returns if the video was uploaded and the video id.
         """
         self.logger.debug(f"default wait_policy:{self.wait_policy}")
-        video_id = None
         if release_date_hour is None:
             release_date_hour="10:15"
         elif release_date_hour and release_date_hour not in availableScheduleTimes:
             self.logger.debug(
-                f"you give a invalid release_date_hour:{self.release_date_hour}, ,try to choose one of them{availableScheduleTimes},we change it to  default 10:15"
+                f"you give a invalid release_date_hour:{release_date_hour}, ,try to choose one of them{availableScheduleTimes},we change it to  default 10:15"
             )
             release_date_hour = "10:15"
         if (
@@ -296,7 +296,7 @@ class YoutubeUpload:
                     self.logger.debug(f'you dont use any proxy {self.proxy_option}')
                 # await passwordlogin(self, page)
 
-                login=await youtube_login(self,self.username, self.password)
+                login=  await passwordlogin(self, self.page)
                 if login:
                     self.logger.debug('we need save cookie to future usage')
                 # save cookie
@@ -312,23 +312,28 @@ class YoutubeUpload:
             login=await youtube_login(self,self.username, self.password)
             if login:
                 self.logger.debug('we need save cookie to future usage')
+
                 cookiepath = (
-                    self.username + datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + ".json"
+                    self.channelname + datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + ".json"
                 )
                 await self.page.context.storage_state(path=cookiepath)
 
             # save cookie
             else:
-                self.logger.debug(
+                self.logger.error(
                 "first try for autologin failed,you can mannually sign in to save credentials for later auto login"
             )
 
                 await self.page.close()
-            return 
+                raise Error(message="first try for autologin failed,you can mannually sign in to save credentials for later auto login")
 
             # save cookie to later import
             # login_using_cookie_file(self,self.channel_cookie_path,page)
-        await self.page.goto(YoutubeHomePageURL, timeout=self.timeout)
+        try:
+            await self.page.goto(YoutubeHomePageURL, timeout=self.timeout)
+        except Exception as e:
+            self.logger.error(f"can not access {YoutubeHomePageURL} due to {e}")
+            sys.exit(1)
 
         page = self.page
         islogin = False
@@ -412,11 +417,8 @@ class YoutubeUpload:
 
         try:
             self.logger.debug(f"Trying to detect daily upload limit...")
-            hint = (
-                await page.locator("#error-short style-scope ytcp-uploads-dialog")
-                .waitfor()
-                .text_content()
-            )
+            ytcpuploadsdialog=page.locator("#error-short style-scope ytcp-uploads-dialog")
+            hint = await ytcpuploadsdialog.waitfor().text_content()
             if "Daily upload limit reached" in hint:
                 self.logger.debug(f"you have reached daily upload limit pls try tomorrow")
 

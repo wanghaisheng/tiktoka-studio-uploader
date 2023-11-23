@@ -2,6 +2,7 @@ from tsup.youtube.youtube_upload import YoutubeUpload
 from datetime import datetime, date, timedelta
 import asyncio
 from tsup.utils.webdriver.setupPL import checkRequirments
+from tsup.youtube.youtube_helper import *
 
 import os
 # If it is the first time you've run the utility, a browser window should popup and prompt you to provide Youtube credentials. A token will be created and stored in request.token file in the local directory for subsequent use.
@@ -50,16 +51,16 @@ def checkfilebroken(path):
 # checkRequirments()
 upload = YoutubeUpload(
     # use r"" for paths, this will not give formatting errors e.g. "\n"
-    root_profile_directory="",
+    root_profile_directory=None,
     proxy_option=proxy_option,
     is_open_browser=False,
-    debug=True,
+    log_level=LOG_LEVEL.DEBUG,
     use_stealth_js=False,
     # if you want to silent background running, set watcheveryuploadstep false
     channel_cookie_path=channel_cookie_path,
     username=username,
-    browser_type="firefox",
-    wait_policy="go next after copyright check success",
+    browser_type=BROWSER_TYPE.FIREFOX,
+    wait_policy=WAIT_POLICY.GO_NEXT_UPLOAD_SUCCESS,
     password=password,
     is_record_video=True
     # for test purpose we need to check the video step by step ,

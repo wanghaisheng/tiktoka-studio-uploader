@@ -144,7 +144,7 @@ class DouyinUpload:
                     **browserLaunchOptionDict,
                 )
 
-        self.log.debug("Firefox is now running")
+        self.logger.debug("Firefox is now running")
         await self.context.grant_permissions(["geolocation"])
         page = await self.context.new_page()
         print("============tags", tags)
@@ -162,7 +162,7 @@ class DouyinUpload:
 
             await page.reload()
         else:
-            self.log.debug("Please sign in and then press enter")
+            self.logger.debug("Please sign in and then press enter")
             # input()
 
             await page.goto(DOUYIN_URL, timeout=300000)
@@ -224,11 +224,11 @@ class DouyinUpload:
 
             # https://github.com/xtekky/google-login-bypass/blob/main/login.py
 
-        self.log.debug("Found douyin upload Dialog Modal")
+        self.logger.debug("Found douyin upload Dialog Modal")
         await page.goto(DOUYIN_UPLOAD_URL, timeout=300000)
         # sleep(self.timeout)
 
-        self.log.debug(f'Trying to upload "{videopath}" to douyin...')
+        self.logger.debug(f'Trying to upload "{videopath}" to douyin...')
         if os.path.exists(get_path(videopath)):
             page.locator(DOUYIN_INPUT_FILE_VIDEO)
             await page.set_input_files(DOUYIN_INPUT_FILE_VIDEO, get_path(videopath))
@@ -247,16 +247,16 @@ class DouyinUpload:
 
         # while True:
         #     check = page.locator('//*[@id="dialog-title"]')
-        #     self.log.debug(f'found to douyin account check')
+        #     self.logger.debug(f'found to douyin account check')
         #     x_path = '//*[@id="textbox"]'
         #     if page.locator(x_path):
-        #         self.log.debug(f'fix  douyin account check')
+        #         self.logger.debug(f'fix  douyin account check')
         #         break
 
         # except:
         # sleep(1)
 
-        self.log.debug(f'Trying to set "{title}" as title...')
+        self.logger.debug(f'Trying to set "{title}" as title...')
 
         # get file name (default) title
         # title=title if title else page.locator(TEXTBOX).text_content()
@@ -282,7 +282,7 @@ class DouyinUpload:
         await page.keyboard.type(title)
 
         if thumbnail:
-            self.log.debug(f'Trying to set "{thumbnail}" as thumbnail...')
+            self.logger.debug(f'Trying to set "{thumbnail}" as thumbnail...')
             await page.locator(DOUYIN_INPUT_FILE_THUMBNAIL_EDIT).click()
             await page.locator(DOUYIN_INPUT_FILE_THUMBNAIL_OPTION_UPLOAD).click()
 
@@ -316,7 +316,7 @@ class DouyinUpload:
 
             sleep(self.timeout)
 
-        self.log.debug("Trying to set {location} to ")
+        self.logger.debug("Trying to set {location} to ")
 
         if location is None or location == "" or len(location) == 0:
             pass
@@ -338,9 +338,9 @@ class DouyinUpload:
                     await page.locator("div.semi-select-option:nth-child(1)").click()
             except:
                 print("no hint for location ", location)
-            self.log.debug(f'Trying to set "{location}" as location...')
+            self.logger.debug(f'Trying to set "{location}" as location...')
 
-        self.log.debug("Trying to set {miniprogram} to ")
+        self.logger.debug("Trying to set {miniprogram} to ")
 
         if miniprogram is None or miniprogram == "" or len(miniprogram) == 0:
             pass
@@ -357,9 +357,9 @@ class DouyinUpload:
             await page.keyboard.type(miniprogram)
             await page.keyboard.press("Enter")
 
-            self.log.debug(f'Trying to set "{miniprogram}" as mini...')
+            self.logger.debug(f'Trying to set "{miniprogram}" as mini...')
 
-        self.log.debug("Trying to set {hottopic} to ")
+        self.logger.debug("Trying to set {hottopic} to ")
 
         if hottopic is None or hottopic == "" or len(hottopic) == 0:
             pass
@@ -384,11 +384,11 @@ class DouyinUpload:
                     ).click()
             except:
                 pass
-            self.log.debug(f'Trying to set "{hottopic}" as hottopic...')
+            self.logger.debug(f'Trying to set "{hottopic}" as hottopic...')
 
-            self.log.debug(f'Trying to set "{hottopic}" as mini...')
+            self.logger.debug(f'Trying to set "{hottopic}" as mini...')
 
-        self.log.debug("Trying to set {heji} to ")
+        self.logger.debug("Trying to set {heji} to ")
 
         if heji is None or heji == "" or len(heji) == 0:
             pass
@@ -428,15 +428,15 @@ class DouyinUpload:
             except:
                 print("暂无合集", heji)
 
-            self.log.debug(f'Trying to set "{heji}" as heji...')
+            self.logger.debug(f'Trying to set "{heji}" as heji...')
 
-        self.log.debug("Trying to set {up2toutiao} to ")
+        self.logger.debug("Trying to set {up2toutiao} to ")
 
         if up2toutiao is None or up2toutiao == False:
             pass
         else:
             await page.locator(".semi-switch-native-control").click()
-        self.log.debug("Trying to set {allow2save} to ")
+        self.logger.debug("Trying to set {allow2save} to ")
 
         if allow2save is None or allow2save == True:
             pass
@@ -445,7 +445,7 @@ class DouyinUpload:
                 ".form--3R0Ka > div:nth-child(14) > div:nth-child(1) > label:nth-child(2)"
             ).click()
 
-        self.log.debug("Trying to set {allow2see} to ")
+        self.logger.debug("Trying to set {allow2see} to ")
         if heji:
             print("添加进合集或专辑的视频，无法设置好友可见或仅自己可见")
         else:
@@ -469,15 +469,15 @@ class DouyinUpload:
         if not publishpolicy in ["立即发布", "定时发布"]:
             publishpolicy = "立即发布"
         if publishpolicy == "立即发布":
-            self.log.debug("Trying to set video visibility to 立即发布...")
+            self.logger.debug("Trying to set video visibility to 立即发布...")
 
         else:
-            self.log.debug("Trying to set video visibility to 定时发布...")
+            self.logger.debug("Trying to set video visibility to 定时发布...")
             # mode a:release_offset exist,publish_data exist will take date value as a starting date to schedule videos
             # mode b:release_offset not exist, publishdate exist , schedule to this specific date
             # mode c:release_offset not exist, publishdate not exist,daily count to increment schedule from tomorrow
             # mode d: offset exist, publish date not exist, daily count to increment with specific offset schedule from tomorrow
-            self.log.debug("Trying to set video schedule time...{publish_date}")
+            self.logger.debug("Trying to set video schedule time...{publish_date}")
             if release_offset and not release_offset == "":
                 if not int(release_offset.split("-")[0]) == 0:
                     offset = timedelta(

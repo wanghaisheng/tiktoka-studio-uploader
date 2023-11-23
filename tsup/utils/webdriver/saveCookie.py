@@ -120,7 +120,7 @@ def getCookie(
 
 async def getCookieWithProxy(self):
     if self.proxy_option == "":
-        self.log.debug(f"start web page without proxy:{self.proxy_option}")
+        self.logger.debug(f"start web page without proxy:{self.proxy_option}")
 
         with PlaywrightAsyncDriver(
             proxy=None,
@@ -135,7 +135,7 @@ async def getCookieWithProxy(self):
             self._browser = pl.browser
             self.context = pl.context
             self.page = pl.page
-        self.log.debug(
+        self.logger.debug(
             f"{self.browserType} is now running without proxy:{self.proxy_option}"
         )
 
@@ -154,7 +154,7 @@ async def getCookieWithProxy(self):
             self.context = pl.context
             self.page = pl.page
 
-        self.log.debug(
+        self.logger.debug(
             f"{self.browserType} is now running with proxy:{self.proxy_option}"
         )
 
@@ -171,7 +171,7 @@ async def getCookieWithProxy(self):
         "tiktok-stealth-" + datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + ".json"
     )
     await self.page.context.storage_state(path=cookiepath)
-    self.log.debug(f"we capture your account cookie at:{cookiepath}")
+    self.logger.debug(f"we capture your account cookie at:{cookiepath}")
     return cookiepath
 
 
