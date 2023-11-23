@@ -38,11 +38,12 @@ wait = 0
 # checkRequirments()
 upload = YoutubeUpload(
     # use r"" for paths, this will not give formatting errors e.g. "\n"
-    root_profile_directory=None,
+    profile_directory=None,
     proxy_option=proxy_option,
     is_open_browser=False,
     log_level=LOG_LEVEL.DEBUG,
     use_stealth_js=False,
+    use_undetected_playwright=True,
     # if you want to silent background running, set watcheveryuploadstep false
     channel_cookie_path=channel_cookie_path,
     username=username,

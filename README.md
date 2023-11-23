@@ -1,12 +1,17 @@
-**Update 2023-11-22**
+**Update 2023-11-23**
 
-1. add selenium support  for tiktok 
+1. change  debug  to log_level, add logger field if you want to wrap this lib in your code,you can pass your own logger here to control output format.
 
-python examples/onefile-example_tiktok_selenium_adspower.py
+2. add use_undetected_playwright ,try to avoid insecure browser detection 
 
-python examples/onefile-example_tiktok_selenium.py
+3. update log util to better reading
 
-2. fix other issues
+4. update insecure browser detect
+
+5. update examples 
+
+6. add placeholder for alternate video meta such as title,description,srt file 
+
 
 
 ## USAGE

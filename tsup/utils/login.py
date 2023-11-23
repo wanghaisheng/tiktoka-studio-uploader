@@ -105,7 +105,26 @@ def confirm_logged_in_tiktok(self) -> bool:
 #     except:
 #         messageTransport.log(error)
 #         await login(page, credentials, messageTransport, useCookieStore)
+async def detectInsecureBrowser(self):
+    try:
+        self.logger.debug(f"Trying to detect insecure browser...")         
+        hint = await self.page.locator(".tCpFMc > form").all_text_contents()
+        hint = "".join(hint)
+        # print(f'hints:{hint}')
 
+        if  'This browser or app may not be secure' in hint:
+            self.logger.debug(f"bingo insecure browser isdetected,try to switch proxy ip or use firefox profile instead of cookie json")
+
+
+            await self.pl.quit()
+            # use sys.exit  it wont break instantly
+            # sys.exit(1)
+            os._exit(1)
+        else:
+            pass
+
+    except:
+        self.logger.debug(f"Finishing detect insecure browser...")
 
 async def passwordlogin(self, page):
     self.logger.debug("try to login in from youtube homepage")
@@ -123,6 +142,8 @@ async def passwordlogin(self, page):
 
     except:
         self.logger.debug("could not find sign in button")
+        sys.exit(1)
+
     # change sign in language
     if 'hl=en' in page.url:
         self.logger.debug(" sign in display language is already english")
@@ -141,6 +162,8 @@ async def passwordlogin(self, page):
                 
         except:
             self.logger.debug("could not find language option ")
+            sys.exit(1)
+
         sleep(random.uniform(5, 6))
         try:
             self.logger.debug(f"Trying to detect Verify it’s you...")         
@@ -157,7 +180,7 @@ async def passwordlogin(self, page):
                 pass
 
         except:
-            self.logger.debug(f"Finishing detect insecure browser...")
+            self.logger.debug(f"Finishing detect verify its you...")
     self.logger.debug("start to detect  Email or phone textbox")
     try:
         await page.get_by_role("textbox", name="Email or phone").is_visible()
@@ -168,14 +191,17 @@ async def passwordlogin(self, page):
 
     except:
         self.logger.debug(f"could not find email or phone input textbox {page.url}")
-        
+        sys.exit(1)
+
     self.logger.debug("start to detect Next button")
     sleep(random.uniform(5, 6))
+
     await page.get_by_role("button", name="Next").click()
     # sleep(random.uniform(5, 6))
     self.logger.debug("detected  Next button")
 
     sleep(random.uniform(5, 6))
+    await detectInsecureBrowser(self)    
     self.logger.debug(f"start to detect  password textbox {page.url}")
 
     try:
@@ -194,36 +220,15 @@ async def passwordlogin(self, page):
             await self.pl.quit()
                 
         # sleep(random.uniform(5, 6))
-        # try:
-        #     self.logger.debug(f"Trying to detect insecure browser...")         
-        #     hint = await self.page.locator(".tCpFMc > form").all_text_contents()
-        #     hint = "".join(hint)
-        #     print(f'hints:{hint}')
 
-        #     if  'This browser or app may not be secure' in hint:
-        #         self.logger.debug(f"you have detect insecure browser")
-
-        #         if self.page:
-        #             await self.page.close()
-        #         if self.context:
-        #             await self.context.close()
-        #         if self.browser:
-        #             await self.browser.close()
-        #         if self.driver:
-        #             await self.driver.stop()
-
-        #     else:
-        #         pass
-
-        # except:
-        #     self.logger.debug(f"Finishing detect insecure browser...")
     self.logger.debug("start to detect Next button")
    
 
     await page.get_by_role("button", name="Next").click()
     self.logger.debug("detected  Next button")
     sleep(random.uniform(5, 6))
- 
+    await detectInsecureBrowser(self)    
+
     try:
         await page.locator("#headingText").get_by_text("2-Step Verification").click()
         await page.get_by_text("Google Authenticator").click()
@@ -240,6 +245,7 @@ async def passwordlogin(self, page):
     # await page.get_by_role("checkbox", name="不再询问").click()
     # await page.locator("ytd-identity-prompt-footer-renderer").click()
     # await page.locator("ytd-simple-menu-header-renderer").click()
+    await detectInsecureBrowser(self)    
 
     current_url = page.url
     if "/studio.youtube.com/" in current_url:

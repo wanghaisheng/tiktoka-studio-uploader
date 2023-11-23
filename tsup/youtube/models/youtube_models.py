@@ -108,7 +108,8 @@ class Channel(BaseModel):
 class altMeta(BaseModel):
     lang: Optional[str] = None
     title: Optional[str] = None
-    video_description: Optional[str] = None
+    description: Optional[str] = None
+    subtitle_filepath: Optional[str] = None
     subtitle_name: Optional[str] = None
     subtitle_format: Optional[str] = None
     subtitle_contents: Optional[str] = None

@@ -99,7 +99,7 @@ class Botcheck:
             #     {"x": 0, "y": 0, "xDistance": 0, "yDistance": -100},
             # )
             await self.page.dispatch_event("input#test-input", "scroll")
-            await self.page.wait_for_timeout(2500)
+            # await self.page.wait_for_timeout(2500)
             await expect(self.page.locator("#result")).to_be_visible()
             element = self.page.locator("#result")
             output = await element.get_attribute("textContent")
@@ -309,7 +309,7 @@ class Botcheck:
             if button:
                 await button.click(delay=10)
                 await self.page.waitForNavigation(wait_until="networkidle2")
-                await self.page.wait_for_timeout(500)
+                # await self.page.wait_for_timeout(500)
             else:
                 print("Could not find the button!")
 
@@ -338,7 +338,7 @@ class Botcheck:
             if button:
                 await button.click(delay=8)
                 await self.page.waitForNavigation(wait_until="networkidle2")
-                await self.page.wait_for_timeout(500)
+                # await self.page.wait_for_timeout(500)
             else:
                 print("Could not find the button!")
 

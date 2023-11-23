@@ -33,6 +33,7 @@ import requests
 from typing import Optional, AsyncIterator
 from contextlib import asynccontextmanager
 from datetime import datetime, date, timedelta
+from undetected_playwright import stealth_async
 
 
 class PlaywrightAsyncDriver(WebDriver):
@@ -46,6 +47,7 @@ class PlaywrightAsyncDriver(WebDriver):
         url_regexes: list = None,
         save_all: bool = False,
         use_stealth_js:bool=False,
+        use_undetected_playwright:bool=False,
         **kwargs
     ):
         """
@@ -72,7 +74,7 @@ class PlaywrightAsyncDriver(WebDriver):
         self._save_all = save_all
         self._timeout = 300
         self._use_stealth_js=use_stealth_js
-
+        self._use_undetected_playwright= use_undetected_playwright
         if self._save_all and self._url_regexes:
             log.warning(
                 "获取完拦截的数据后, 请主动调用PlaywrightDriver的clear_cache()方法清空拦截的数据，否则数据会一直累加，导致内存溢出"
@@ -147,7 +149,7 @@ class PlaywrightAsyncDriver(WebDriver):
                     record_video_dir=os.getcwd() + os.sep + "screen-recording",
                 )
 
-        if self._proxy and self._use_stealth_js:
+        if self._use_stealth_js:
             # https://gitcdn.xyz/repo/berstend/puppeteer-extra/stealth-js/stealth.min.js
             # https://raw.githubusercontent.com/requireCool/stealth.min.js/main/stealth.min.js
             # https://gitee.com/edwin_uestc/stealth.min.js/raw/main/stealth.min.js
@@ -161,9 +163,9 @@ class PlaywrightAsyncDriver(WebDriver):
             )
 
             print("we are trying to use stealth.js to fake like a human")
-            print("we are trying to update latest stealth.js",proxy)
+            print("we are trying to update latest stealth.js",self._proxy)
 
-            with requests.get(url, stream=True, proxies=proxy) as r:
+            with requests.get(url, stream=True, proxies=self._proxy) as r:
                 r.raise_for_status()
                 with open(latest_path, "wb") as f:
                     for chunk in r.iter_content(chunk_size=8192):
@@ -207,6 +209,10 @@ class PlaywrightAsyncDriver(WebDriver):
             # await self.page.goto("https://www.google.com")
 
             await self.context.add_init_script(path=path)
+        elif self._use_undetected_playwright==True:        
+            await stealth_async(self.context)
+            self.page = await self.context.new_page()
+
         else:
             self.page = await self.context.new_page()
             

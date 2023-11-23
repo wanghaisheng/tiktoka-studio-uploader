@@ -2,7 +2,7 @@ import json
 from tsup.utils.constants import *
 from tsup.utils.log import log,Log
 from tsup.utils.exceptions import *
-from tsup.youtube.youtube_helper import *
+from tsup.youtube.youtube_helper import VerifyDialog,ALTMeta,LOG_LEVEL,BROWSER_TYPE,WAIT_POLICY,PUBLISH_POLICY_TYPE,VIDEO_CATEGORIES_OPTIONS,VIDEO_SETTINGS,set_channel_language_english,get_path,setscheduletime
 import os
 from tsup.utils.login import *
 from time import sleep
@@ -21,7 +21,7 @@ from playwright.async_api import Playwright, Browser, BrowserContext
 class YoutubeUpload:
     def __init__(
         self,
-        root_profile_directory: Optional[str] = None,
+        profile_directory: Optional[str] = None,
         proxy_option: Optional[str] = None,
 
         timeout: int  = 200 * 1000,
@@ -32,7 +32,7 @@ class YoutubeUpload:
         recovery_email: Optional[str] = None,
         channel_cookie_path: Optional[str] = None,
         logger:Optional[Log]= None,
-
+        use_undetected_playwright:Optional[bool] = False,
         use_stealth_js:Optional[bool] = False,
         browser_type: Optional[int]=BROWSER_TYPE.FIREFOX,
         # 'chromium', 'firefox', or 'webkit'
@@ -53,14 +53,17 @@ class YoutubeUpload:
         self.username = username
         self.password = password
         self.use_stealth_js=use_stealth_js
-        self.channel_cookie_path = channel_cookie_path
-        if self.channelname is None:
+        self._use_undetected_playwright=use_undetected_playwright
 
-            self.channelname=username
+        self.channel_cookie_path = channel_cookie_path
+        if self.username is None:
+            self.channelname=os.path.splitext(self.channel_cookie_path)[0]
+
 
         else:
-            self.channelname=os.path.splitext(self.channel_cookie_path)[0]
-        self.root_profile_directory = root_profile_directory
+            self.channelname=username
+
+        self.profile_directory = profile_directory
         self.proxy_option = proxy_option
         self.is_open_browser = is_open_browser
         if browser_type not in list(dict(BROWSER_TYPE.BROWSER_TYPE_TEXT).values()):
@@ -99,13 +102,12 @@ class YoutubeUpload:
 
     async def upload(
         self,
-        video_id:str,
         video_local_path: str ,
         video_title: str ,
         video_description: str ,
         thumbnail_local_path: str ,
         publish_policy: Literal[0,1,2,3,4,5] = 0,
-        tags: list = [],
+        tags: list[str] = [],
         release_date: Optional[datetime] = datetime(
             date.today().year, date.today().month, date.today().day
         ),
@@ -131,7 +133,9 @@ class YoutubeUpload:
         is_show_howmany_likes: Optional[bool] = True,
         is_monetization_allowed: Optional[bool] = True,
         first_comment:Optional[str]=None,
-        subtitles:Optional[str]=None
+        alternate_infos:Optional[list[ALTMeta]]=None,
+        video_id:Optional[str]=None,
+
     ) -> Tuple[bool, Optional[str]]:
         """Uploads a video to YouTube.
         Returns if the video was uploaded and the video id.
@@ -228,6 +232,7 @@ class YoutubeUpload:
             self.logger.debug(f"start web page without proxy:{self.proxy_option}")
 
             pl = await PlaywrightAsyncDriver.create(
+                user_data_dir=self.profile_directory,
                 proxy=None,
                 driver_type=self.browser_type,
                 timeout=3000,
@@ -245,9 +250,12 @@ class YoutubeUpload:
             self.logger.debug(f"start web page with proxy:{self.proxy_option}")
             
             pl = await PlaywrightAsyncDriver.create(
+                user_data_dir=self.profile_directory,
+
                 proxy=self.proxy_option,
                 driver_type=self.browser_type,
                 timeout=3000,
+                use_undetected_playwright=self._use_undetected_playwright,
                 use_stealth_js=self.use_stealth_js,
                 url=YOUTUBE_URL,
             )
@@ -325,7 +333,7 @@ class YoutubeUpload:
             )
 
                 await self.page.close()
-                raise Error(message="first try for autologin failed,you can mannually sign in to save credentials for later auto login")
+                sys.exit(1)
 
             # save cookie to later import
             # login_using_cookie_file(self,self.channel_cookie_path,page)
@@ -355,7 +363,8 @@ class YoutubeUpload:
             self.logger.debug("start to check login status")
 
             islogin = confirm_logged_in(self)
-
+            if islogin==False:
+                self.logger.error('login is failed after 3 retries')
             # https://github.com/xtekky/google-login-bypass/blob/main/login.py
 
         self.logger.debug("check whether  home page is English")
@@ -418,11 +427,13 @@ class YoutubeUpload:
         try:
             self.logger.debug(f"Trying to detect daily upload limit...")
             ytcpuploadsdialog=page.locator("#error-short style-scope ytcp-uploads-dialog")
-            hint = await ytcpuploadsdialog.waitfor().text_content()
-            if "Daily upload limit reached" in hint:
+            await ytcpuploadsdialog.wait_for()
+            hint =ytcpuploadsdialog.text_content()
+            if "Daily upload limit reached" in str(hint):
                 self.logger.debug(f"you have reached daily upload limit pls try tomorrow")
 
-                self.close()
+                await self.page.close()
+                sys.exit(1)
 
             else:
                 pass
@@ -542,13 +553,15 @@ class YoutubeUpload:
                 else:
                     self.logger.debug("There is no copyright issue exist")
         # get video id
+        self._video_id=None
         try:
             self.logger.debug(f"Trying to get videoid...")
 
             if await page.locator("a.ytcp-video-info").is_visible():
-                video_id = await page.locator("a.ytcp-video-info").get_attribute("href")
-                video_id = video_id.split("/")[-1]
-                self.logger.debug(f" get videoid in uploading page:{video_id}")
+                video_id_locator = page.locator("a.ytcp-video-info")
+                _video_id = await video_id_locator.get_attribute("href")
+                _video_id = _video_id.split("/")[-1]
+                self.logger.debug(f" get videoid in uploading page:{_video_id}")
 
         except:
             self.logger.debug(
@@ -712,11 +725,13 @@ class YoutubeUpload:
         else:
             self.logger.debug(f"tags you give:{tags}")
             if type(tags) == list:
-                tags = ",".join(str(tag) for tag in tags)
-                tags = tags[:500]
+                tagsstr = ",".join(str(tag) for tag in tags)
+                tagsstr = tagsstr[:500]
+                tags=tagsstr.split(',')
+                self.logger.debug("tags words is longer than 500, cut off some,overwrite prefined channel tags")
+
             else:
                 tags = tags
-            self.logger.debug("overwrite prefined channel tags")
             if len(tags) > TAGS_COUNTER:
                 self.logger.debug(
                     f"Tags were not set due to exceeding the maximum allowed characters ({len(tags)}/{TAGS_COUNTER})"
@@ -752,17 +767,12 @@ class YoutubeUpload:
                 await page.locator(
                     "#uncaptioned-reason > ytcp-select:nth-child(1) > ytcp-text-dropdown-trigger:nth-child(1) > ytcp-dropdown-trigger:nth-child(1) > div:nth-child(2)"
                 ).click()
-                await page.get_by_role(
-                    "option", name=CaptionsCertificationOptions[captions_certification]
-                ).locator("div").nth(1 + int(captions_certification)).click()
+                await page.locator("div").nth(1 + int(captions_certification)).click()
 
         if video_film_date is not None:
             # parse from video metadata  using ffmpeg
             # if none, set to uploading day
-            video_film_date = (
-                datetime(date.today().year, date.today().month, date.today().day),
-            )
-            video_film_date = video_film_date.strftime("%b %d, %Y")
+            video_film_date = datetime(date.today().year, date.today().month, date.today().day).strftime("%b %d, %Y")
 
             await page.locator("#recorded-date tp-yt-iron-icon").click()
             await page.locator("#input-1").get_by_role("textbox").is_visible()
@@ -800,7 +810,7 @@ class YoutubeUpload:
             index=int(categories)
             await page.get_by_text("Category", exact=True).click()
             await page.locator("#category tp-yt-iron-icon").click()
-            await page.get_by_role("option", name=categories).locator("div").nth(
+            await page.get_by_role("option", name=dict(VIDEO_CATEGORIES_OPTIONS.VIDEO_CATEGORIES_OPTIONS_TEXT)[categories]).locator("div").nth(
                 index
             ).click()
         if comments_ratings_policy == 0:
@@ -920,13 +930,12 @@ class YoutubeUpload:
                 release_date = release_date
 
             if release_date_hour and release_date_hour in availableScheduleTimes:
-                release_date_hour = datetime.strptime(release_date_hour, "%H:%M")
-                release_date_hour = release_date_hour.strftime("%I:%M %p")
+                release_date_hour = datetime.strptime(release_date_hour, "%H:%M").strftime("%I:%M %p")
             else:
-                self.logger.debug(
+                self.logger.error(
                     f"your specified schedule time is not supported by youtube yet{release_date_hour}"
                 )
-                release_date_hour = release_date_hour.strftime("%I:%M %p")
+                sys.exit(1)
 
             self.logger.debug(
                 f"Trying to set video schedule time...{release_date}...{release_date_hour}"
@@ -937,11 +946,11 @@ class YoutubeUpload:
             self.logger.debug(f'you should choose a valid publish_policy from {dict(PUBLISH_POLICY_TYPE.PUBLISH_POLICY_TYPE_TEXT).keys()}')
         self.logger.debug("publish setting task done")
 
-        if video_id is None:
+        if self._video_id is None:
             self.logger.debug("start to grab video id  in schedule page")
 
-            video_id = await self.get_video_id(page)
-            self.logger.debug(f"finish to grab video id in schedule page:{video_id}")
+            self. _video_id = await self.get_video_id(page)
+            self.logger.debug(f"finish to grab video id in schedule page:{self._video_id}")
         # await page.click('#save-button')
         # done-button > div:nth-child(2)
         self.logger.debug("trying to click done button")
@@ -983,13 +992,8 @@ class YoutubeUpload:
         self.logger.debug(f"{video_local_path} is upload process is done")
 
         sleep(5)
-        logging.info("Upload is complete")
+        self.logger.debug("Upload is complete")
 
-        # upload multi-language subtitles and title description
-        # https://studio.youtube.com/video/_aaNTRwoJco/translations
-        YoutubeSubtitleURL = (
-            "https://studio.youtube.com/video/" + video_id + "/translations"
-        )
 
         # submit first comment to drive more traffic for your website
         # firstComment
@@ -997,12 +1001,23 @@ class YoutubeUpload:
         # locator the comment field
         # input 
         # submit and check
+
+        # upload multi-language subtitles and title description
+        # https://studio.youtube.com/video/_aaNTRwoJco/translations
+        if video_id:
+            print('skip the upload process,update alterinfo')
+
+        YoutubeSubtitleURL =  "https://studio.youtube.com/video/" + self._video_id + "/translations"
+        # if alternate_infos is not None
+
+        ## submit alternate subtitle and title descriptions
+
         await self.pl.quit()
         # page.locator("#close-icon-button > tp-yt-iron-icon:nth-child(1)").click()
         # self.logger.debug(page.expect_popup().locator("#html-body > ytcp-uploads-still-processing-dialog:nth-child(39)"))
         # page.wait_for_selector("ytcp-dialog.ytcp-uploads-still-processing-dialog > tp-yt-paper-dialog:nth-child(1)")
         # page.locator("ytcp-button.ytcp-uploads-still-processing-dialog > div:nth-child(2)").click()
-        return True, video_id
+        return True, self._video_id
 
     async def get_video_id(self, page) -> Optional[str]:
         video_id = None

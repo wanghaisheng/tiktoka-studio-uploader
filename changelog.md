@@ -1,3 +1,17 @@
+**Update 2023-11-23**
+
+1. change  debug  to log_level, add logger field if you want to wrap this lib in your code,you can pass your own logger here to control output format.
+
+2. add use_undetected_playwright ,try to avoid insecure browser detection 
+
+3. update log util to better reading
+
+4. update insecure browser detect
+
+5. update examples 
+
+6. add placeholder for alternate video meta such as title,description,srt file 
+
 
 
 

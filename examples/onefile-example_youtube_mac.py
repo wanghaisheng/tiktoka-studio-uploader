@@ -51,7 +51,7 @@ def checkfilebroken(path):
 # checkRequirments()
 upload = YoutubeUpload(
     # use r"" for paths, this will not give formatting errors e.g. "\n"
-    root_profile_directory=None,
+    profile_directory=None,
     proxy_option=proxy_option,
     is_open_browser=False,
     log_level=LOG_LEVEL.DEBUG,

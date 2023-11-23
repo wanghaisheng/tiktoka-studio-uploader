@@ -8,7 +8,14 @@ from tsup.utils.constants import *
 from pathlib import Path
 import os
 from typing import Tuple, Optional, Union, Literal
-
+class ALTMeta:
+    lang: Optional[str] = None
+    title: Optional[str] = None
+    description: Optional[str] = None
+    subtitle_filepath: Optional[str] = None
+    subtitle_name: Optional[str] = None
+    subtitle_format: Optional[str] = None
+    subtitle_contents: Optional[str] = None
 class LOG_LEVEL:
     CRITICAL = 50
     FATAL = CRITICAL
