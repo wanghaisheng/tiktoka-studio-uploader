@@ -108,7 +108,11 @@ def confirm_logged_in_tiktok(self) -> bool:
 #         await login(page, credentials, messageTransport, useCookieStore)
 async def detectInsecureBrowser(self):
     try:
-        self.logger.debug(f"Trying to detect insecure browser...")         
+        self.logger.debug(f"Trying to detect insecure browser...")        
+        await  expect(
+            await self.page.locator(".tCpFMc > form")
+        ).to_be_visible()           
+
         hint = await self.page.locator(".tCpFMc > form").all_text_contents()
         hint = "".join(hint)
         # print(f'hints:{hint}')
@@ -131,9 +135,13 @@ async def detectInsecureBrowser(self):
 async def detectveryitsyou(self):
     try:
         self.logger.debug(f"Trying to detect Verify it’s you...")         
+
+        await  expect(
+            await self.page.locator(".tCpFMc > form")
+        ).to_be_visible()        
         hint = await self.page.locator(".tCpFMc > form").all_text_contents()
         hint = "".join(hint)
-        print(f'hints:{hint}')
+        self.logger.debug(f'hints:{hint}')
 
         if  'Verify it’s you' in hint:
             self.logger.debug(f"To help keep your account secure, Google needs to verify it’s you. Please sign in again to continue to YouTube.")
@@ -158,8 +166,12 @@ async def passwordlogin(self, page):
         return 
         # #sys.exit(1)
 
+
     try:
-        await page.get_by_role("link", name="Sign in").is_visible()
+        await  expect(
+            page.get_by_role("link", name="Sign in")
+        ).to_be_visible()
+
         await page.get_by_role("link", name="Sign in").click()
         self.logger.debug("detected  sign in button")
 
@@ -177,7 +189,11 @@ async def passwordlogin(self, page):
         self.logger.debug("change sign in display language to english")
         try:
             #endpoint > tp-yt-paper-item > yt-formatted-string
-            await page.locator("#endpoint > tp-yt-paper-item > yt-formatted-string").is_visible()
+
+            await  expect(
+                page.locator("#endpoint > tp-yt-paper-item > yt-formatted-string")
+            ).to_be_visible()
+
             s = await page.locator("#endpoint > tp-yt-paper-item > yt-formatted-string").all_text_contents()
             s = "".join(s)
             if not "Home" in s:
@@ -196,7 +212,10 @@ async def passwordlogin(self, page):
 
     self.logger.debug("start to detect  Email or phone textbox")
     try:
-        await page.get_by_role("textbox", name="Email or phone").is_visible()
+
+        await  expect(
+            page.get_by_role("textbox", name="Email or phone")
+        ).to_be_visible()           
         self.logger.debug("detected  Email or phone textbox")
         self.logger.debug("start to fill in   Email or phone textbox")
 
@@ -204,7 +223,9 @@ async def passwordlogin(self, page):
 
     except:
         self.logger.debug(f"could not find email or phone input textbox {page.url}")
-        await self.pl.quit()
+        await detectveryitsyou(self)    
+
+        # await self.pl.quit()
 
         #sys.exit(1)
     await detectveryitsyou(self)    
@@ -212,6 +233,9 @@ async def passwordlogin(self, page):
     self.logger.debug("start to detect Next button")
     sleep(random.uniform(5, 6))
 
+    await  expect(
+        page.get_by_role("button", name="Next")
+    ).to_be_visible()           
     await page.get_by_role("button", name="Next").click()
     # sleep(random.uniform(5, 6))
     self.logger.debug("detected  Next button")
@@ -221,7 +245,10 @@ async def passwordlogin(self, page):
     self.logger.debug(f"start to detect  password textbox {page.url}")
 
     try:
-        await page.get_by_role("textbox", name="Enter your password").is_visible()
+
+        await  expect(
+             page.get_by_role("textbox", name="Enter your password")
+        ).to_be_visible()     
 
         self.logger.debug("detected  password textbox")
         self.logger.debug("start to fill in password textbox")
@@ -246,6 +273,12 @@ async def passwordlogin(self, page):
     await detectInsecureBrowser(self)    
 
     try:
+
+        await  expect(
+            page.locator("#headingText").get_by_text("2-Step Verification")
+        ).to_be_visible()     
+
+
         await page.locator("#headingText").get_by_text("2-Step Verification").click()
         await page.get_by_text("Google Authenticator").click()
         await page.get_by_text(
