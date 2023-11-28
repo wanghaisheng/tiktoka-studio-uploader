@@ -118,13 +118,33 @@ async def detectInsecureBrowser(self):
 
             await self.pl.quit()
             # use sys.exit  it wont break instantly
-            # sys.exit(1)
+            # #sys.exit(1)
             os._exit(1)
         else:
             pass
 
     except:
         self.logger.debug(f"Finishing detect insecure browser...")
+
+
+async def detectveryitsyou(self):
+    try:
+        self.logger.debug(f"Trying to detect Verify it’s you...")         
+        hint = await self.page.locator(".tCpFMc > form").all_text_contents()
+        hint = "".join(hint)
+        print(f'hints:{hint}')
+
+        if  'Verify it’s you' in hint:
+            self.logger.debug(f"To help keep your account secure, Google needs to verify it’s you. Please sign in again to continue to YouTube.")
+            self.logger.debug(f"for this situation you need a fresh new cookie file")
+
+            await self.pl.quit()
+            return 
+        else:
+            pass
+
+    except:
+        self.logger.debug(f"Finishing detect verify its you...")
 
 async def passwordlogin(self, page):
     self.logger.debug("try to login in from youtube homepage")
@@ -133,7 +153,9 @@ async def passwordlogin(self, page):
         await self.page.goto(YoutubeHomePageURL, timeout=self.timeout)
     except Exception as e:
         self.logger.error(f"can not access {YoutubeHomePageURL} due to {e}")
-        sys.exit(1)
+        await self.pl.quit()
+        return 
+        # #sys.exit(1)
 
     try:
         await page.get_by_role("link", name="Sign in").is_visible()
@@ -142,7 +164,9 @@ async def passwordlogin(self, page):
 
     except:
         self.logger.debug("could not find sign in button")
-        sys.exit(1)
+        await self.pl.quit()
+
+        #sys.exit(1)
 
     # change sign in language
     if 'hl=en' in page.url:
@@ -162,25 +186,13 @@ async def passwordlogin(self, page):
                 
         except:
             self.logger.debug("could not find language option ")
-            sys.exit(1)
+            await self.pl.quit()
+            # #sys.exit(1)
 
         sleep(random.uniform(5, 6))
-        try:
-            self.logger.debug(f"Trying to detect Verify it’s you...")         
-            hint = await self.page.locator(".tCpFMc > form").all_text_contents()
-            hint = "".join(hint)
-            print(f'hints:{hint}')
 
-            if  'Verify it’s you' in hint:
-                self.logger.debug(f"To help keep your account secure, Google needs to verify it’s you. Please sign in again to continue to YouTube.")
-                self.logger.debug(f"for this situation you need a fresh new cookie file")
+    await detectveryitsyou(self)    
 
-                await self.quit()
-            else:
-                pass
-
-        except:
-            self.logger.debug(f"Finishing detect verify its you...")
     self.logger.debug("start to detect  Email or phone textbox")
     try:
         await page.get_by_role("textbox", name="Email or phone").is_visible()
@@ -191,7 +203,10 @@ async def passwordlogin(self, page):
 
     except:
         self.logger.debug(f"could not find email or phone input textbox {page.url}")
-        sys.exit(1)
+        await self.pl.quit()
+
+        #sys.exit(1)
+    await detectveryitsyou(self)    
 
     self.logger.debug("start to detect Next button")
     sleep(random.uniform(5, 6))

@@ -4,6 +4,7 @@ from tsup.utils.log import log,Log
 from tsup.utils.exceptions import *
 from tsup.youtube.youtube_helper import VerifyDialog,ALTMeta,LOG_LEVEL,BROWSER_TYPE,WAIT_POLICY,PUBLISH_POLICY_TYPE,VIDEO_CATEGORIES_OPTIONS,VIDEO_SETTINGS,set_channel_language_english,get_path,setscheduletime
 import os
+from pathlib import PurePath
 from tsup.utils.login import *
 from time import sleep
 from datetime import datetime, date, timedelta
@@ -24,7 +25,7 @@ class YoutubeUpload:
         profile_directory: Optional[str] = None,
         proxy_option: Optional[str] = None,
 
-        timeout: int  = 200 * 1000,
+        timeout: int  = 2000 * 1000,
         is_open_browser: Optional[bool] = True,
         log_level: Optional[int]  = LOG_LEVEL.DEBUG,
         username: Optional[str] = None,
@@ -42,6 +43,8 @@ class YoutubeUpload:
         is_record_video: Optional[bool] = True,
     ) -> None:
         self.timeout = timeout
+        self.logger=logger
+
         if logger is None:
             self.logger=log
         if log_level is None:
@@ -49,7 +52,7 @@ class YoutubeUpload:
         else:
             self.logger.setLevel(log_level)
 
-
+        self.profile_directory=profile_directory
         self.username = username
         self.password = password
         self.use_stealth_js=use_stealth_js
@@ -57,7 +60,16 @@ class YoutubeUpload:
 
         self.channel_cookie_path = channel_cookie_path
         if self.username is None:
-            self.channelname=os.path.splitext(self.channel_cookie_path)[0]
+            if self.channel_cookie_path is None:
+                if self.profile_directory==None:
+                    import uuid
+                    self.channelname=uuid.uuid4()
+
+                else:
+                    self.channelname=PurePath(self.profile_directory).parts[-1]
+
+            else:
+                self.channelname=os.path.splitext(self.channel_cookie_path)[0]
 
 
         else:
@@ -66,10 +78,16 @@ class YoutubeUpload:
         self.profile_directory = profile_directory
         self.proxy_option = proxy_option
         self.is_open_browser = is_open_browser
-        if browser_type not in list(dict(BROWSER_TYPE.BROWSER_TYPE_TEXT).values()):
-            self.browser_type = "firefox"
+        if type(browser_type)==str:        
+            if browser_type not in list(dict(BROWSER_TYPE.BROWSER_TYPE_TEXT).values()):
+                self.browser_type = "firefox"
+        elif type(browser_type)==int:        
+            if browser_type not in dict(BROWSER_TYPE.BROWSER_TYPE_TEXT).keys():
+                browser_type=1
+            self.browser_type =dict(BROWSER_TYPE.BROWSER_TYPE_TEXT)[browser_type]
         else:
-            self.browser_type = browser_type
+
+            self.browser_type = "firefox"
 
         # self.pl: Playwright
         # self.browser: Browser 
@@ -235,7 +253,7 @@ class YoutubeUpload:
                 user_data_dir=self.profile_directory,
                 proxy=None,
                 driver_type=self.browser_type,
-                timeout=3000,
+                timeout=self.timeout,
                 use_stealth_js=False,
             )
             self.pl = pl
@@ -254,7 +272,7 @@ class YoutubeUpload:
 
                 proxy=self.proxy_option,
                 driver_type=self.browser_type,
-                timeout=3000,
+                timeout=self.timeout,
                 use_undetected_playwright=self._use_undetected_playwright,
                 use_stealth_js=self.use_stealth_js,
                 url=YOUTUBE_URL,
@@ -333,14 +351,16 @@ class YoutubeUpload:
             )
 
                 await self.page.close()
-                sys.exit(1)
+                await self.pl.quit()
 
+                return False,None
             # save cookie to later import
             # login_using_cookie_file(self,self.channel_cookie_path,page)
         try:
             await self.page.goto(YoutubeHomePageURL, timeout=self.timeout)
         except Exception as e:
             self.logger.error(f"can not access {YoutubeHomePageURL} due to {e}")
+            await self.pl.quit()
             sys.exit(1)
 
         page = self.page
