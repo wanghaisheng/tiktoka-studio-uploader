@@ -6,6 +6,7 @@ from time import sleep
 import random
 from datetime import datetime, date, timedelta, time
 from playwright.async_api import Page, expect
+from tsup.youtube.youtube_helper import set_channel_language_english
 import sys
 """ Login module """
 
@@ -174,20 +175,20 @@ async def passwordlogin(self, page):
         
     else:
         self.logger.debug("change sign in display language to english")
-
         try:
-            await page.get_by_role("combobox").is_visible()
-            s = await page.get_by_role("combobox").all_text_contents()
+            #endpoint > tp-yt-paper-item > yt-formatted-string
+            await page.locator("#endpoint > tp-yt-paper-item > yt-formatted-string").is_visible()
+            s = await page.locator("#endpoint > tp-yt-paper-item > yt-formatted-string").all_text_contents()
             s = "".join(s)
-            if not "English" in s:
-                await page.get_by_role("combobox").click()
-                await page.get_by_role("option", name="English (United States)").click()
+            if not "Home" in s:
+                await set_channel_language_english(self, page)
+
             self.logger.debug("changed to english display language")
                 
         except:
             self.logger.debug("could not find language option ")
             await self.pl.quit()
-            # #sys.exit(1)
+            #sys.exit(1)
 
         sleep(random.uniform(5, 6))
 

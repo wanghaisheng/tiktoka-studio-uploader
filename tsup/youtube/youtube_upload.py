@@ -361,7 +361,8 @@ class YoutubeUpload:
         except Exception as e:
             self.logger.error(f"can not access {YoutubeHomePageURL} due to {e}")
             await self.pl.quit()
-            sys.exit(1)
+            # sys.exit(1)
+            return False,None
 
         page = self.page
         islogin = False
