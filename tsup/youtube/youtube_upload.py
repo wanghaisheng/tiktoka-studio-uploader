@@ -351,7 +351,7 @@ class YoutubeUpload:
             )
 
                 await self.page.close()
-                await self.pl.quit()
+                #await self.pl.quit()
 
                 return False,None
             # save cookie to later import
@@ -454,7 +454,7 @@ class YoutubeUpload:
                 self.logger.debug(f"you have reached daily upload limit pls try tomorrow")
 
                 await self.page.close()
-                sys.exit(1)
+                return False,None
 
             else:
                 pass
@@ -956,7 +956,7 @@ class YoutubeUpload:
                 self.logger.error(
                     f"your specified schedule time is not supported by youtube yet{release_date_hour}"
                 )
-                sys.exit(1)
+                return False,None
 
             self.logger.debug(
                 f"Trying to set video schedule time...{release_date}...{release_date_hour}"
@@ -1033,7 +1033,7 @@ class YoutubeUpload:
 
         ## submit alternate subtitle and title descriptions
 
-        await self.pl.quit()
+        #await self.pl.quit()
         # page.locator("#close-icon-button > tp-yt-iron-icon:nth-child(1)").click()
         # self.logger.debug(page.expect_popup().locator("#html-body > ytcp-uploads-still-processing-dialog:nth-child(39)"))
         # page.wait_for_selector("ytcp-dialog.ytcp-uploads-still-processing-dialog > tp-yt-paper-dialog:nth-child(1)")

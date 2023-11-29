@@ -163,7 +163,7 @@ async def passwordlogin(self, page):
     except Exception as e:
         self.logger.error(f"can not access {YoutubeHomePageURL} due to {e}")
         await self.pl.quit()
-        return 
+        return False,None
         # #sys.exit(1)
 
 
@@ -178,7 +178,7 @@ async def passwordlogin(self, page):
     except:
         self.logger.debug("could not find sign in button")
         await self.pl.quit()
-
+        return False,None
         #sys.exit(1)
 
     # change sign in language
@@ -204,7 +204,7 @@ async def passwordlogin(self, page):
         except:
             self.logger.debug("could not find language option ")
             await self.pl.quit()
-            #sys.exit(1)
+            return False,None
 
         sleep(random.uniform(5, 6))
 
@@ -225,7 +225,8 @@ async def passwordlogin(self, page):
         self.logger.debug(f"could not find email or phone input textbox {page.url}")
         await detectveryitsyou(self)    
 
-        # await self.pl.quit()
+        await self.pl.quit()
+        return False,None
 
         #sys.exit(1)
     await detectveryitsyou(self)    
@@ -261,7 +262,8 @@ async def passwordlogin(self, page):
     #     page.get_by_text("We noticed unusual activity in your Google Account. To keep your account safe, y").click()
         if 'rejected' in page.url:
             await self.pl.quit()
-                
+        return False,None
+
         # sleep(random.uniform(5, 6))
 
     self.logger.debug("start to detect Next button")
