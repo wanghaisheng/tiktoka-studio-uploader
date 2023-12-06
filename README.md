@@ -1,16 +1,10 @@
-**Update 2023-11-23**
+**Update 2023-12-06**
 
-1. change  debug  to log_level, add logger field if you want to wrap this lib in your code,you can pass your own logger here to control output format.
+1.rename package to upload pypi for easy install  due to old tsup is not allowed to use anymore
 
-2. add use_undetected_playwright ,try to avoid insecure browser detection 
 
-3. update log util to better reading
 
-4. update insecure browser detect
 
-5. update examples 
-
-6. add placeholder for alternate video meta such as title,description,srt file 
 
 
 
@@ -20,7 +14,11 @@ if there's anything you don't understand, submit an issue or cantact me
 
 ### for those beginner
 
-checkout the [GUI version](https://github.com/wanghaisheng/tiktoka-studio-uploader-app).
+checkout the [GUI version](https://github.com/wanghaisheng/uploader-genius-V1).
+
+New version you can check www.tiktokastudio.com for more infos.
+
+I can also assist you to run script in your own server(Paid)
 
 ### youtube
 
@@ -56,7 +54,7 @@ Last Year During COVID I was shutdown at home without walking out the door for 2
 
 ---
 
-This project aims to automate the upload process for YouTube Videos. Since videos can only be publicly uploaded through the YouTube Data API by using a Google Workspaces Account (not free!YouTube counts 1600 credits per upload. ), I decided to figure out a headless uploader using Selenium and Playwright. This approach also bypasses API restrictions (e.g. Rate Limits/Endcards can't be set through the API).There are tons of library existing but not for me .
+This project aims to automate the Videos upload process for social media platform such as YouTube . Since videos can only be publicly uploaded through the YouTube Data API by using a Google Workspaces Account (not free!YouTube counts 1600 credits per upload. ), I decided to figure out a headless uploader using Selenium and Playwright. This approach also bypasses API restrictions (e.g. Rate Limits/Endcards can't be set through the API).There are tons of library existing but not for me .
 
 AS a code dummy, I do accept any advice because my only purpose is to get things working
 
@@ -87,9 +85,9 @@ AS a code dummy, I do accept any advice because my only purpose is to get things
 
 ## features YOU MAY NEED
 
-### profile support 
+### profile support
 
-use firefox profile instead of cookie file can  avoid hints such as your browser is insecure 
+use firefox profile instead of cookie file can  avoid hints such as your browser is insecure
 
 
 ### 1. proxy support
@@ -222,7 +220,7 @@ you can submit an issue too
 
 ## community/Support
 
-Join discord     
+Join discord
 
 https://discord.gg/mSCMS3jv5V
 

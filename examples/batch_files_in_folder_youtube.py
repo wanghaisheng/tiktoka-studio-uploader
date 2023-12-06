@@ -1,5 +1,5 @@
-from tsup.youtube.youtube_upload import YoutubeUpload
-from tsup.youtube.models.youtube_models import YoutubeVideo,UploadSetting
+from upgenius.youtube.youtube_upload import YoutubeUpload
+from upgenius.youtube.models.youtube_models import YoutubeVideo,UploadSetting
 
 from datetime import datetime, date, timedelta
 import asyncio
@@ -67,7 +67,7 @@ def analyse_video_thumb_pair(folder):
                                 title = f.read()
 
                             if os.path.exists(thumbpath):
-                                
+
                                 video = YoutubeVideo(
                                     video_local_path=videopath,
                                     video_title=title,
@@ -108,7 +108,7 @@ setting["dailycount"] = 4
 maxdays = calendar._monthlen(today.year, today.month)
 print("max day in  month", maxdays)
 for i,video in enumerate(videofiles):
-## auto gen publish date 
+## auto gen publish date
 
     monthoffset = int(int(i) / maxdays)
     startingday = today.day

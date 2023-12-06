@@ -3,7 +3,7 @@
 
 import subprocess
 import time
-from tsup.utils.webdriver.setupPL import checkRequirments
+from upgenius.utils.webdriver.setupPL import checkRequirments
 
 
 def getCookie(

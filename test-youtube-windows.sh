@@ -1,6 +1,7 @@
-pip uninstall -y tsup
+pip uninstall -y upgenius
 pip install -i https://pypi.mirrors.ustc.edu.cn/simple/ -r requirements.txt
 python setup.py install
+playwright install  firefox
 #auto save cookie file without manually export
 # python examples/save-youtube-Cookie.py
 # test exported cookie file before actually use

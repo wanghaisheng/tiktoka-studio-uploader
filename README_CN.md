@@ -134,7 +134,7 @@ pip install -r requirements.txt
 
 python onefile-example.py
 
-all codes under **tsup**, twist them as you wish
+all codes under **upgenius**, twist them as you wish
 
 ```
 

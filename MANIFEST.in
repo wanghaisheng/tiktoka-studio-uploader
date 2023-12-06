@@ -1,10 +1,10 @@
 include README.md
 include LICENSE
 
-include tsup/requirements.txt
-include tsup/VERSION
+include upgenius/requirements.txt
+include upgenius/VERSION
 
-recursive-include tsup/utils/js *
+recursive-include upgenius/utils/js *
 recursive-include tests *
 
 global-exclude __pycache__ *.py[cod]

@@ -1,8 +1,8 @@
-from tsup.youtube.youtube_upload import YoutubeUpload
+from upgenius.youtube.youtube_upload import YoutubeUpload
 from datetime import datetime, date, timedelta
 import asyncio
-from tsup.utils.webdriver.setupPL import checkRequirments
-from tsup.youtube.youtube_helper import *
+from upgenius.utils.webdriver.setupPL import checkRequirments
+from upgenius.youtube.youtube_helper import LOG_LEVEL,BROWSER_TYPE,WAIT_POLICY
 
 import os
 # If it is the first time you've run the utility, a browser window should popup and prompt you to provide Youtube credentials. A token will be created and stored in request.token file in the local directory for subsequent use.
@@ -43,7 +43,7 @@ def checkfilebroken(path):
         return True
     else:
         print(f'{path} is not  exist')
-        
+
         return False
 
 

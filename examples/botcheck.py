@@ -5,19 +5,19 @@ from playwright.async_api import (
     async_playwright,
     expect,
 )
-from tsup.utils.webdriver.playwright_driver_async_stealth import (
+from upgenius.utils.webdriver.playwright_driver_async_stealth import (
     PlaywrightAsyncDriverStealth,
 )
-from tsup.utils.webdriver.playwright_driver_async_undetected import (
+from upgenius.utils.webdriver.playwright_driver_async_undetected import (
     PlaywrightAsyncDriverUndetected,
 )
 
-from tsup.utils.webdriver.playwright_driver_async import (
+from upgenius.utils.webdriver.playwright_driver_async import (
     PlaywrightAsyncDriver,
 )
 import asyncio
 import os
-from tsup.botright.botright import Botright
+from upgenius.botright.botright import Botright
 from cf_clearance import async_cf_retry, async_stealth
 from datetime import datetime
 from urllib.parse import urlparse, urlunsplit, urlsplit
@@ -523,14 +523,14 @@ async def main():
             use_stealth_js=False,
     #         for github action
             headless=False,
-            
+
         )
-        freshpage=pl.page        
+        freshpage=pl.page
         await pl.page.goto(url)
-        await pl.page.screenshot(path=f"result/{url.split('//')[-1]}.png", full_page=True)        
+        await pl.page.screenshot(path=f"result/{url.split('//')[-1]}.png", full_page=True)
         print('PlaywrightAsyncDriverUndetected raw pl',url)
-        
-        botcheck = Botcheck(freshpage)    
+
+        botcheck = Botcheck(freshpage)
         await pl.quit()
     for url in ipchecklist:
 
@@ -541,13 +541,13 @@ async def main():
             use_stealth_js=False,
     #         for github action
             headless=True,
-            
+
         )
-        freshpage=pl.page        
+        freshpage=pl.page
         print('raw pl',url)
-        
+
         botcheck = Botcheck(freshpage)
-        
+
         await botcheck.checkIP(botcheck.page ,url)
     for url in ipchecklist:
 
@@ -558,12 +558,12 @@ async def main():
             use_stealth_js=True,
     #         for github action
             headless=True,
-            
+
         )
-        freshpage=pl.page       
+        freshpage=pl.page
         print('raw pl with stealth js',url)
 
-        await botcheck.checkIP(pl.page ,url)        
+        await botcheck.checkIP(pl.page ,url)
     for url in ipchecklist:
         print('raw pl with async_stealth',url)
         pl = await PlaywrightAsyncDriverStealth.create(
@@ -573,9 +573,9 @@ async def main():
     #         headless=False,
     #         for github action
             headless=True,
-            
+
         )
-        freshpage=pl.page     
+        freshpage=pl.page
         botcheck = Botcheck(freshpage)
         await async_stealth(botcheck.page, pure=True)
         await botcheck.checkIP(botcheck.page ,url)
@@ -589,11 +589,11 @@ async def main():
             use_stealth_js=False,
     #         for github action
             headless=True,
-            
+
         )
-        freshpage=pl.page        
-        
-        botcheck = Botcheck(freshpage)        
+        freshpage=pl.page
+
+        botcheck = Botcheck(freshpage)
         print('raw pl with navigator',url)
 
         await pl.page.add_init_script(

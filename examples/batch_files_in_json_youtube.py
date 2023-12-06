@@ -1,4 +1,4 @@
-from tsup.youtube.youtube_upload import YoutubeUpload
+from upgenius.youtube.youtube_upload import YoutubeUpload
 from datetime import datetime, date, timedelta
 import asyncio
 import os

@@ -1,8 +1,8 @@
 """
 Uploads multiple videos downloaded from the internet
 """
-from tsup.tiktok.selenium.TikTokAdspowerUploader import AdspowerUploader
-from tsup.tiktok.selenium.auth import AuthBackend
+from upgenius.tiktok.selenium.TikTokAdspowerUploader import AdspowerUploader
+from upgenius.tiktok.selenium.auth import AuthBackend
 
 
 FILENAME = "upload.mp4"
@@ -23,6 +23,6 @@ videos = [
 ]
 
 if __name__ == "__main__":
-    
+
     uploader = AdspowerUploader("jie", "new bag.mp4", "conf.json", None)
     uploader.upload()

@@ -4,16 +4,16 @@ from sys import version_info
 import setuptools
 
 if version_info < (3, 6, 0):
-    raise SystemExit("Sorry! tsup requires python 3.6.0 or later.")
+    raise SystemExit("Sorry! upgenius requires python 3.6.0 or later.")
 
-with open(join(dirname(__file__), "tsup/VERSION"), "rb") as fh:
+with open(join(dirname(__file__), "upgenius/VERSION"), "rb") as fh:
     version = fh.read().decode("ascii").strip()
 
 with open("README.md", "r", encoding="utf8") as fh:
     long_description = fh.read()
 
 packages = setuptools.find_packages()
-packages.extend(["tsup"])
+packages.extend(["upgenius"])
 
 
 requires = [
@@ -29,7 +29,7 @@ requires = [
     "playwright",
 ]
 setuptools.setup(
-    name="tsup",
+    name="upgenius",
     version=version,
     author="wanghaisheng",
     author_email="admin@tiktokastudio.com",
@@ -39,7 +39,7 @@ setuptools.setup(
     license="MIT",
     url="https://github.com/wanghaisheng/tiktoka-studio-uploader",
     download_url="https://github.com/wanghaisheng/tiktoka-studio-uploader/tarball/version",
-    # packages=["tsup", "tsup.utils", "tsup.tiktok", "tsup.db", "tsup.network"],
+    # packages=["upgenius", "upgenius.utils", "upgenius.tiktok", "upgenius.db", "upgenius.network"],
     packages=packages,
     # so we emit to hard code the package/sub-folder name
     include_package_data=True,

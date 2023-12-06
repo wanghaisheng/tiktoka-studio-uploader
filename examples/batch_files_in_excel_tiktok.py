@@ -1,5 +1,5 @@
-from tsup.tiktok.sessionId.uploader import upload2TiktokSessionId
-from tsup.utils.tools import get_duration_timestamp
+from upgenius.tiktok.sessionId.uploader import upload2TiktokSessionId
+from upgenius.utils.tools import get_duration_timestamp
 import pandas  as pd
 import os
 import json
@@ -13,8 +13,8 @@ def more():
 
         for name in my_dic.iterrows():
             print(name)
-            
-            item = name[1].to_dict()        
+
+            item = name[1].to_dict()
             print(item)
 
             # print(f'start to load videos in json file, found {len(videos)} videos there')
@@ -31,9 +31,9 @@ def more():
             print(f'type {type(tags)}')
             print(f'type {type(users)}')
 
-            year_target = item["year_target"]            
-            month_target = item["month_target"]            
-            day_target = item["day_target"]            
+            year_target = item["year_target"]
+            month_target = item["month_target"]
+            day_target = item["day_target"]
             hour_target = item["hour_target"]
 
             minute_target = item["minute_target"]
@@ -54,6 +54,6 @@ def more():
             except Exception as e:
                 print(f'you may double check sessionid is ok :\n {e}')
     else:
-        print('videos.json file not found')    
+        print('videos.json file not found')
 if __name__ == '__main__':
     more()

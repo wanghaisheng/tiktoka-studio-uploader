@@ -1,5 +1,5 @@
-from tsup.tiktok.sessionId.uploader import  upload2TiktokSessionId
-from tsup.utils.tools import get_duration_timestamp
+from upgenius.tiktok.sessionId.uploader import  upload2TiktokSessionId
+from upgenius.utils.tools import get_duration_timestamp
 year_target = 2023
 month_target = 8
 day_target = 31
@@ -10,7 +10,7 @@ schedule_time=get_duration_timestamp(year_target,month_target,day_target,hour_ta
 default_tags=["Funny", "Joke", "fyp"]
 if __name__ == '__main__':
 	import argparse
-	parser = argparse.ArgumentParser()        
+	parser = argparse.ArgumentParser()
 	parser.add_argument("-i", "--session_id", help="Tiktok sessionid cookie", required=True)
 	parser.add_argument("-p", "--path", help="Path to video file", required=True)
 	parser.add_argument("-t", "--title", help="Title of the video", required=True)

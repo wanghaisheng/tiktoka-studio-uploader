@@ -1,5 +1,5 @@
-from tsup.tiktok.sessionId.uploader import  upload2TiktokSessionId
-from tsup.utils.tools import get_duration_timestamp
+from upgenius.tiktok.sessionId.uploader import  upload2TiktokSessionId
+from upgenius.utils.tools import get_duration_timestamp
 def videoMetaString_timestamp():
     # targetDateTime in following format:timestamp  ,you need calculate by yourself
     schedule_time=0
@@ -17,16 +17,16 @@ def videoMetaString_timestamp():
     title = "MY SUPER TITLE"
     tags = ["Funny", "Joke", "fyp"]
     users = ["amazing dear"]
-    proxy = {'http': 'http://ip:port', 'https': 'https://ip:port'}    
+    proxy = {'http': 'http://ip:port', 'https': 'https://ip:port'}
     url_server='us'
     isupload=upload2TiktokSessionId(session_id, path, title, tags, users, url_server, schedule_time)
     if isupload==False:
-        
+
         url_server='www'
-        isupload=upload2TiktokSessionId(session_id, path, title, tags, users, url_server, schedule_time)    
+        isupload=upload2TiktokSessionId(session_id, path, title, tags, users, url_server, schedule_time)
 def videoMetaString():
 
-        
+
     # targetDateTime in following format
 
     year_target = 2023
@@ -50,18 +50,18 @@ def videoMetaString():
     title = "MY SUPER TITLE"
     tags = ["Funny", "Joke", "fyp"]
     users = ["amazing dear"]
-    proxy = {'http': 'socks5://127.0.0.1:1080', 'https': 'socks5://127.0.0.1:1080'}    
+    proxy = {'http': 'socks5://127.0.0.1:1080', 'https': 'socks5://127.0.0.1:1080'}
     url_server='us'
-    
+
     print(f'start to upload video:{path} to tiktok')
-    
+
     isupload=upload2TiktokSessionId(session_id, path, title, tags, users, url_server, schedule_time,proxy)
     if isupload==False:
-        
+
         url_server='www'
         isupload=upload2TiktokSessionId(session_id, path, title, tags, users, url_server, schedule_time,proxy)
-        
-    
+
+
 def videoMetaJson():
     # readjsonfile
     year_target = 2023
@@ -72,7 +72,7 @@ def videoMetaJson():
     second_target = 0
     session_id=""
     # you can try save-tiktok-sessionId.py under examples directory
-    
+
 # if failed, pls try manual way
 # To get it log in to your TikTok account and on the page https://www.tiktok.com/ press the F12 key on your keyboard then Application > Storage > Cookies and find the value of the sessionid cookie. You should have something like this: 7a9f3c5d8f6e4b2a1c9d8e7f6a5b4c3d
     schedule_time=0
@@ -84,7 +84,7 @@ def videoMetaJson():
     title = "MY SUPER TITLE"
     tags = ["Funny", "Joke", "fyp"]
     users = ["amazing dear"]
-    proxy = {'http': 'http://ip:port', 'https': 'https://ip:port'}    
+    proxy = {'http': 'http://ip:port', 'https': 'https://ip:port'}
     url_server='us'
 
     upload2TiktokSessionId(session_id, path, title, tags, users, url_server, schedule_time)

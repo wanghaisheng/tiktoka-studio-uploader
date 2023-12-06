@@ -1,4 +1,4 @@
-pip3 uninstall -y tsup
+pip3 uninstall -y upgenius
 pip3 install -i https://pypi.mirrors.ustc.edu.cn/simple/ -r requirements.txt
 python -m playwright install
 

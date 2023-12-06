@@ -1,5 +1,5 @@
 from base64 import encode
-from tsup.youtube import *
+from upgenius.youtube import *
 from datetime import datetime, date, timedelta
 import asyncio
 import os

@@ -1,9 +1,9 @@
-from tsup.youtube.youtube_upload import YoutubeUpload
-from tsup.youtube.youtube_helper import *
+from upgenius.youtube.youtube_upload import YoutubeUpload
+from upgenius.youtube.youtube_helper import LOG_LEVEL,BROWSER_TYPE,WAIT_POLICY
 from datetime import datetime, date, timedelta
 import asyncio
-from tsup.utils.webdriver.setupPL import checkRequirments
-import os 
+from upgenius.utils.webdriver.setupPL import checkRequirments
+import os
 
 # If it is the first time you've run the utility, a browser window should popup and prompt you to provide Youtube credentials. A token will be created and stored in request.token file in the local directory for subsequent use.
 
@@ -124,7 +124,7 @@ def checkfilebroken(path):
         return True
     else:
         print(f'{path} is not  exist')
-        
+
         return False
 def scheduletopublish_every7days():
     # mode a:release_offset exist,publishdate exist will take date value as a starting date to schedule videos

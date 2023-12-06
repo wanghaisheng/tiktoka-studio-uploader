@@ -3,13 +3,13 @@
 ytb.db
 geckodriver.log
 main.spec
-/tsup.egg-info/*
+/upgenius.egg-info/*
 /build/*
 /dist/*
 example.py
 /test-results/*
 screen-recording/*
-/tsup/__pycache__/*
+/upgenius/__pycache__/*
 /cookies/*
 /tests/*
 /datas/*

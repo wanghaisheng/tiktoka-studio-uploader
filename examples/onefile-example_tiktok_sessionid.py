@@ -1,5 +1,5 @@
-from tsup.tiktok.sessionId.uploader import  upload2TiktokSessionId
-from tsup.utils.tools import get_duration_timestamp
+from upgenius.tiktok.sessionId.uploader import  upload2TiktokSessionId
+from upgenius.utils.tools import get_duration_timestamp
 def videoMetaString_timestamp():
     # targetDateTime in following format:timestamp  ,you need calculate by yourself
     schedule_time=0
@@ -21,13 +21,13 @@ def videoMetaString_timestamp():
 
     isupload=upload2TiktokSessionId(session_id, path, title, tags, users, url_server, schedule_time)
     if isupload==False:
-        
+
         url_server='www'
         isupload=upload2TiktokSessionId(session_id, path, title, tags, users, url_server, schedule_time)
 
 def videoMetaString():
 
-        
+
     # targetDateTime in following format
 
     year_target = 2023
@@ -52,7 +52,7 @@ def videoMetaString():
     tags = ["Funny", "Joke", "fyp"]
     users = ["amazing dear"]
     url_server='us'
-    
+
 
     print(f'start to upload video:{path} to tiktok {url_server}')
     try:

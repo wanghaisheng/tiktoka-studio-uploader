@@ -1,5 +1,5 @@
-# from tsup import *
-from tsup.douyin import DouyinUpload
+# from upgenius import *
+from upgenius.douyin import DouyinUpload
 from datetime import datetime, date, timedelta
 import asyncio
 import json
