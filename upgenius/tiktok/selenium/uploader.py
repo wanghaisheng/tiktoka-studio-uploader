@@ -60,7 +60,7 @@ def upload_video(filename=None, description='', cookies='', schedule: datetime.d
 
 
 def upload_videos(videos: list = None, auth: AuthBackend = None, proxy: dict = None, browser='chrome',
-                  browser_agent=None, on_complete=None, headless=False, num_retires : int = 1, *args, **kwargs):
+                  browser_agent=None, on_complete=None, headless=False, num_retries : int = 1, *args, **kwargs):
     """
     Uploads multiple videos to TikTok
 
@@ -150,7 +150,7 @@ def upload_videos(videos: list = None, auth: AuthBackend = None, proxy: dict = N
                     continue
 
             complete_upload_form(driver, path, description, schedule,
-                                 num_retires=num_retires, headless=headless,
+                                 num_retries=num_retries, headless=headless,
                                  *args, **kwargs)
         except Exception as exception:
             logger.error('Failed to upload %s', path)
@@ -339,12 +339,11 @@ def _set_video(driver, path: str = '', num_retries: int = 3, **kwargs) -> None:
             )
             upload_box.send_keys(path)
             # waits for the upload progress bar to disappear
-            upload_progress = EC.presence_of_element_located(
-                (By.XPATH, config['selectors']['upload']['upload_in_progress'])
+            upload_finished = EC.presence_of_element_located(
+                (By.XPATH, config['selectors']['upload']['upload_finished'])
                 )
 
-            WebDriverWait(driver, config['explicit_wait']).until(upload_progress)
-            WebDriverWait(driver, config['explicit_wait']).until_not(upload_progress)
+            WebDriverWait(driver, config['explicit_wait']).until(upload_finished)
 
             # waits for the video to upload
             upload_confirmation = EC.presence_of_element_located(
@@ -377,7 +376,7 @@ def _remove_cookies_window(driver) -> None:
     logger.debug(green(f'Removing cookies window'))
     cookies_banner = WebDriverWait(driver, config['implicit_wait']).until(
         EC.presence_of_element_located((By.TAG_NAME, config['selectors']['upload']['cookies_banner']['banner'])))
-
+    
     item = WebDriverWait(driver, config['implicit_wait']).until(
         EC.visibility_of(cookies_banner.shadow_root.find_element(By.CSS_SELECTOR, config['selectors']['upload']['cookies_banner']['button'])))
 
@@ -397,15 +396,15 @@ def _remove_split_window(driver) -> None:
     """
     logger.debug(green(f'Removing split window'))
     window_xpath = config['selectors']['upload']['split_window']
-
+    
     try:
         condition = EC.presence_of_element_located((By.XPATH, window_xpath))
         window = WebDriverWait(driver, config['implicit_wait']).until(condition)
         window.click()
-
+            
     except TimeoutException:
         logger.debug(red(f"Split window not found or operation timed out"))
-
+        
 
 def _set_interactivity(driver, comment=True, stitch=True, duet=True, *args, **kwargs) -> None:
     """
