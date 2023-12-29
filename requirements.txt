@@ -16,3 +16,8 @@ numpy
 colorama==0.4.6
 undetected-playwright
 openpyxl
+setuptools
+python-dateutil
+toml
+pytz
+webdriver_manager

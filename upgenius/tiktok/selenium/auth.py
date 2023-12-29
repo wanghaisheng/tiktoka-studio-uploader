@@ -10,6 +10,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from upgenius.tiktok.selenium import config, logger
 from upgenius.tiktok.selenium.browsers import get_browser
 from upgenius.tiktok.selenium.utils import green
+import json
+from typing import List, Dict
 
 class AuthBackend:
     """
@@ -77,7 +79,7 @@ class AuthBackend:
         return driver
 
 
-    def load_json_cookie_file(cookie_file: str):
+    def load_json_cookie_file(self,cookie_file: str):
         """Restore auth cookies from a file. Does not guarantee that the user is logged in afterwards.
         Visits the domains specified in the cookies to set them, the previous page is not restored.
         """
@@ -111,7 +113,7 @@ class AuthBackend:
         lines=[]
         if path:
             if '.json' in path:
-                return load_json_cookie_file(path)
+                return self.load_json_cookie_file(path)
 
             else:
 

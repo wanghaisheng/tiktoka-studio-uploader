@@ -6,6 +6,18 @@ Log into Tiktok on any desktop web browser, then open your browser's developer t
 *    Firefox: Devtools > Storage > Cookies
 *    Safari: Devtools > Storage > Cookies
 
+
+
+### get cookie.txt from browser extension
+
+https://github.com/kairi003/Get-cookies.txt-LOCALLY
+
+
+After installing, open the extensions menu on TikTok.com and click 🍪 Get cookies.txt to reveal your cookies. Select Export As ⇩ and specify a location and name to save.
+
+
+
+
 ### automatically get cookies or sessionId
 
 edit  saveCookie.py with your own account name, line 106
@@ -60,7 +72,26 @@ https://github.com/wanghaisheng/tiktoka-studio-uploader/archive/refs/heads/playw
 
 4. unzip this into anywhere you like，open terminal:
 
+## macos
+
+
 ```
+
+python3 -m venv .venv
+
+source .venv/bin/activate
+
+pip install -r requirements.txt
+
+python setup.py install
+```
+
+## windows
+
+```
+python -m venv .venv
+
+source .venv/Scripts/activate
 pip install -r requirements.txt
 
 python setup.py install
@@ -125,5 +156,5 @@ all codes under **ytb_up**, twist them as you wish
 5. use existing without modification as a lib
 
 ```
-pip install ytb-up
+pip install upgenius
 ```

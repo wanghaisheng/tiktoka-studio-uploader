@@ -17,3 +17,5 @@ screen-recording/*
 youtube-stealth-**.json
 *.json
 .DS_Store
+.venv
+temp_proxy_auth_extension.zip

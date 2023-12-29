@@ -4,6 +4,11 @@ include LICENSE
 include upgenius/requirements.txt
 include upgenius/VERSION
 
+
+include upgenius/tiktok/selenium/config.toml
+include upgenius/tiktok/selenium/proxy_auth_extension/background.js
+include upgenius/tiktok/selenium/proxy_auth_extension/manifest.json
+
 recursive-include upgenius/utils/js *
 recursive-include tests *
 

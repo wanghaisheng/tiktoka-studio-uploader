@@ -62,11 +62,35 @@ https://docs.python.org/3.9/using/index.html
 
 git clone https://github.com/wanghaisheng/tiktoka-studio-uploader
 
+
+```
+
+## macos
+
+
+```
+
+python3 -m venv .venv
+
+source .venv/bin/activate
+
 pip install -r requirements.txt
 
 python setup.py install
+```
+
+## windows
 
 ```
+python -m venv .venv
+
+source .venv/Scripts/activate
+pip install -r requirements.txt
+
+python setup.py install
+```
+
+
 
 all codes under **ytb_up**, twist them as you wish
 
@@ -76,5 +100,5 @@ all codes under **ytb_up**, twist them as you wish
 5. use existing without modification as a lib
 
 ```
-pip install ytb-up
+pip install upgenius
 ```
