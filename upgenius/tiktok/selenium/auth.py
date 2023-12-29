@@ -108,6 +108,7 @@ class AuthBackend:
         """
         Gets cookies from the passed file using the netscape standard
         """
+        lines=[]
         if path:
             if '.json' in path:
                 return load_json_cookie_file(path)
