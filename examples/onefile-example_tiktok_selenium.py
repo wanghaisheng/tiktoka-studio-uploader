@@ -9,7 +9,7 @@ FILENAME = "upload.mp4"
 proxy = {'user': 'myuser', 'pass': 'mypass', 'host': '111.111.111', 'port': '99'}  # user:pass
 
 # max limit: 10 days later than now
-schedule = datetime(2023, 12, 20, 13, 00)
+schedule = datetime(2023, 12, 30, 13, 00)
 BROWSERS = [
     'chrome',
     'safari',
@@ -21,6 +21,8 @@ BROWSERS = [
 #  🫵 Mentions and Hashtags
 # you should embed them in description field
 
+
+# The scheduled datetime must be at least 20 minutes in the future and a maximum of 10 days.
 onevideo = [
     {
         "path": "tests/1.mp4",
@@ -64,8 +66,7 @@ if __name__ == "__main__":
             #  To set a proxy, currently only works with chrome as the browser
             proxy=proxy,
             # The datetime to schedule the video will be treated with the UTC timezone.
-# The scheduled datetime must be at least 20 minutes in the future and a maximum of 10 days.
-            schedule=schedule,
+
              #To set whether or not a video uploaded allows stitches, comments or duet,
              comment=True, stitch=True, duet=True,
 
