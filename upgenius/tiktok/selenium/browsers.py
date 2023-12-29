@@ -101,10 +101,13 @@ def chrome_defaults(*args, headless: bool = False, proxy: dict = None, **kwargs)
         if 'user' in proxy.keys() and 'pass' in proxy.keys():
             # This can fail if you are executing the function more than once in the same time
             extension_file = 'temp_proxy_auth_extension.zip'
-            generate_proxy_auth_extension(proxy['host'], proxy['port'], proxy['user'], proxy['pass'], extension_file)
+            print(f'proxy with user pass gen proxy extension :{proxy}')
+            generate_proxy_auth_extension(proxy['scheme'],proxy['host'], proxy['port'], proxy['user'], proxy['pass'], extension_file)
             options.add_extension(extension_file)
         else:
-            options.add_argument(f'--proxy-server={proxy["host"]}:{proxy["port"]}')
+            print('proxy without user pass',f'--proxy-server={proxy["scheme"]}://{proxy["host"]}:{proxy["port"]}')
+            options.add_argument(f'--proxy-server={proxy["scheme"]}://{proxy["host"]}:{proxy["port"]}')
+            # options.add_argument('--proxy-server=socks5://' + '127.0.0.1:1080')
 
     return options
 

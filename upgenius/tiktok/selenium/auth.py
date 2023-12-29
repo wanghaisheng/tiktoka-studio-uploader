@@ -85,10 +85,20 @@ class AuthBackend:
         """
         domain_cookies: Dict[str, List[object]] = {}
         # cookie_file=r'D:\Download\audio-visual\make-reddit-video\auddit\assets\cookies\aww.json'
-        with open(cookie_file) as file:
-            cookies: List = json.load(file)
+
+        with open(cookie_file, 'rb') as f:
+            cookies = json.loads(f.read().decode('utf-8'))        
+            try:
+                print(f'{type(cookies)}')
+                cookies=cookies.get('cookies')
+            except:
+                pass
+            if (type(cookies)==list)==False:
+                raise 'check your cookie file contents'
+
             # Sort cookies by domain, because we need to visit to domain to add cookies
             for cookie in cookies:
+                print(type(cookie),cookie,'-------------')
                 if (
                     cookie["sameSite"] != "no_restriction"
                     or cookie["sameSite"].lower() != "no_restriction"

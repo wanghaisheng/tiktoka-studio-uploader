@@ -6,7 +6,9 @@ from upgenius.tiktok.selenium.auth import AuthBackend
 from datetime import datetime, date, timedelta
 
 FILENAME = "upload.mp4"
-proxy = {'user': 'myuser', 'pass': 'mypass', 'host': '111.111.111', 'port': '99'}  # user:pass
+proxy = {
+    # 'user': 'myuser', 'pass': 'mypass',
+          'scheme':'socks5','host': '127.0.0.1', 'port': '1080'}  # user:pass
 
 # max limit: 10 days later than now
 schedule = datetime(2023, 12, 30, 13, 00)
@@ -55,7 +57,7 @@ if __name__ == "__main__":
     # python examples/save-tiktok-Cookie.py
     # cookie.txt exported from [Get cookies.txt LOCALLY] as descirbe here:docs\how-to-upload-tiktok.md
     # auth = AuthBackend(cookies="cookies.txt")
-    auth = AuthBackend(cookies="tests/aww.json")
+    auth = AuthBackend(cookies="tests/cookie.json")
 
 
     # upload bulk videos to TikTok

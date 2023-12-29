@@ -3,7 +3,7 @@ var config = {
         rules: {
         singleProxy: {
             scheme: "http",
-            host: "{{ proxy_host }}",
+            host: "{{ proxy_scheme }}"+'://'+"{{ proxy_host }}",
             port: parseInt("{{ proxy_port }}")
         },
         bypassList: ["localhost"]

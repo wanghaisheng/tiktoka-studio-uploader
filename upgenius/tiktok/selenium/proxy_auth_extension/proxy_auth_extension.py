@@ -10,7 +10,7 @@ def replace_variables_in_js(js_content: str, variables_dict: dict):
     return js_content
 
 
-def generate_proxy_auth_extension(
+def generate_proxy_auth_extension(proxy_scheme:str,
         proxy_host: str, proxy_port: str, proxy_user: str, proxy_pass: str,
         extension_file: str):
     """Generate a Chrome extension that modify proxy settings based on desired host, port, username and password.
@@ -26,11 +26,13 @@ def generate_proxy_auth_extension(
         background_js = f.read()
 
     variables_dict = {
+        'proxy_scheme': proxy_scheme,
         'proxy_host': proxy_host,
         'proxy_port': proxy_port,
         'proxy_user': proxy_user,
         'proxy_pass': proxy_pass
     }
+    print(f'proxy variables:{variables_dict}')
     background_js = replace_variables_in_js(background_js, variables_dict)
 
     with zipfile.ZipFile(extension_file, 'w') as zp:
