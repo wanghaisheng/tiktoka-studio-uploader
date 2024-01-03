@@ -21,3 +21,4 @@ python-dateutil
 toml
 pytz
 webdriver_manager
+seleniumbase

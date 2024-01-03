@@ -9,7 +9,7 @@ FILENAME = "upload.mp4"
 proxy = {
     # 'user': 'myuser', 'pass': 'mypass',
           'scheme':'socks5','host': '127.0.0.1', 'port': '1080'}  # user:pass
-
+proxy='socks5://127.0.0.1:1080'
 # max limit: 10 days later than now
 schedule = datetime(2023, 12, 30, 13, 00)
 BROWSERS = [

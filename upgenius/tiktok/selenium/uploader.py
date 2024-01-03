@@ -20,11 +20,13 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import ElementClickInterceptedException, TimeoutException
 
-from upgenius.tiktok.selenium.browsers import get_browser
+from upgenius.tiktok.selenium.browsers_sb import get_browser
 from upgenius.tiktok.selenium.auth import AuthBackend
 from upgenius.tiktok.selenium import config, logger
 from upgenius.tiktok.selenium.utils import bold, green, red
 from upgenius.tiktok.selenium.proxy_auth_extension.proxy_auth_extension import proxy_is_working
+import re
+
 
 
 def upload_video(filename=None, description='', cookies='', schedule: datetime.datetime = None, username='',
@@ -105,9 +107,28 @@ def upload_videos(videos: list = None, auth: AuthBackend = None, proxy: dict = N
         logger.debug('Using user-defined browser agent')
         driver = browser_agent
     if proxy:
-        if proxy_is_working(driver, proxy['host']):
-            logger.debug(green('Proxy is working'))
+
+
+        # url = "https://user:pass@host:1234"
+        url=proxy
+        pattern = r"(https?|socks5)://(\w+):(\w+)@(\w+):(\d+)"
+        match = re.match(pattern, url)
+
+        if match:
+            scheme = match.group(1)
+            username = match.group(2)
+            password = match.group(3)
+            host = match.group(4)
+            port = match.group(5)
+            if proxy_is_working(driver, host):
+                logger.debug(green('Proxy is working'))
+            print(f"Scheme: {scheme}")
+            print(f"Host: {host}")
+            print(f"Port: {port}")
+            print(f"Username: {username}")
+            print(f"Password: {password}")
         else:
+            print("URL format does not match the pattern")        
             logger.error('Proxy is not working')
             driver.quit()
             raise Exception('Proxy is not working')
@@ -586,6 +607,8 @@ def _post_video(driver) -> None:
     """
     logger.debug(green('Clicking the post button'))
 
+    driver.set_window_size(1920, 1080)
+
     try:
         post = WebDriverWait(driver, config['implicit_wait']).until(EC.element_to_be_clickable((By.XPATH, config['selectors']['upload']['post'])))
         post.click()
@@ -593,14 +616,14 @@ def _post_video(driver) -> None:
         logger.debug(green("Trying to click on the button again"))
         driver.execute_script('document.querySelector(".btn-post > button").click()')
 
-    # waits for the video to upload
-    post_confirmation = EC.presence_of_element_located(
+    post_confirmation = EC.visibility_of_element_located(
         (By.XPATH, config['selectors']['upload']['post_confirmation'])
         )
-    WebDriverWait(driver, config['explicit_wait']).until(post_confirmation)
+
+    manage_posts = WebDriverWait(driver, config['explicit_wait']).until(post_confirmation)
+    manage_posts.click()
 
     logger.debug(green('Video posted successfully'))
-
 
 # HELPERS
 
