@@ -109,26 +109,17 @@ def upload_videos(videos: list = None, auth: AuthBackend = None, proxy: dict = N
     if proxy:
 
 
-        # url = "https://user:pass@host:1234"
-        url=proxy
-        pattern = r"(https?|socks5)://(\w+):(\w+)@(\w+):(\d+)"
-        match = re.match(pattern, url)
-
+        pattern = r'(?P<protocol>\w+)://(?:(?P<user>\w+):(?P<pass>\w+)@)?(?P<host>[\w.]+):(?P<port>\d+)'
+        match = re.match(pattern, proxy)
         if match:
-            scheme = match.group(1)
-            username = match.group(2)
-            password = match.group(3)
-            host = match.group(4)
-            port = match.group(5)
+            parts = match.groupdict()
+            host = parts['host']
+            port = int(parts['port'])
+            print()
             if proxy_is_working(driver, host):
-                logger.debug(green('Proxy is working'))
-            print(f"Scheme: {scheme}")
-            print(f"Host: {host}")
-            print(f"Port: {port}")
-            print(f"Username: {username}")
-            print(f"Password: {password}")
+                logger.debug(green('Proxy is working'))            
         else:
-            print("URL format does not match the pattern")        
+            print("Invalid proxy url URL format does not match the pattern")        
             logger.error('Proxy is not working')
             driver.quit()
             raise Exception('Proxy is not working')

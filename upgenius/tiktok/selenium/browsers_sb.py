@@ -13,7 +13,7 @@ from webdriver_manager.microsoft import EdgeChromiumDriverManager
 from selenium.webdriver.edge.service import Service as EdgeService
 
 from selenium import webdriver
-from seleniumbase import SB
+from seleniumbase import Driver
 
 from upgenius.tiktok.selenium import config
 from upgenius.tiktok.selenium.proxy_auth_extension.proxy_auth_extension import generate_proxy_auth_extension
@@ -23,58 +23,19 @@ def get_browser(name: str = 'chrome',headless=False,proxy=None, options=None, *a
     """
     Gets a browser based on the name with the ability to pass in additional arguments
     """
-    with SB(uc=True,xvfb=True,browser=name, test=True,proxy=proxy,headless=headless) as sb:
-        return sb.get_new_driver(
-    locale_code=None,
-    protocol=None,
-    servername=None,
-    port=None,
-    # proxy=None,
-    proxy_bypass_list=None,
-    proxy_pac_url=None,
-    multi_proxy=None,
-    agent=None,
-    switch_to=True,
-    cap_file=None,
-    cap_string=None,
-    recorder_ext=None,
-    disable_js=None,
-    disable_csp=None,
-    enable_ws=None,
-    enable_sync=None,
-    use_auto_ext=None,
-    undetectable=None,
-    uc_cdp_events=None,
-    uc_subprocess=None,
-    log_cdp_events=None,
-    no_sandbox=None,
-    disable_gpu=None,
-    headless2=None,
-    incognito=None,
-    guest_mode=None,
-    dark_mode=None,
-    devtools=None,
-    remote_debug=None,
-    enable_3d_apis=None,
-    swiftshader=None,
-    ad_block_on=None,
-    block_images=None,
-    do_not_track=None,
-    chromium_arg=None,
-    firefox_arg=None,
-    firefox_pref=None,
-    user_data_dir=None,
-    extension_zip=None,
-    extension_dir=None,
-    binary_location=None,
-    driver_version=None,
-    page_load_strategy=None,
-    use_wire=None,
-    external_pdf=None,
-    is_mobile=None,
-    d_width=None,
-    d_height=None,
-    d_p_r=None) 
+
+        
+    return Driver(
+        uc=True,browser=name, proxy=proxy,headless=headless, 
+        locale_code=None, protocol=None,
+        servername=None, port=None,  agent=None, 
+        cap_file=None, cap_string=None, disable_csp=None, enable_ws=None,
+        enable_sync=None, use_auto_ext=None, no_sandbox=None, disable_gpu=None,
+        incognito=None, guest_mode=None, devtools=None, remote_debug=None,
+        swiftshader=None, block_images=None,
+        chromium_arg=None, firefox_arg=None, firefox_pref=None,
+        user_data_dir=None, extension_zip=None, extension_dir=None,
+        is_mobile=None, d_width=None, d_height=None, d_p_r=None)     
 
             
 

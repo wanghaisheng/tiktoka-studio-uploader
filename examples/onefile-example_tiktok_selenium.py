@@ -11,7 +11,7 @@ proxy = {
           'scheme':'socks5','host': '127.0.0.1', 'port': '1080'}  # user:pass
 proxy='socks5://127.0.0.1:1080'
 # max limit: 10 days later than now
-schedule = datetime(2023, 12, 30, 13, 00)
+schedule = datetime(2024, 1, 5, 13, 00)
 BROWSERS = [
     'chrome',
     'safari',
@@ -72,5 +72,5 @@ if __name__ == "__main__":
              #To set whether or not a video uploaded allows stitches, comments or duet,
              comment=True, stitch=True, duet=True,
 
-             headless=True
+             headless=False
              )
