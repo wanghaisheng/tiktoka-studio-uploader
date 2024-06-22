@@ -13,8 +13,10 @@
 if there's anything you don't understand, submit an issue or cantact me
 
 ### for those beginner
+checkout the [GUI version V2](https://github.com/wanghaisheng/tiktoka-studio-uploader-app).
 
-checkout the [GUI version](https://github.com/wanghaisheng/uploader-genius-V1).
+
+checkout the [GUI version V1](https://github.com/wanghaisheng/uploader-genius-V1).
 
 New version you can check www.tiktokastudio.com for more infos.
 
