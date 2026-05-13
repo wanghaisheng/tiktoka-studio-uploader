@@ -1,3 +1,4 @@
+from .mobile.mobile_upload import TikTokMobileUploader
 # -*- coding: utf-8 -*-
 """
 Created on 2023/6/05 12:09 AM
